@@ -9,14 +9,13 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
-import { FeedbackData } from '@/types/feedback';
-import { v4 as uuidv4 } from 'uuid';
 
 const Feedback = () => {
   const navigate = useNavigate();
   const { addFeedback } = useFeedback();
-
+  
   // State for form data
   const [ageGroup, setAgeGroup] = useState('');
   const [occupation, setOccupation] = useState('');
@@ -25,7 +24,7 @@ const Feedback = () => {
   const [usesMpesa, setUsesMpesa] = useState<boolean | null>(null);
   
   const [followsBudget, setFollowsBudget] = useState('');
-  const [spendingAreas, setSpendingAreas] = useState<Record<string, boolean>>({
+  const [spendingAreas, setSpendingAreas] = useState({
     rent: false,
     food: false,
     transport: false,
@@ -46,9 +45,31 @@ const Feedback = () => {
   const [desiredFeatures, setDesiredFeatures] = useState('');
   const [concerns, setConcerns] = useState('');
   
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Form submission handler
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation
+    if (!ageGroup) {
+      toast.error("Please select your age group");
+      return;
+    }
+    if (!occupation) {
+      toast.error("Please select your occupation");
+      return;
+    }
+    if (!incomeRange) {
+      toast.error("Please select your income range");
+      return;
+    }
+    if (usesMpesa === null) {
+      toast.error("Please indicate if you use M-PESA");
+      return;
+    }
+
+    setIsSubmitting(true);
     
     // Gather selected spending areas
     const selectedSpendingAreas = Object.entries(spendingAreas)
@@ -56,58 +77,72 @@ const Feedback = () => {
       .map(([area, _]) => area === 'other' ? otherSpendingArea : area);
     
     // Create feedback object
-    const feedback: FeedbackData = {
-      id: uuidv4(),
-      timestamp: new Date().toISOString(),
+    const feedback = {
       demographic: {
         ageGroup,
         occupation: occupation === 'Other' ? otherOccupation : occupation,
         incomeRange,
-        usesMpesa: usesMpesa === true,
+        usesMpesa: usesMpesa === true
       },
       financialHabits: {
         followsBudget,
         mostSpendingAreas: selectedSpendingAreas,
         runsOutOfMoney,
-        savesMoney,
+        savesMoney
       },
       reactionToTengaPesa: {
         wouldUseFeature,
         findWithdrawalRulesHelpful,
         feelingAboutPenalty,
-        wantsSpendingInsights,
+        wantsSpendingInsights
       },
       finalThoughts: {
         thinksTengaPesaHelps,
         desiredFeatures,
-        concerns,
-      },
+        concerns
+      }
     };
     
-    // Add feedback to context
-    addFeedback(feedback);
-    
-    // Show success message
-    toast.success("Thank you for your feedback!", {
-      description: "Your responses have been recorded successfully."
-    });
-    
-    // Redirect to homepage
-    navigate('/');
+    try {
+      // Add feedback to context and database
+      const success = await addFeedback(feedback);
+      
+      if (success) {
+        // Show success message
+        toast.success("Thank you for your feedback!", {
+          description: "Your responses have been recorded successfully."
+        });
+        
+        // Redirect to homepage
+        navigate('/');
+      } else {
+        toast.error("Failed to submit your feedback", {
+          description: "Please try again later."
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      toast.error("Something went wrong", {
+        description: "Please try again later."
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-  
+
   return (
     <Layout>
       <div className="container mx-auto py-8 px-4">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold mb-6 text-center">Tenga Pesa Feedback Questionnaire</h1>
           <p className="text-gray-600 mb-8 text-center">
-            We're collecting opinions about a proposed budgeting feature within M-PESA to help people better manage their money. Your feedback is anonymous and valuable.
+            We're collecting opinions about a proposed budgeting feature within M-PESA to help people better manage their money. 
+            Your feedback is anonymous and valuable.
           </p>
-          
+
           <form onSubmit={handleSubmit}>
-            {/* Section A: Demographics */}
-            <Card className="mb-8">
+            {/* Section A: Demographic Information */}
+            <Card className="mb-8 shadow-md">
               <CardHeader>
                 <h2 className="text-xl font-bold">Section A: Demographic Information</h2>
               </CardHeader>
@@ -133,8 +168,12 @@ const Feedback = () => {
                       <Label htmlFor="age-4">35-44</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="45 and above" id="age-5" />
-                      <Label htmlFor="age-5">45 and above</Label>
+                      <RadioGroupItem value="45-54" id="age-5" />
+                      <Label htmlFor="age-5">45-54</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="55+" id="age-6" />
+                      <Label htmlFor="age-6">55+</Label>
                     </div>
                   </RadioGroup>
                 </div>
@@ -144,78 +183,85 @@ const Feedback = () => {
                   <Label className="text-base font-medium mb-2 block">Occupation:</Label>
                   <RadioGroup value={occupation} onValueChange={setOccupation} className="space-y-2">
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Student" id="occ-1" />
-                      <Label htmlFor="occ-1">Student</Label>
+                      <RadioGroupItem value="Student" id="occupation-1" />
+                      <Label htmlFor="occupation-1">Student</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Employed" id="occ-2" />
-                      <Label htmlFor="occ-2">Employed</Label>
+                      <RadioGroupItem value="Employed" id="occupation-2" />
+                      <Label htmlFor="occupation-2">Employed</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Self-employed" id="occ-3" />
-                      <Label htmlFor="occ-3">Self-employed</Label>
+                      <RadioGroupItem value="Self-employed" id="occupation-3" />
+                      <Label htmlFor="occupation-3">Self-employed</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Unemployed" id="occ-4" />
-                      <Label htmlFor="occ-4">Unemployed</Label>
+                      <RadioGroupItem value="Unemployed" id="occupation-4" />
+                      <Label htmlFor="occupation-4">Unemployed</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Other" id="occ-5" />
-                      <Label htmlFor="occ-5">Other</Label>
+                      <RadioGroupItem value="Retired" id="occupation-5" />
+                      <Label htmlFor="occupation-5">Retired</Label>
                     </div>
-                    {occupation === 'Other' && (
-                      <Textarea 
-                        placeholder="Please specify your occupation" 
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Other" id="occupation-6" />
+                      <Label htmlFor="occupation-6">Other</Label>
+                    </div>
+                  </RadioGroup>
+                  
+                  {occupation === 'Other' && (
+                    <div className="mt-2">
+                      <Input
+                        placeholder="Please specify"
                         value={otherOccupation}
                         onChange={(e) => setOtherOccupation(e.target.value)}
-                        className="mt-2"
+                        className="max-w-md"
                       />
-                    )}
-                  </RadioGroup>
+                    </div>
+                  )}
                 </div>
                 
                 {/* Income Range */}
                 <div>
-                  <Label className="text-base font-medium mb-2 block">Monthly Income Range (Approximate):</Label>
+                  <Label className="text-base font-medium mb-2 block">Monthly Income Range (KSh):</Label>
                   <RadioGroup value={incomeRange} onValueChange={setIncomeRange} className="space-y-2">
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Below KES 5,000" id="inc-1" />
-                      <Label htmlFor="inc-1">Below KES 5,000</Label>
+                      <RadioGroupItem value="Less than 10,000" id="income-1" />
+                      <Label htmlFor="income-1">Less than 10,000</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="KES 5,000 - 10,000" id="inc-2" />
-                      <Label htmlFor="inc-2">KES 5,000 - 10,000</Label>
+                      <RadioGroupItem value="10,000 - 30,000" id="income-2" />
+                      <Label htmlFor="income-2">10,000 - 30,000</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="KES 10,001 - 30,000" id="inc-3" />
-                      <Label htmlFor="inc-3">KES 10,001 - 30,000</Label>
+                      <RadioGroupItem value="30,001 - 50,000" id="income-3" />
+                      <Label htmlFor="income-3">30,001 - 50,000</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="KES 30,001 - 60,000" id="inc-4" />
-                      <Label htmlFor="inc-4">KES 30,001 - 60,000</Label>
+                      <RadioGroupItem value="50,001 - 100,000" id="income-4" />
+                      <Label htmlFor="income-4">50,001 - 100,000</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Above KES 60,000" id="inc-5" />
-                      <Label htmlFor="inc-5">Above KES 60,000</Label>
+                      <RadioGroupItem value="More than 100,000" id="income-5" />
+                      <Label htmlFor="income-5">More than 100,000</Label>
                     </div>
                   </RadioGroup>
                 </div>
                 
                 {/* M-PESA Usage */}
                 <div>
-                  <Label className="text-base font-medium mb-2 block">Do you actively use M-PESA?</Label>
+                  <Label className="text-base font-medium mb-2 block">Do you use M-PESA?</Label>
                   <RadioGroup 
-                    value={usesMpesa === true ? "Yes" : usesMpesa === false ? "No" : ""} 
-                    onValueChange={(value) => setUsesMpesa(value === "Yes")}
+                    value={usesMpesa === null ? undefined : usesMpesa ? 'yes' : 'no'} 
+                    onValueChange={(v) => setUsesMpesa(v === 'yes')} 
                     className="space-y-2"
                   >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Yes" id="mpesa-1" />
-                      <Label htmlFor="mpesa-1">Yes</Label>
+                      <RadioGroupItem value="yes" id="mpesa-yes" />
+                      <Label htmlFor="mpesa-yes">Yes</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="No" id="mpesa-2" />
-                      <Label htmlFor="mpesa-2">No</Label>
+                      <RadioGroupItem value="no" id="mpesa-no" />
+                      <Label htmlFor="mpesa-no">No</Label>
                     </div>
                   </RadioGroup>
                 </div>
@@ -223,154 +269,178 @@ const Feedback = () => {
             </Card>
             
             {/* Section B: Financial Habits */}
-            <Card className="mb-8">
+            <Card className="mb-8 shadow-md">
               <CardHeader>
                 <h2 className="text-xl font-bold">Section B: Financial Habits</h2>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Budget Following */}
                 <div>
-                  <Label className="text-base font-medium mb-2 block">Do you follow a budget for your monthly spending?</Label>
+                  <Label className="text-base font-medium mb-2 block">Do you follow a budget?</Label>
                   <RadioGroup value={followsBudget} onValueChange={setFollowsBudget} className="space-y-2">
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Yes" id="budget-1" />
-                      <Label htmlFor="budget-1">Yes</Label>
+                      <RadioGroupItem value="Yes, strictly" id="budget-1" />
+                      <Label htmlFor="budget-1">Yes, strictly</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="No" id="budget-2" />
-                      <Label htmlFor="budget-2">No</Label>
+                      <RadioGroupItem value="Yes, but not strictly" id="budget-2" />
+                      <Label htmlFor="budget-2">Yes, but not strictly</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="Sometimes" id="budget-3" />
                       <Label htmlFor="budget-3">Sometimes</Label>
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="No" id="budget-4" />
+                      <Label htmlFor="budget-4">No</Label>
+                    </div>
                   </RadioGroup>
                 </div>
                 
-                {/* Spending Areas */}
+                {/* Areas of Spending */}
                 <div>
-                  <Label className="text-base font-medium mb-2 block">Where does most of your income go? (You can choose more than one)</Label>
+                  <Label className="text-base font-medium mb-2 block">
+                    Which areas do you spend most of your money on? (Check all that apply)
+                  </Label>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="spend-1" 
+                      <Checkbox
+                        id="spending-rent"
                         checked={spendingAreas.rent}
-                        onCheckedChange={(checked) => 
-                          setSpendingAreas({...spendingAreas, rent: checked === true})}
+                        onCheckedChange={(checked) =>
+                          setSpendingAreas({ ...spendingAreas, rent: !!checked })
+                        }
                       />
-                      <Label htmlFor="spend-1">Rent</Label>
+                      <Label htmlFor="spending-rent">Rent/Housing</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="spend-2" 
+                      <Checkbox
+                        id="spending-food"
                         checked={spendingAreas.food}
-                        onCheckedChange={(checked) => 
-                          setSpendingAreas({...spendingAreas, food: checked === true})}
+                        onCheckedChange={(checked) =>
+                          setSpendingAreas({ ...spendingAreas, food: !!checked })
+                        }
                       />
-                      <Label htmlFor="spend-2">Food</Label>
+                      <Label htmlFor="spending-food">Food</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="spend-3" 
+                      <Checkbox
+                        id="spending-transport"
                         checked={spendingAreas.transport}
-                        onCheckedChange={(checked) => 
-                          setSpendingAreas({...spendingAreas, transport: checked === true})}
+                        onCheckedChange={(checked) =>
+                          setSpendingAreas({ ...spendingAreas, transport: !!checked })
+                        }
                       />
-                      <Label htmlFor="spend-3">Transport</Label>
+                      <Label htmlFor="spending-transport">Transport</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="spend-4" 
+                      <Checkbox
+                        id="spending-entertainment"
                         checked={spendingAreas.entertainment}
-                        onCheckedChange={(checked) => 
-                          setSpendingAreas({...spendingAreas, entertainment: checked === true})}
+                        onCheckedChange={(checked) =>
+                          setSpendingAreas({ ...spendingAreas, entertainment: !!checked })
+                        }
                       />
-                      <Label htmlFor="spend-4">Entertainment</Label>
+                      <Label htmlFor="spending-entertainment">Entertainment/Leisure</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="spend-5" 
+                      <Checkbox
+                        id="spending-savings"
                         checked={spendingAreas.savings}
-                        onCheckedChange={(checked) => 
-                          setSpendingAreas({...spendingAreas, savings: checked === true})}
+                        onCheckedChange={(checked) =>
+                          setSpendingAreas({ ...spendingAreas, savings: !!checked })
+                        }
                       />
-                      <Label htmlFor="spend-5">Savings</Label>
+                      <Label htmlFor="spending-savings">Savings/Investments</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="spend-6" 
+                      <Checkbox
+                        id="spending-other"
                         checked={spendingAreas.other}
-                        onCheckedChange={(checked) => 
-                          setSpendingAreas({...spendingAreas, other: checked === true})}
+                        onCheckedChange={(checked) =>
+                          setSpendingAreas({ ...spendingAreas, other: !!checked })
+                        }
                       />
-                      <Label htmlFor="spend-6">Other</Label>
+                      <Label htmlFor="spending-other">Other</Label>
                     </div>
+                    
                     {spendingAreas.other && (
-                      <Textarea 
-                        placeholder="Please specify other spending areas" 
-                        value={otherSpendingArea}
-                        onChange={(e) => setOtherSpendingArea(e.target.value)}
-                        className="mt-2"
-                      />
+                      <div className="mt-2">
+                        <Input
+                          placeholder="Please specify"
+                          value={otherSpendingArea}
+                          onChange={(e) => setOtherSpendingArea(e.target.value)}
+                          className="max-w-md"
+                        />
+                      </div>
                     )}
                   </div>
                 </div>
                 
-                {/* Running Out of Money */}
+                {/* Runs out of money */}
                 <div>
-                  <Label className="text-base font-medium mb-2 block">Have you ever run out of money before meeting important needs?</Label>
+                  <Label className="text-base font-medium mb-2 block">
+                    How often do you run out of money before the end of the month?
+                  </Label>
                   <RadioGroup value={runsOutOfMoney} onValueChange={setRunsOutOfMoney} className="space-y-2">
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Frequently" id="run-1" />
-                      <Label htmlFor="run-1">Frequently</Label>
+                      <RadioGroupItem value="Very often" id="runout-1" />
+                      <Label htmlFor="runout-1">Very often</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Sometimes" id="run-2" />
-                      <Label htmlFor="run-2">Sometimes</Label>
+                      <RadioGroupItem value="Sometimes" id="runout-2" />
+                      <Label htmlFor="runout-2">Sometimes</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Rarely" id="run-3" />
-                      <Label htmlFor="run-3">Rarely</Label>
+                      <RadioGroupItem value="Rarely" id="runout-3" />
+                      <Label htmlFor="runout-3">Rarely</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Never" id="run-4" />
-                      <Label htmlFor="run-4">Never</Label>
+                      <RadioGroupItem value="Never" id="runout-4" />
+                      <Label htmlFor="runout-4">Never</Label>
                     </div>
                   </RadioGroup>
                 </div>
                 
-                {/* Saving Money */}
+                {/* Saves Money */}
                 <div>
-                  <Label className="text-base font-medium mb-2 block">Do you save money regularly?</Label>
+                  <Label className="text-base font-medium mb-2 block">Do you regularly save money?</Label>
                   <RadioGroup value={savesMoney} onValueChange={setSavesMoney} className="space-y-2">
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Yes" id="save-1" />
-                      <Label htmlFor="save-1">Yes</Label>
+                      <RadioGroupItem value="Yes, consistently" id="saves-1" />
+                      <Label htmlFor="saves-1">Yes, consistently</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="No" id="save-2" />
-                      <Label htmlFor="save-2">No</Label>
+                      <RadioGroupItem value="Yes, but irregularly" id="saves-2" />
+                      <Label htmlFor="saves-2">Yes, but irregularly</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Occasionally" id="save-3" />
-                      <Label htmlFor="save-3">Occasionally</Label>
+                      <RadioGroupItem value="Rarely" id="saves-3" />
+                      <Label htmlFor="saves-3">Rarely</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Never" id="saves-4" />
+                      <Label htmlFor="saves-4">Never</Label>
                     </div>
                   </RadioGroup>
                 </div>
               </CardContent>
             </Card>
             
-            {/* Section C: Reaction to Tenga Pesa Idea */}
-            <Card className="mb-8">
+            {/* Section C: Reaction to Tenga Pesa */}
+            <Card className="mb-8 shadow-md">
               <CardHeader>
-                <h2 className="text-xl font-bold">Section C: Reaction to Tenga Pesa Idea</h2>
+                <h2 className="text-xl font-bold">Section C: Reaction to Tenga Pesa</h2>
+                <p className="text-sm text-gray-500 mt-2">
+                  Tenga Pesa is a proposed M-PESA feature that lets you set aside money in a special wallet 
+                  with flexible withdrawal restrictions to help you stick to your budget.
+                </p>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Would Use Feature */}
+                {/* Would use feature */}
                 <div>
                   <Label className="text-base font-medium mb-2 block">
-                    If M-PESA introduced a budgeting feature where your income is automatically divided into mini-accounts 
-                    (e.g., rent, food, savings) – would you use it?
+                    How likely are you to use this feature if available?
                   </Label>
                   <RadioGroup value={wouldUseFeature} onValueChange={setWouldUseFeature} className="space-y-2">
                     <div className="flex items-center space-x-2">
@@ -378,22 +448,34 @@ const Feedback = () => {
                       <Label htmlFor="use-1">Definitely</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Maybe" id="use-2" />
-                      <Label htmlFor="use-2">Maybe</Label>
+                      <RadioGroupItem value="Probably" id="use-2" />
+                      <Label htmlFor="use-2">Probably</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="No" id="use-3" />
-                      <Label htmlFor="use-3">No</Label>
+                      <RadioGroupItem value="Not sure" id="use-3" />
+                      <Label htmlFor="use-3">Not sure</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Probably not" id="use-4" />
+                      <Label htmlFor="use-4">Probably not</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Definitely not" id="use-5" />
+                      <Label htmlFor="use-5">Definitely not</Label>
                     </div>
                   </RadioGroup>
                 </div>
                 
-                {/* Withdrawal Rules Helpfulness */}
+                {/* Withdrawal rules */}
                 <div>
                   <Label className="text-base font-medium mb-2 block">
-                    Would you find it helpful if each mini-account had withdrawal rules to help control spending?
+                    Would you find it helpful to set withdrawal rules (like specific days or maximum amounts)?
                   </Label>
-                  <RadioGroup value={findWithdrawalRulesHelpful} onValueChange={setFindWithdrawalRulesHelpful} className="space-y-2">
+                  <RadioGroup 
+                    value={findWithdrawalRulesHelpful} 
+                    onValueChange={setFindWithdrawalRulesHelpful} 
+                    className="space-y-2"
+                  >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="Very helpful" id="rules-1" />
                       <Label htmlFor="rules-1">Very helpful</Label>
@@ -403,50 +485,82 @@ const Feedback = () => {
                       <Label htmlFor="rules-2">Somewhat helpful</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Not helpful" id="rules-3" />
-                      <Label htmlFor="rules-3">Not helpful</Label>
+                      <RadioGroupItem value="Neutral" id="rules-3" />
+                      <Label htmlFor="rules-3">Neutral</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Not very helpful" id="rules-4" />
+                      <Label htmlFor="rules-4">Not very helpful</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Not at all helpful" id="rules-5" />
+                      <Label htmlFor="rules-5">Not at all helpful</Label>
                     </div>
                   </RadioGroup>
                 </div>
                 
-                {/* Feeling About Penalty */}
+                {/* Penalty feeling */}
                 <div>
                   <Label className="text-base font-medium mb-2 block">
-                    How would you feel about a small penalty for withdrawing money early from a goal or locked mini-account?
+                    How would you feel about a small penalty (2-5%) for withdrawing money outside your set rules?
                   </Label>
-                  <RadioGroup value={feelingAboutPenalty} onValueChange={setFeelingAboutPenalty} className="space-y-2">
+                  <RadioGroup 
+                    value={feelingAboutPenalty} 
+                    onValueChange={setFeelingAboutPenalty} 
+                    className="space-y-2"
+                  >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="I support it – it builds discipline" id="penalty-1" />
-                      <Label htmlFor="penalty-1">I support it – it builds discipline</Label>
+                      <RadioGroupItem value="This would motivate me" id="penalty-1" />
+                      <Label htmlFor="penalty-1">This would motivate me</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="I don't mind if it's optional" id="penalty-2" />
-                      <Label htmlFor="penalty-2">I don't mind if it's optional</Label>
+                      <RadioGroupItem value="I would accept this" id="penalty-2" />
+                      <Label htmlFor="penalty-2">I would accept this</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="I don't like penalties at all" id="penalty-3" />
-                      <Label htmlFor="penalty-3">I don't like penalties at all</Label>
+                      <RadioGroupItem value="I'm unsure" id="penalty-3" />
+                      <Label htmlFor="penalty-3">I'm unsure</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="This would discourage me" id="penalty-4" />
+                      <Label htmlFor="penalty-4">This would discourage me</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="I would never use it with penalties" id="penalty-5" />
+                      <Label htmlFor="penalty-5">I would never use it with penalties</Label>
                     </div>
                   </RadioGroup>
                 </div>
                 
-                {/* Spending Insights */}
+                {/* Spending insights */}
                 <div>
                   <Label className="text-base font-medium mb-2 block">
-                    Would you like to see spending insights and nudges (e.g., "you spent KES 2,000 on entertainment this week") in M-PESA?
+                    Would you like to receive insights about your spending habits as part of this feature?
                   </Label>
-                  <RadioGroup value={wantsSpendingInsights} onValueChange={setWantsSpendingInsights} className="space-y-2">
+                  <RadioGroup 
+                    value={wantsSpendingInsights} 
+                    onValueChange={setWantsSpendingInsights} 
+                    className="space-y-2"
+                  >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Yes" id="insights-1" />
-                      <Label htmlFor="insights-1">Yes</Label>
+                      <RadioGroupItem value="Yes, very interested" id="insights-1" />
+                      <Label htmlFor="insights-1">Yes, very interested</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="No" id="insights-2" />
-                      <Label htmlFor="insights-2">No</Label>
+                      <RadioGroupItem value="Somewhat interested" id="insights-2" />
+                      <Label htmlFor="insights-2">Somewhat interested</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Not sure" id="insights-3" />
-                      <Label htmlFor="insights-3">Not sure</Label>
+                      <RadioGroupItem value="Neutral" id="insights-3" />
+                      <Label htmlFor="insights-3">Neutral</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Not very interested" id="insights-4" />
+                      <Label htmlFor="insights-4">Not very interested</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Not at all interested" id="insights-5" />
+                      <Label htmlFor="insights-5">Not at all interested</Label>
                     </div>
                   </RadioGroup>
                 </div>
@@ -454,63 +568,81 @@ const Feedback = () => {
             </Card>
             
             {/* Section D: Final Thoughts */}
-            <Card className="mb-8">
+            <Card className="mb-8 shadow-md">
               <CardHeader>
                 <h2 className="text-xl font-bold">Section D: Final Thoughts</h2>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Tenga Pesa Helps */}
+                {/* Feature helps */}
                 <div>
                   <Label className="text-base font-medium mb-2 block">
-                    Do you think Tenga Pesa could help you better manage your money?
+                    Do you think the Tenga Pesa feature would help you manage your money better?
                   </Label>
-                  <RadioGroup value={thinksTengaPesaHelps} onValueChange={setThinksTengaPesaHelps} className="space-y-2">
+                  <RadioGroup 
+                    value={thinksTengaPesaHelps} 
+                    onValueChange={setThinksTengaPesaHelps} 
+                    className="space-y-2"
+                  >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Yes" id="help-1" />
-                      <Label htmlFor="help-1">Yes</Label>
+                      <RadioGroupItem value="Definitely" id="helps-1" />
+                      <Label htmlFor="helps-1">Definitely</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="No" id="help-2" />
-                      <Label htmlFor="help-2">No</Label>
+                      <RadioGroupItem value="Probably" id="helps-2" />
+                      <Label htmlFor="helps-2">Probably</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Maybe" id="help-3" />
-                      <Label htmlFor="help-3">Maybe</Label>
+                      <RadioGroupItem value="Not sure" id="helps-3" />
+                      <Label htmlFor="helps-3">Not sure</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Probably not" id="helps-4" />
+                      <Label htmlFor="helps-4">Probably not</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Definitely not" id="helps-5" />
+                      <Label htmlFor="helps-5">Definitely not</Label>
                     </div>
                   </RadioGroup>
                 </div>
                 
-                {/* Desired Features */}
+                {/* Desired features */}
                 <div>
                   <Label className="text-base font-medium mb-2 block">
-                    What features would you like to see in such a budgeting tool?
+                    What additional features would make Tenga Pesa more useful to you?
                   </Label>
-                  <Textarea 
-                    placeholder="Enter your desired features..." 
+                  <Textarea
+                    placeholder="Your answer"
                     value={desiredFeatures}
                     onChange={(e) => setDesiredFeatures(e.target.value)}
-                    className="h-24"
+                    className="min-h-[100px] resize-none"
                   />
                 </div>
                 
-                {/* Concerns / Suggestions */}
+                {/* Concerns */}
                 <div>
                   <Label className="text-base font-medium mb-2 block">
-                    Any concerns or suggestions?
+                    Do you have any concerns about using Tenga Pesa?
                   </Label>
-                  <Textarea 
-                    placeholder="Enter your concerns or suggestions..." 
+                  <Textarea
+                    placeholder="Your answer"
                     value={concerns}
                     onChange={(e) => setConcerns(e.target.value)}
-                    className="h-24"
+                    className="min-h-[100px] resize-none"
                   />
                 </div>
               </CardContent>
             </Card>
             
-            <div className="text-center mt-8">
-              <Button type="submit" className="bg-mpesa-green hover:bg-mpesa-darkgreen text-lg py-6 px-8">
-                Submit Feedback
+            {/* Submit Button */}
+            <div className="flex justify-center">
+              <Button 
+                type="submit" 
+                size="lg" 
+                className="w-full sm:w-auto px-8"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Submitting..." : "Submit Feedback"}
               </Button>
             </div>
           </form>

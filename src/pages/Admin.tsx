@@ -1,10 +1,15 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { useFeedback } from '@/context/FeedbackContext';
+import { useAuth } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { LogOut, RefreshCw } from 'lucide-react';
+import { toast } from '@/components/ui/sonner';
 import {
   BarChart,
   Bar,
@@ -19,7 +24,9 @@ import {
 } from 'recharts';
 
 const Admin = () => {
-  const { feedbacks } = useFeedback();
+  const { feedbacks, refetchFeedbacks, isLoading } = useFeedback();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   // Helper function to count occurrences
   const countResponses = (field: string) => {
@@ -47,15 +54,57 @@ const Admin = () => {
     return Object.entries(counts).map(([name, value]) => ({ name, value }));
   };
 
+  const handleLogout = () => {
+    logout();
+    toast.success("Logged out successfully");
+    navigate('/');
+  };
+
+  const handleRefresh = () => {
+    refetchFeedbacks();
+    toast.success("Data refreshed");
+  };
+
   // Colors for charts
   const COLORS = ['#2ECC71', '#3498DB', '#9B59B6', '#F1C40F', '#E67E22', '#E74C3C'];
   
   return (
     <Layout>
       <div className="container mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-6 text-center">Admin Dashboard</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={handleRefresh}
+              disabled={isLoading}
+              className="flex items-center gap-1"
+            >
+              <RefreshCw className="h-4 w-4" />
+              {isLoading ? 'Refreshing...' : 'Refresh Data'}
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleLogout}
+              className="flex items-center gap-1"
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
+          </div>
+        </div>
         
-        {feedbacks.length === 0 ? (
+        {isLoading ? (
+          <Card className="mb-8">
+            <CardContent className="pt-6 text-center py-20">
+              <div className="animate-pulse flex flex-col items-center gap-4">
+                <div className="h-12 w-12 rounded-full bg-gray-300"></div>
+                <div className="h-6 w-48 rounded bg-gray-300"></div>
+                <div className="h-4 w-64 rounded bg-gray-300"></div>
+              </div>
+            </CardContent>
+          </Card>
+        ) : feedbacks.length === 0 ? (
           <Card className="mb-8">
             <CardContent className="pt-6 text-center">
               <p className="text-gray-500 mt-4">No feedback submissions yet. Once users fill out the questionnaire, their responses will appear here.</p>
@@ -63,7 +112,7 @@ const Admin = () => {
           </Card>
         ) : (
           <>
-            <Card className="mb-8">
+            <Card className="mb-8 shadow-md">
               <CardHeader>
                 <h2 className="text-xl font-bold">Summary Statistics</h2>
               </CardHeader>
@@ -71,17 +120,17 @@ const Admin = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-gray-50 p-4 rounded-md text-center">
                     <h3 className="font-medium text-gray-700">Total Submissions</h3>
-                    <p className="text-3xl font-bold text-mpesa-green">{feedbacks.length}</p>
+                    <p className="text-3xl font-bold text-emerald-600">{feedbacks.length}</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-md text-center">
                     <h3 className="font-medium text-gray-700">M-PESA Users</h3>
-                    <p className="text-3xl font-bold text-mpesa-green">
+                    <p className="text-3xl font-bold text-emerald-600">
                       {feedbacks.filter(f => f.demographic.usesMpesa).length}
                     </p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-md text-center">
                     <h3 className="font-medium text-gray-700">Would Use Tenga Pesa</h3>
-                    <p className="text-3xl font-bold text-mpesa-green">
+                    <p className="text-3xl font-bold text-emerald-600">
                       {feedbacks.filter(f => f.reactionToTengaPesa.wouldUseFeature === "Definitely").length}
                     </p>
                   </div>
@@ -98,7 +147,7 @@ const Admin = () => {
               </TabsList>
               
               <TabsContent value="demographics">
-                <Card>
+                <Card className="shadow-md">
                   <CardHeader>
                     <h2 className="text-xl font-bold">Demographic Information</h2>
                   </CardHeader>
@@ -197,7 +246,7 @@ const Admin = () => {
               </TabsContent>
               
               <TabsContent value="financial">
-                <Card>
+                <Card className="shadow-md">
                   <CardHeader>
                     <h2 className="text-xl font-bold">Financial Habits</h2>
                   </CardHeader>
@@ -275,7 +324,7 @@ const Admin = () => {
               </TabsContent>
               
               <TabsContent value="reactions">
-                <Card>
+                <Card className="shadow-md">
                   <CardHeader>
                     <h2 className="text-xl font-bold">Reactions to Tenga Pesa</h2>
                   </CardHeader>
@@ -354,7 +403,7 @@ const Admin = () => {
               </TabsContent>
               
               <TabsContent value="responses">
-                <Card>
+                <Card className="shadow-md">
                   <CardHeader>
                     <h2 className="text-xl font-bold">All Responses</h2>
                   </CardHeader>
@@ -374,8 +423,8 @@ const Admin = () => {
                         </TableHeader>
                         <TableBody>
                           {feedbacks.map((feedback) => (
-                            <TableRow key={feedback.id}>
-                              <TableCell>
+                            <TableRow key={feedback.id} className="hover:bg-gray-50">
+                              <TableCell className="font-medium">
                                 {new Date(feedback.timestamp).toLocaleString()}
                               </TableCell>
                               <TableCell>{feedback.demographic.ageGroup}</TableCell>
