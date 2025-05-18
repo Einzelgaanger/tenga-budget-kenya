@@ -34,14 +34,14 @@ export const getFeedbacks = async (): Promise<FeedbackData[]> => {
 
     if (error) throw error;
     
-    // Transform from database format to app format
+    // Transform from database format to app format with proper type casting
     return (data || []).map(item => ({
       id: item.id,
       timestamp: item.timestamp,
-      demographic: item.demographic,
-      financialHabits: item.financial_habits,
-      reactionToTengaPesa: item.reaction_to_tenga_pesa,
-      finalThoughts: item.final_thoughts
+      demographic: item.demographic as FeedbackData['demographic'],
+      financialHabits: item.financial_habits as FeedbackData['financialHabits'],
+      reactionToTengaPesa: item.reaction_to_tenga_pesa as FeedbackData['reactionToTengaPesa'],
+      finalThoughts: item.final_thoughts as FeedbackData['finalThoughts']
     }));
   } catch (error) {
     console.error('Error fetching feedbacks:', error);
