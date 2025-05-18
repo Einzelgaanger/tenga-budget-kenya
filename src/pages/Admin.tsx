@@ -28,7 +28,7 @@ const Admin = () => {
     feedbacks.forEach(feedback => {
       // Access nested properties using dynamic path
       const path = field.split('.');
-      let value = feedback;
+      let value: any = feedback;
       for (const key of path) {
         if (value && typeof value === 'object' && key in value) {
           value = value[key as keyof typeof value];
