@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { FeedbackData } from '@/types/feedback';
 import { submitFeedback, getFeedbacks } from '@/services/feedbackService';
@@ -11,7 +12,7 @@ interface FeedbackContextType {
   refetchFeedbacks: () => Promise<void>;
 }
 
-const FeedbackContext = createContext<FeedbackContextType>({
+export const FeedbackContext = createContext<FeedbackContextType>({
   feedbacks: [],
   addFeedback: async () => false,
   isLoading: false,
