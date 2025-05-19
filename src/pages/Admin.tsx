@@ -1,7 +1,6 @@
-
 import React, { useEffect } from 'react';
 import Layout from '@/components/Layout';
-import { useFeedback } from '@/context/FeedbackContext';
+import { useFeedback } from '@/hooks/use-feedback';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -25,20 +24,30 @@ import {
 
 const Admin = () => {
   const { feedbacks, refetchFeedbacks, isLoading } = useFeedback();
-  const { logout } = useAuth();
+  const { logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // Helper function to count occurrences
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/admin/login');
+      return;
+    }
+    // Fetch data when component mounts and we're authenticated
+    refetchFeedbacks().catch(console.error);
+  }, [isAuthenticated, navigate, refetchFeedbacks]);
+
+  // Helper function to count occurrences with proper typing
   const countResponses = (field: string) => {
     const counts: Record<string, number> = {};
     
     feedbacks.forEach(feedback => {
       // Access nested properties using dynamic path
       const path = field.split('.');
-      let value: any = feedback;
+      let value: unknown = feedback;
+      
       for (const key of path) {
-        if (value && typeof value === 'object' && key in value) {
-          value = value[key as keyof typeof value];
+        if (value && typeof value === 'object' && key in (value as object)) {
+          value = (value as Record<string, unknown>)[key];
         } else {
           value = undefined;
           break;
@@ -60,8 +69,8 @@ const Admin = () => {
     navigate('/');
   };
 
-  const handleRefresh = () => {
-    refetchFeedbacks();
+  const handleRefresh = async () => {
+    await refetchFeedbacks();
     toast.success("Data refreshed");
   };
 
