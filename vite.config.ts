@@ -8,9 +8,11 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-  },
-  plugins: [
-    react(),
+  },  plugins: [
+    react({
+      jsxRuntime: 'automatic',
+      jsxImportSource: 'react',
+    }),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
