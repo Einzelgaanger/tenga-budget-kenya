@@ -1,11 +1,8 @@
-import express from 'express';
-import path from 'path';
-import compression from 'compression';
-import { fileURLToPath } from 'url';
 
-// Get the directory name for ES module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const path = require('path');
+const compression = require('compression');
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -34,7 +31,7 @@ app.get('*', (req, res) => {
 // Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).sendFile(path.join(__dirname, 'public', 'error.html'));
+  res.status(500).send('Something broke!');
 });
 
 app.listen(PORT, () => {

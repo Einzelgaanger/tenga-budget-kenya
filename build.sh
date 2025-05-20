@@ -11,6 +11,9 @@ rm -rf package-lock.json
 echo "Installing dependencies..."
 npm install
 
+echo "Running dependency fixes..."
+node fix-dependencies.js
+
 echo "Building application..."
 npm run build
 
