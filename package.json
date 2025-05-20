@@ -11,8 +11,7 @@
     "build:dev": "tsc && vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "node server.js",
-    "postinstall": "mkdir -p node_modules/@rollup && cd node_modules/@rollup && ([ ! -d rollup-linux-x64-gnu ] && ln -s ../rollup rollup-linux-x64-gnu || true)"
+    "start": "node server.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
