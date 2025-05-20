@@ -28,10 +28,9 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      plugins: [['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }]]
+      plugins: mode === 'production' ? [['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }]] : []
     }),
-    mode === 'development' &&
-    componentTagger(),
+    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
