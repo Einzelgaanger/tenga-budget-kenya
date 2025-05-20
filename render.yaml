@@ -1,8 +1,9 @@
+
 services:
   - type: web
     name: tengapesa
     env: node
-    buildCommand: rm -rf node_modules package-lock.json && npm install && node fix-dependencies.js && npm run build
+    buildCommand: npm install && npm run build
     startCommand: node server.js
     envVars:
       - key: NODE_VERSION
