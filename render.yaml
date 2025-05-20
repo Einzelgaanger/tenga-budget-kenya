@@ -1,9 +1,8 @@
 services:
   - type: web
     name: tengapesa
-    env: node
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
+    env: node    buildCommand: npm ci && npm run build
+    startCommand: node server.js
     envVars:
       - key: NODE_VERSION
         value: 18
