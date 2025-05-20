@@ -11,8 +11,11 @@ rm -rf package-lock.json
 echo "Installing dependencies..."
 npm install --production=false
 
+echo "Running dependency fixes..."
+node fix-dependencies.js
+
 echo "Building application..."
 npm run build
 
 echo "Starting the server..."
-node server.js
+node server.cjs

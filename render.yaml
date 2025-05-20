@@ -5,8 +5,9 @@ services:
     env: node
     buildCommand: |
       npm ci
+      node fix-dependencies.js
       npm run build
-    startCommand: node server.js
+    startCommand: node server.cjs
     envVars:
       - key: NODE_VERSION
         value: 18
