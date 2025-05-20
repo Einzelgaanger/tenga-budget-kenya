@@ -72,30 +72,60 @@ const Admin = () => {
   const handleRefresh = async () => {
     await refetchFeedbacks();
     toast.success("Data refreshed");
-  };
+  };  // Modern vibrant color palette for charts
+  const COLORS = [
+    'hsl(222, 47%, 40%)',  // Primary blue
+    'hsl(186, 86%, 53%)',  // Bright cyan
+    'hsl(262, 83%, 58%)',  // Vibrant purple
+    'hsl(142, 76%, 36%)',  // Rich green
+    'hsl(38, 92%, 50%)',   // Warm amber
+    'hsl(199, 89%, 48%)'   // Sky blue
+  ];
 
-  // Colors for charts
-  const COLORS = ['#2ECC71', '#3498DB', '#9B59B6', '#F1C40F', '#E67E22', '#E74C3C'];
+  // Enhanced chart global options
+  const chartOptions = {
+    style: {
+      background: 'transparent'
+    },
+    animate: {
+      duration: 1000,
+      easing: 'ease-out'
+    },
+    legend: {
+      iconSize: 12,
+      iconType: 'circle',
+      formatter: (value: string) => value.toUpperCase()
+    },
+    tooltip: {
+      contentStyle: {
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        padding: '8px 12px'
+      }
+    }
+  };
   
   return (
     <Layout>
-      <div className="container mx-auto py-8 px-4">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <div className="flex gap-2">
+      <div className="container mx-auto py-6 sm:py-8 px-3 sm:px-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
+          <div className="flex flex-wrap w-full sm:w-auto gap-2">
             <Button 
               variant="outline" 
               onClick={handleRefresh}
               disabled={isLoading}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 text-sm sm:text-base flex-1 sm:flex-none justify-center"
             >
               <RefreshCw className="h-4 w-4" />
-              {isLoading ? 'Refreshing...' : 'Refresh Data'}
+              <span className="hidden xs:inline">{isLoading ? 'Refreshing...' : 'Refresh Data'}</span>
+              <span className="xs:hidden">Refresh</span>
             </Button>
             <Button 
               variant="destructive" 
               onClick={handleLogout}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 text-sm sm:text-base flex-1 sm:flex-none justify-center"
             >
               <LogOut className="h-4 w-4" />
               Logout
@@ -148,11 +178,11 @@ const Admin = () => {
             </Card>
             
             <Tabs defaultValue="demographics" className="mb-8">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="demographics">Demographics</TabsTrigger>
-                <TabsTrigger value="financial">Financial Habits</TabsTrigger>
-                <TabsTrigger value="reactions">Reactions</TabsTrigger>
-                <TabsTrigger value="responses">All Responses</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
+                <TabsTrigger value="demographics" className="text-xs sm:text-sm px-2 py-1.5 sm:px-3 sm:py-2">Demographics</TabsTrigger>
+                <TabsTrigger value="financial" className="text-xs sm:text-sm px-2 py-1.5 sm:px-3 sm:py-2">Financial Habits</TabsTrigger>
+                <TabsTrigger value="reactions" className="text-xs sm:text-sm px-2 py-1.5 sm:px-3 sm:py-2">Reactions</TabsTrigger>
+                <TabsTrigger value="responses" className="text-xs sm:text-sm px-2 py-1.5 sm:px-3 sm:py-2">All Responses</TabsTrigger>
               </TabsList>
               
               <TabsContent value="demographics">
@@ -161,11 +191,11 @@ const Admin = () => {
                     <h2 className="text-xl font-bold">Demographic Information</h2>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                       <div>
-                        <h3 className="text-lg font-medium mb-2">Age Groups</h3>
-                        <div className="h-64">
-                          <ResponsiveContainer width="100%" height="100%">
+                        <h3 className="text-base sm:text-lg font-medium mb-2 text-center sm:text-left">Age Groups</h3>
+                        <div className="h-56 sm:h-64">
+                          <ResponsiveContainer width="100%" height="100%" className="mx-auto">
                             <PieChart>
                               <Pie
                                 data={countResponses('demographic.ageGroup')}
@@ -417,8 +447,8 @@ const Admin = () => {
                     <h2 className="text-xl font-bold">All Responses</h2>
                   </CardHeader>
                   <CardContent>
-                    <div className="overflow-auto">
-                      <Table>
+                    <div className="overflow-x-auto -mx-4 sm:mx-0">
+                      <Table className="min-w-[800px] w-full text-sm sm:text-base">
                         <TableHeader>
                           <TableRow>
                             <TableHead>Timestamp</TableHead>

@@ -132,32 +132,32 @@ const Feedback = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-6 sm:py-8 px-3 sm:px-4">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6 text-center">Tenga Pesa Feedback Questionnaire</h1>
-          <p className="text-gray-600 mb-8 text-center">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-center leading-tight">Tenga Pesa Feedback Questionnaire</h1>
+          <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 text-center px-2">
             We're collecting opinions about a proposed budgeting feature within M-PESA to help people better manage their money. 
             Your feedback is anonymous and valuable.
           </p>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
             {/* Section A: Demographic Information */}
-            <Card className="mb-8 shadow-md">
-              <CardHeader>
-                <h2 className="text-xl font-bold">Section A: Demographic Information</h2>
+            <Card className="mb-6 sm:mb-8 shadow-md border rounded-lg overflow-hidden">
+              <CardHeader className="py-4 sm:py-6 px-4 sm:px-6 bg-gray-50">
+                <h2 className="text-lg sm:text-xl font-bold">Section A: Demographic Information</h2>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
                 {/* Age Group */}
                 <div>
-                  <Label className="text-base font-medium mb-2 block">Age Group:</Label>
-                  <RadioGroup value={ageGroup} onValueChange={setAgeGroup} className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Under 18" id="age-1" />
-                      <Label htmlFor="age-1">Under 18</Label>
+                  <Label className="text-sm sm:text-base font-medium mb-2 block">Age Group:</Label>
+                  <RadioGroup value={ageGroup} onValueChange={setAgeGroup} className="space-y-3">
+                    <div className="flex items-center space-x-3 py-1">
+                      <RadioGroupItem value="Under 18" id="age-1" className="h-5 w-5" />
+                      <Label htmlFor="age-1" className="text-sm sm:text-base cursor-pointer">Under 18</Label>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="18-24" id="age-2" />
-                      <Label htmlFor="age-2">18-24</Label>
+                    <div className="flex items-center space-x-3 py-1">
+                      <RadioGroupItem value="18-24" id="age-2" className="h-5 w-5" />
+                      <Label htmlFor="age-2" className="text-sm sm:text-base cursor-pointer">18-24</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="25-34" id="age-3" />
@@ -635,14 +635,14 @@ const Feedback = () => {
             </Card>
             
             {/* Submit Button */}
-            <div className="flex justify-center">
+            <div className="mt-6 sm:mt-8 flex justify-center">
               <Button 
                 type="submit" 
                 size="lg" 
-                className="w-full sm:w-auto px-8"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 sm:px-8 w-full sm:w-auto max-w-xs mx-auto" 
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Submit Feedback"}
+                {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
               </Button>
             </div>
           </form>
