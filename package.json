@@ -5,14 +5,14 @@
   "type": "module",
   "engines": {
     "node": "18.x"
-  },
-  "scripts": {
+  },  "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "build:dev": "tsc && vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "node server.js"
+    "start": "node server.js",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

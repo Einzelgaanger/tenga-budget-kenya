@@ -1,12 +1,15 @@
-
 services:
   - type: web
     name: tengapesa
     env: node
-    buildCommand: bash ./build.sh
+    buildCommand: |
+      npm ci
+      npm run build
     startCommand: node server.js
     envVars:
       - key: NODE_VERSION
         value: 18
       - key: PORT
         value: 8080
+    healthCheckPath: /
+    autoDeploy: true
