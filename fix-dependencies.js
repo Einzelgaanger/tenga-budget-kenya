@@ -1,3 +1,4 @@
+
 /**
  * This script fixes dependency issues with rollup and esbuild on Linux environments
  */
@@ -15,6 +16,9 @@ function ensureDirectoryExists(dirPath) {
 
 // Function to create a symlink if it doesn't exist
 function createSymlinkIfNeeded(target, linkPath) {
+  const linkDir = path.dirname(linkPath);
+  ensureDirectoryExists(linkDir);
+  
   if (!fs.existsSync(linkPath)) {
     try {
       // For Windows compatibility during development
@@ -36,24 +40,36 @@ function createSymlinkIfNeeded(target, linkPath) {
   }
 }
 
-// Fix rollup dependency issue
-const rollupDir = path.join(__dirname, 'node_modules', '@rollup');
-ensureDirectoryExists(rollupDir);
-createSymlinkIfNeeded(
-  path.join(__dirname, 'node_modules', 'rollup'),
-  path.join(rollupDir, 'rollup-linux-x64-gnu')
-);
+try {
+  // Fix rollup dependency issue
+  const rollupDir = path.join(__dirname, 'node_modules', '@rollup');
+  ensureDirectoryExists(rollupDir);
+  
+  // Check if rollup directory exists
+  if (fs.existsSync(path.join(__dirname, 'node_modules', 'rollup'))) {
+    createSymlinkIfNeeded(
+      path.join(__dirname, 'node_modules', 'rollup'),
+      path.join(rollupDir, 'rollup-linux-x64-gnu')
+    );
+  }
 
-// Fix esbuild dependency issue if needed
-const esbuildDir = path.join(__dirname, 'node_modules', '@esbuild');
-ensureDirectoryExists(esbuildDir);
+  // Fix esbuild dependency issue if needed
+  const esbuildDir = path.join(__dirname, 'node_modules', '@esbuild');
+  ensureDirectoryExists(esbuildDir);
 
-// Check if we're on Linux and need to create the linux-x64 symlink
-if (process.platform === 'linux') {
-  createSymlinkIfNeeded(
-    path.join(__dirname, 'node_modules', 'esbuild'),
-    path.join(esbuildDir, 'linux-x64')
-  );
+  // Check if esbuild directory exists
+  if (fs.existsSync(path.join(__dirname, 'node_modules', 'esbuild'))) {
+    // Check if we're on Linux and need to create the linux-x64 symlink
+    if (process.platform === 'linux') {
+      createSymlinkIfNeeded(
+        path.join(__dirname, 'node_modules', 'esbuild'),
+        path.join(esbuildDir, 'linux-x64')
+      );
+    }
+  }
+
+  console.log('Dependency fixes applied successfully!');
+} catch (error) {
+  console.error('Error applying dependency fixes:', error);
+  process.exit(1);
 }
-
-console.log('Dependency fixes applied successfully!');
