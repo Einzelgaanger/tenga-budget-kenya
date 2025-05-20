@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => ({
     sourcemap: false,
     minify: 'terser',
     rollupOptions: {
+      external: [],
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
