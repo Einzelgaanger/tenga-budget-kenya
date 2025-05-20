@@ -2,7 +2,7 @@ services:
   - type: web
     name: tengapesa
     env: node
-    buildCommand: npm ci && npm run build
+    buildCommand: chmod +x build.sh && ./build.sh
     startCommand: node server.js
     envVars:
       - key: NODE_VERSION
