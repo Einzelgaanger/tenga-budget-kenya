@@ -2,18 +2,23 @@
   "name": "vite_react_shadcn_ts",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
-  "engines": {
+  "type": "module",  "engines": {
     "node": "18.x"
   },
-  "scripts": {
+  "overrides": {
+    "rollup": "^4.9.0"
+  },
+  "resolutions": {
+    "rollup": "^4.9.0",
+    "@rollup/rollup-linux-x64-gnu": "4.9.0"
+  },  "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "node fix-rollup.js && tsc && vite build",
     "build:dev": "tsc && vite build --mode development",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "start": "node server.js",
-    "postinstall": "npm run build"
+    "lint": "eslint .",    "preview": "vite preview",
+    "start": "node server.cjs",
+    "postinstall": "npm run build",
+    "fix-deps": "node fix-rollup.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

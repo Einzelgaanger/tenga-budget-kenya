@@ -3,8 +3,15 @@ const express = require('express');
 const path = require('path');
 const compression = require('compression');
 
+// Initialize express app
 const app = express();
 const PORT = process.env.PORT || 8080;
+
+// Error handler for uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  process.exit(1);
+});
 
 // Enable gzip compression for faster loading
 app.use(compression());
