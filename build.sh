@@ -15,17 +15,17 @@ npm install --no-optional
 
 echo "Creating rollup symlink..."
 if [ -d "node_modules/rollup" ]; then
+  echo "Creating rollup symlink..."
+  mkdir -p node_modules/@rollup
   ln -sf "$(pwd)/node_modules/rollup" "$(pwd)/node_modules/@rollup/rollup-linux-x64-gnu" || true
+  echo "Symlink created"
+else
+  echo "Rollup directory not found"
 fi
-
-echo "Running build..."
-npm run build
-
-echo "Build completed successfully!"
-npm install --production=false
 
 echo "Running dependency fixes..."
 node fix-dependencies.js
+node fix-rollup.js
 
 echo "Building application..."
 npm run build

@@ -5,33 +5,33 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    --background: 260 33% 98%;
+    --foreground: 260 20% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 260 20% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 260 20% 15%;
 
-    --primary: 222 47% 40%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 260 38% 50%;
+    --primary-foreground: 260 33% 98%;
 
-    --secondary: 186 86% 53%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 260 70% 75%;
+    --secondary-foreground: 260 20% 15%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 260 20% 96%;
+    --muted-foreground: 260 10% 50%;
 
-    --accent: 262 83% 58%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 260 70% 75%;
+    --accent-foreground: 260 20% 15%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 222 47% 40%;
+    --border: 260 20% 90%;
+    --input: 260 20% 90%;
+    --ring: 260 38% 50%;
 
     --success: 142 76% 36%;
     --warning: 38 92% 50%;
@@ -41,33 +41,33 @@
   }
 
   .dark {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
+    --background: 260 20% 10%;
+    --foreground: 260 33% 98%;
 
-    --card: 222 47% 8%;
-    --card-foreground: 210 40% 98%;
+    --card: 260 20% 15%;
+    --card-foreground: 260 33% 98%;
 
-    --popover: 222 47% 8%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 260 20% 15%;
+    --popover-foreground: 260 33% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222 47% 6%;
+    --primary: 260 33% 80%;
+    --primary-foreground: 260 20% 10%;
 
-    --secondary: 186 86% 53%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 260 70% 40%;
+    --secondary-foreground: 260 33% 98%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 70%;
+    --muted: 260 20% 25%;
+    --muted-foreground: 260 10% 70%;
 
-    --accent: 262 83% 58%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 260 70% 40%;
+    --accent-foreground: 260 33% 98%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 260 33% 98%;
 
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 212 91% 48%;
+    --border: 260 20% 25%;
+    --input: 260 20% 25%;
+    --ring: 260 33% 70%;
   }
   
   * {
@@ -105,9 +105,9 @@
     height: 3px;
     background: linear-gradient(
       90deg,
-      hsl(var(--primary)) 0%,
-      hsl(var(--secondary)) 50%,
-      hsl(var(--accent)) 100%
+      theme('colors.brand.primary') 0%,
+      theme('colors.brand.secondary') 50%,
+      theme('colors.brand.tertiary') 100%
     );
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
@@ -183,8 +183,8 @@
     @apply absolute inset-0 opacity-0 transition-opacity duration-300;
     background: linear-gradient(
       45deg,
-      hsl(var(--primary) / 0.1),
-      hsl(var(--secondary) / 0.1)
+      theme('colors.brand.primary' / 0.1),
+      theme('colors.brand.secondary' / 0.1)
     );
   }
 
@@ -227,5 +227,32 @@
   .hover-lift:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Brand-specific styles */
+  .bg-gradient-brand {
+    @apply bg-gradient-to-r from-brand-primary via-brand-secondary to-brand-tertiary;
+  }
+
+  .text-gradient-brand {
+    @apply bg-gradient-to-r from-brand-primary via-brand-secondary to-brand-tertiary bg-clip-text text-transparent;
+  }
+
+  /* Card backgrounds */
+  .card-gradient-1 {
+    @apply bg-gradient-to-br from-accent-purple/30 to-accent-pink/30;
+  }
+
+  .card-gradient-2 {
+    @apply bg-gradient-to-br from-accent-blue/30 to-accent-green/30;
+  }
+
+  .card-gradient-3 {
+    @apply bg-gradient-to-br from-accent-yellow/30 to-accent-orange/30;
+  }
+
+  /* Colorful sections */
+  .section-gradient {
+    @apply bg-gradient-to-br from-background to-accent-gray/50;
   }
 }

@@ -30,6 +30,11 @@ app.use(express.static(path.join(__dirname, 'dist'), {
   etag: true,
 }));
 
+// Health check endpoint for Render
+app.get('/healthz', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // Handle client-side routing
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
