@@ -11,10 +11,12 @@ try {
     console.log('Reading package.json...');
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
     
-    // Check if build script needs updating
-    if (packageJson.scripts && packageJson.scripts.build && packageJson.scripts.build.includes('fix-rollup.js')) {
+    // Update the build script to use the correct extension
+    if (packageJson.scripts && packageJson.scripts.build) {
       console.log('Updating build script to use .cjs extension...');
-      packageJson.scripts.build = packageJson.scripts.build.replace('fix-rollup.js', 'fix-rollup.cjs');
+      if (packageJson.scripts.build.includes('fix-rollup.js')) {
+        packageJson.scripts.build = packageJson.scripts.build.replace('fix-rollup.js', 'fix-rollup.cjs');
+      }
       
       // Write back the updated package.json
       fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
