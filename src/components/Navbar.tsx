@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Home, MessageCircle, ShieldCheck, Menu, X, ChevronRight, Sparkles } from 'lucide-react';
+import { Home, MessageCircle, ShieldCheck, Menu, X, ChevronRight, Sparkles, Exit, Error } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -86,6 +86,7 @@ const Navbar: React.FC = () => {
             >
               <ShieldCheck size={18} />
               <span>Admin</span>
+              <Exit size={16} className="ml-1 text-white/80" />
             </Button>
           </Link>
         </div>
@@ -128,7 +129,7 @@ const Navbar: React.FC = () => {
               >
                 <ShieldCheck size={18} />
                 <span>Admin</span>
-                <ChevronRight size={16} className="ml-auto" />
+                <Error size={16} className="ml-auto text-red-300" />
               </Button>
             </Link>
           </div>
