@@ -18,4 +18,3 @@ services:
         value: 8080
     healthCheckPath: /healthz
     autoDeploy: true
-

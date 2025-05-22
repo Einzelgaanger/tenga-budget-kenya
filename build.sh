@@ -32,4 +32,3 @@ npm run build
 
 echo "Starting the server..."
 node server.cjs
-
