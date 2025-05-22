@@ -6,7 +6,7 @@ services:
     buildCommand: |
       rm -rf node_modules package-lock.json
       npm install --no-optional
-      node fix-rollup.js
+      node fix-rollup.cjs
       mkdir -p node_modules/@rollup
       ln -sf "$(pwd)/node_modules/rollup" "$(pwd)/node_modules/@rollup/rollup-linux-x64-gnu" || true
       npm run build
@@ -18,3 +18,4 @@ services:
         value: 8080
     healthCheckPath: /healthz
     autoDeploy: true
+

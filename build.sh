@@ -24,11 +24,12 @@ else
 fi
 
 echo "Running dependency fixes..."
-node fix-dependencies.js
-node fix-rollup.js
+node fix-dependencies.cjs
+node fix-rollup.cjs
 
 echo "Building application..."
 npm run build
 
 echo "Starting the server..."
 node server.cjs
+

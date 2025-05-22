@@ -14,6 +14,10 @@ export default defineConfig(({ mode }) => ({
     host: true,
     port: Number(process.env.PORT) || 8080,
   },
+  plugins: [
+    react(),
+    mode === 'development' && componentTagger(),
+  ].filter(Boolean),
   build: {
     outDir: 'dist',
     sourcemap: false,
@@ -28,13 +32,10 @@ export default defineConfig(({ mode }) => ({
       }
     }
   },
-  plugins: [
-    react(),
-    mode === 'development' && componentTagger(),
-  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
 }));
+
