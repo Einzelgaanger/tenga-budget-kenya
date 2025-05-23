@@ -2,7 +2,21 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Home, MessageCircle, ShieldCheck, Menu, X, ChevronRight, Sparkles, LogOut, AlertTriangle } from 'lucide-react';
+import { 
+  Home, 
+  MessageCircle, 
+  ShieldCheck, 
+  Menu, 
+  X, 
+  ChevronRight, 
+  Sparkles, 
+  LogOut, 
+  AlertTriangle,
+  Bell,
+  Zap,
+  Star,
+  Heart
+} from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -62,8 +76,9 @@ const Navbar: React.FC = () => {
                 isActive('/') ? 'bg-brand-secondary/50' : ''
               }`}
             >
-              <Home size={18} />
+              <Home size={18} className="text-accent-blue" />
               <span>Home</span>
+              <Star size={12} className="text-accent-yellow ml-1" />
             </Button>
           </Link>
           <Link to="/feedback">
@@ -73,8 +88,9 @@ const Navbar: React.FC = () => {
                 isActive('/feedback') ? 'bg-brand-secondary/50' : ''
               }`}
             >
-              <MessageCircle size={18} />
+              <MessageCircle size={18} className="text-accent-green" />
               <span>Feedback</span>
+              <Heart size={12} className="text-accent-red ml-1" />
             </Button>
           </Link>
           <Link to="/admin-login">
@@ -84,11 +100,18 @@ const Navbar: React.FC = () => {
                 isActive('/admin') || isActive('/admin-login') ? 'bg-accent-orange/30' : ''
               }`}
             >
-              <ShieldCheck size={18} />
+              <ShieldCheck size={18} className="text-accent-purple" />
               <span>Admin</span>
               <LogOut size={16} className="ml-1 text-white/80" />
             </Button>
           </Link>
+          <Button 
+            variant="ghost"
+            size="icon"
+            className="rounded-full bg-accent-blue/20 text-accent-blue hover:bg-accent-blue/30"
+          >
+            <Bell size={18} />
+          </Button>
         </div>
       </div>
 
@@ -103,7 +126,7 @@ const Navbar: React.FC = () => {
                   isActive('/') ? 'bg-brand-secondary/50' : ''
                 }`}
               >
-                <Home size={18} />
+                <Home size={18} className="text-accent-blue" />
                 <span>Home</span>
                 <ChevronRight size={16} className="ml-auto" />
               </Button>
@@ -115,7 +138,7 @@ const Navbar: React.FC = () => {
                   isActive('/feedback') ? 'bg-brand-secondary/50' : ''
                 }`}
               >
-                <MessageCircle size={18} />
+                <MessageCircle size={18} className="text-accent-green" />
                 <span>Feedback</span>
                 <ChevronRight size={16} className="ml-auto" />
               </Button>
@@ -127,7 +150,7 @@ const Navbar: React.FC = () => {
                   isActive('/admin') || isActive('/admin-login') ? 'bg-accent-orange/30' : ''
                 }`}
               >
-                <ShieldCheck size={18} />
+                <ShieldCheck size={18} className="text-accent-purple" />
                 <span>Admin</span>
                 <AlertTriangle size={16} className="ml-auto text-accent-red" />
               </Button>
