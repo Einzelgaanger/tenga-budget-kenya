@@ -6,12 +6,14 @@ import path from "path";
 export default defineConfig(({ mode }) => ({
   server: {
     host: true,
-    port: Number(process.env.PORT) || 8080,
+    port: 8080,
   },
   preview: {
     host: true,
-    port: Number(process.env.PORT) || 8080,
-  },
+    port: 8080,
+  },  plugins: [
+    react()
+  ],
   build: {
     outDir: 'dist',
     sourcemap: false,
@@ -23,14 +25,12 @@ export default defineConfig(({ mode }) => ({
           vendor: ['react', 'react-dom', 'react-router-dom'],
           ui: ['@radix-ui/react-slot']
         }
-      }
-    }
-  },  plugins: [
-    react()
-  ],
+      }    }
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']
   },
 }));

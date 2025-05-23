@@ -31,6 +31,24 @@ export default {
 					blue: '#3498DB',
 					darkblue: '#2980B9',
 				},
+				brand: {
+					primary: '#121212',    // Black
+					secondary: '#1E88E5',  // Blue
+					tertiary: '#FF5722',   // Orange
+					light: '#E3F2FD',      // Light blue
+					dark: '#0D0D0D',       // Dark black
+				},
+				accent: {
+					green: '#4CAF50',      // Green
+					yellow: '#FFEB3B',     // Yellow
+					orange: '#FF5722',     // Orange
+					red: '#F44336',        // Red
+					blue: '#2196F3',       // Blue
+					purple: '#9C27B0',     // Keeping purple
+					pink: '#E91E63',       // Keeping pink
+					peach: '#FFAB91',      // Keeping peach
+					gray: '#ECEFF1',       // Light gray
+				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
@@ -91,11 +109,36 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' }
+				},
+				'pulse-slow': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.7' }
+				},
+				'bounce-subtle': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-5px)' }
+				},
+				'spin-slow': {
+					'0%': { transform: 'rotate(0deg)' },
+					'100%': { transform: 'rotate(360deg)' }
+				},
+				'shimmer': {
+					'0%': { backgroundPosition: '-200% 0' },
+					'100%': { backgroundPosition: '200% 0' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'float': 'float 5s ease-in-out infinite',
+				'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
+				'bounce-subtle': 'bounce-subtle 2s ease-in-out infinite',
+				'spin-slow': 'spin-slow 10s linear infinite',
+				'shimmer': 'shimmer 2s infinite linear'
 			}
 		}
 	},

@@ -2,10 +2,13 @@
 services:
   - type: web
     name: tengapesa
-    env: node    buildCommand: |
+    env: node
+    buildCommand: |
       rm -rf node_modules package-lock.json
       npm install --no-optional
-      node fix-rollup.js
+      node fix-rollup.cjs
+      mkdir -p node_modules/@rollup
+      ln -sf "$(pwd)/node_modules/rollup" "$(pwd)/node_modules/@rollup/rollup-linux-x64-gnu" || true
       npm run build
     startCommand: node server.cjs
     envVars:
@@ -13,5 +16,5 @@ services:
         value: 18
       - key: PORT
         value: 8080
-    healthCheckPath: /
+    healthCheckPath: /healthz
     autoDeploy: true
