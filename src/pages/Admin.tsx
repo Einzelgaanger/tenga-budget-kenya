@@ -289,9 +289,6 @@ const Admin = () => {
                                 outerRadius={80}
                                 fill="#8884d8"
                                 dataKey="value"
-                                animationBegin={0}
-                                animationDuration={1000}
-                                animationEasing="ease-out"
                               >
                                 {countResponses('demographic.ageGroup').map((entry, index) => (
                                   <Cell 
@@ -327,12 +324,7 @@ const Admin = () => {
                                 tick={{ fill: '#333', fontSize: 12 }} 
                               />
                               <Tooltip content={<CustomTooltip />} />
-                              <Bar 
-                                dataKey="value" 
-                                animationBegin={100}
-                                animationDuration={1200}
-                                animationEasing="ease-in-out"
-                              >
+                              <Bar dataKey="value">
                                 {countResponses('demographic.occupation').map((entry, index) => (
                                   <Cell 
                                     key={`cell-${index}`} 
@@ -362,9 +354,6 @@ const Admin = () => {
                             <BarChart
                               data={countResponses('demographic.incomeRange')}
                               margin={{ top: 5, right: 30, left: 5, bottom: 40 }}
-                              animationBegin={200}
-                              animationDuration={1500}
-                              animationEasing="ease-in-out"
                             >
                               <XAxis 
                                 dataKey="name" 
@@ -416,9 +405,6 @@ const Admin = () => {
                                 label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                                 fill="#8884d8"
                                 dataKey="value"
-                                animationBegin={300}
-                                animationDuration={1200}
-                                animationEasing="ease-out"
                               >
                                 <Cell fill="#2ECC71" />
                                 <Cell fill="#E74C3C" />
@@ -466,9 +452,6 @@ const Admin = () => {
                                 label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                                 fill="#8884d8"
                                 dataKey="value"
-                                animationBegin={0}
-                                animationDuration={1500}
-                                animationEasing="ease-out"
                               >
                                 {countResponses('financialHabits.followsBudget').map((entry, index) => (
                                   <Cell 
@@ -494,9 +477,6 @@ const Admin = () => {
                             <BarChart
                               data={countResponses('financialHabits.runsOutOfMoney')}
                               margin={{ top: 15, right: 30, left: 20, bottom: 5 }}
-                              animationBegin={100}
-                              animationDuration={1200}
-                              animationEasing="ease-in-out"
                             >
                               <XAxis 
                                 dataKey="name" 
@@ -542,9 +522,6 @@ const Admin = () => {
                                 label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                                 fill="#8884d8"
                                 dataKey="value"
-                                animationBegin={200}
-                                animationDuration={1500}
-                                animationEasing="ease-out"
                               >
                                 {countResponses('financialHabits.savesMoney').map((entry, index) => (
                                   <Cell 
@@ -592,9 +569,6 @@ const Admin = () => {
                                 label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                                 fill="#8884d8"
                                 dataKey="value"
-                                animationBegin={0}
-                                animationDuration={1500}
-                                animationEasing="ease-out"
                               >
                                 {countResponses('reactionToTengaPesa.wouldUseFeature').map((entry, index) => (
                                   <Cell 
@@ -621,9 +595,6 @@ const Admin = () => {
                               data={countResponses('reactionToTengaPesa.feelingAboutPenalty')}
                               layout="vertical"
                               margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
-                              animationBegin={100}
-                              animationDuration={1200}
-                              animationEasing="ease-in-out"
                             >
                               <XAxis type="number" />
                               <YAxis 
@@ -671,9 +642,6 @@ const Admin = () => {
                                 label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                                 fill="#8884d8"
                                 dataKey="value"
-                                animationBegin={200}
-                                animationDuration={1500}
-                                animationEasing="ease-out"
                               >
                                 {countResponses('finalThoughts.thinksTengaPesaHelps').map((entry, index) => (
                                   <Cell 
