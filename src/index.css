@@ -2,22 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 210 33% 98%;
-    --foreground: 210 20% 15%;
+@layer base {  :root {
+    --background: 0 0% 100%;
+    --foreground: 145 63% 42%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 20% 15%;
+    --card-foreground: 145 63% 42%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 20% 15%;
+    --popover-foreground: 145 63% 42%;
 
-    --primary: 210 90% 40%;
-    --primary-foreground: 210 33% 98%;
+    --primary: 145 63% 42%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 16 100% 50%;
-    --secondary-foreground: 210 20% 15%;
+    --secondary: 145 63% 42%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 210 20% 96%;
     --muted-foreground: 210 10% 50%;
@@ -38,22 +37,21 @@
 
     --radius: 0.75rem;
   }
-
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 210 33% 98%;
+    --background: 145 63% 42%;
+    --foreground: 0 0% 100%;
 
-    --card: 0 0% 10%;
-    --card-foreground: 210 33% 98%;
+    --card: 145 63% 36%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 0 0% 10%;
-    --popover-foreground: 210 33% 98%;
+    --popover: 145 63% 36%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 210 90% 50%;
-    --primary-foreground: 0 0% 10%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 145 63% 42%;
 
-    --secondary: 16 100% 55%;
-    --secondary-foreground: 210 33% 98%;
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 145 63% 42%;
 
     --muted: 0 0% 20%;
     --muted-foreground: 210 10% 70%;
@@ -236,18 +234,17 @@
   .text-gradient-brand {
     @apply bg-gradient-to-r from-brand-primary via-brand-secondary to-brand-tertiary bg-clip-text text-transparent;
   }
-
-  /* Card backgrounds with enhanced colors */
+  /* Card backgrounds with M-PESA colors */
   .card-gradient-1 {
-    @apply bg-gradient-to-br from-accent-purple/30 to-accent-pink/30;
+    @apply bg-gradient-to-br from-mpesa-green/30 to-mpesa-darkgreen/30;
   }
 
   .card-gradient-2 {
-    @apply bg-gradient-to-br from-accent-blue/30 to-accent-green/30;
+    @apply bg-gradient-to-br from-mpesa-blue/30 to-mpesa-darkblue/30;
   }
 
   .card-gradient-3 {
-    @apply bg-gradient-to-br from-accent-yellow/30 to-accent-orange/30;
+    @apply bg-gradient-to-br from-mpesa-green/20 to-mpesa-blue/20;
   }
 
   .card-gradient-4 {
@@ -271,18 +268,17 @@
     background-size: 200% 100%;
     animation: shimmer 2s infinite;
   }
-
-  /* Icon wrapper styles */
+  /* Icon wrapper styles with M-PESA colors */
   .icon-wrapper {
     @apply flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300;
   }
 
   .icon-wrapper-blue {
-    @apply bg-accent-blue/20 text-accent-blue hover:bg-accent-blue/30;
+    @apply bg-mpesa-blue/20 text-mpesa-blue hover:bg-mpesa-blue/30;
   }
 
   .icon-wrapper-green {
-    @apply bg-accent-green/20 text-accent-green hover:bg-accent-green/30;
+    @apply bg-mpesa-green/20 text-mpesa-green hover:bg-mpesa-green/30;
   }
 
   .icon-wrapper-red {

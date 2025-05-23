@@ -30,24 +30,23 @@ export default {
 					darkgreen: '#27AE60',
 					blue: '#3498DB',
 					darkblue: '#2980B9',
-				},
-				brand: {
-					primary: '#121212',    // Black
-					secondary: '#1E88E5',  // Blue
-					tertiary: '#FF5722',   // Orange
-					light: '#E3F2FD',      // Light blue
-					dark: '#0D0D0D',       // Dark black
+				},				brand: {
+					primary: '#2ECC71',    // M-PESA Green
+					secondary: '#27AE60',   // Darker M-PESA Green
+					tertiary: '#3498DB',    // M-PESA Blue
+					light: '#F1F8E9',      // Light green
+					dark: '#1E8449',        // Dark green
 				},
 				accent: {
-					green: '#4CAF50',      // Green
-					yellow: '#FFEB3B',     // Yellow
-					orange: '#FF5722',     // Orange
-					red: '#F44336',        // Red
-					blue: '#2196F3',       // Blue
-					purple: '#9C27B0',     // Keeping purple
-					pink: '#E91E63',       // Keeping pink
-					peach: '#FFAB91',      // Keeping peach
-					gray: '#ECEFF1',       // Light gray
+					green: '#2ECC71',      // M-PESA Green
+					yellow: '#F1C40F',     // Complementary yellow
+					orange: '#E67E22',     // Complementary orange
+					red: '#E74C3C',        // Error red
+					blue: '#3498DB',       // M-PESA Blue
+					purple: '#8E44AD',     // Complementary purple
+					pink: '#E91E63',       // Complementary pink
+					peach: '#FFAB91',      // Complementary peach
+					gray: '#ECF0F1',       // Light gray
 				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',

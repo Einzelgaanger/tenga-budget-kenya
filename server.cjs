@@ -1,4 +1,3 @@
-
 const express = require('express');
 const path = require('path');
 const compression = require('compression');
@@ -6,12 +5,6 @@ const compression = require('compression');
 // Initialize express app
 const app = express();
 const PORT = process.env.PORT || 8080;
-
-// Error handler for uncaught exceptions
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-  process.exit(1);
-});
 
 // Enable gzip compression for faster loading
 app.use(compression());
@@ -25,17 +18,14 @@ app.use((req, res, next) => {
 });
 
 // Serve static files from the dist directory
-app.use(express.static(path.join(__dirname, 'dist'), {
-  maxAge: '1y',
-  etag: true,
-}));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // Health check endpoint for Render
 app.get('/healthz', (req, res) => {
   res.status(200).send('OK');
 });
 
-// Handle client-side routing
+// Serve index.html for all other routes
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
