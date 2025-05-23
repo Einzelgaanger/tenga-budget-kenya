@@ -31,27 +31,6 @@ function fixRollupDependency() {
       console.log('Rollup link exists:', fs.existsSync(rollupLink));
     }
 
-    // Clean and reinstall if needed
-    if (!fs.existsSync(path.join(__dirname, 'node_modules', 'rollup'))) {
-      console.log('Rollup not found, cleaning installation...');
-      try {
-        fs.rmSync('node_modules', { recursive: true, force: true });
-        fs.rmSync('package-lock.json', { force: true });
-      } catch (e) {
-        console.log('Error during cleanup:', e.message);
-      }
-
-      console.log('Installing dependencies...');
-      execSync('npm install --no-optional', { stdio: 'inherit' });
-    }
-
-    console.log('Checking for rollup directory after fix...');
-    if (fs.existsSync(path.join(__dirname, 'node_modules', 'rollup'))) {
-      console.log('Rollup is installed properly');
-    } else {
-      console.log('Rollup is still missing, something went wrong');
-    }
-
     console.log('Rollup dependency fix applied successfully!');
   } catch (error) {
     console.error('Error fixing rollup dependency:', error);
