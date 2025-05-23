@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import Layout from '@/components/Layout';
 import { useFeedback } from '@/hooks/use-feedback';
 import { useAuth } from '@/context/AuthContext';
@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { LogOut, RefreshCw } from 'lucide-react';
+import { LogOut, RefreshCw, Download } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import {
   BarChart,
@@ -72,7 +72,50 @@ const Admin = () => {
   const handleRefresh = async () => {
     await refetchFeedbacks();
     toast.success("Data refreshed");
-  };  // Modern vibrant color palette for charts
+  };
+
+  const handleDownloadData = useCallback(() => {
+    if (feedbacks.length === 0) return;
+    
+    // Dynamically import xlsx to avoid bundling it unnecessarily
+    import('xlsx').then(XLSX => {
+      // Prepare data for Excel export
+      const worksheetData = feedbacks.map(feedback => ({
+        'Timestamp': new Date(feedback.timestamp).toLocaleString(),
+        'Age Group': feedback.demographic.ageGroup,
+        'Occupation': feedback.demographic.occupation,
+        'Income Range': feedback.demographic.incomeRange,
+        'Uses Mpesa': feedback.demographic.usesMpesa ? 'Yes' : 'No',
+        'Follows Budget': feedback.financialHabits.followsBudget,
+        'Most Spending Areas': feedback.financialHabits.mostSpendingAreas.join(', '),
+        'Runs Out Of Money': feedback.financialHabits.runsOutOfMoney,
+        'Saves Money': feedback.financialHabits.savesMoney,
+        'Would Use Feature': feedback.reactionToTengaPesa.wouldUseFeature,
+        'Withdrawal Rules Helpful': feedback.reactionToTengaPesa.findWithdrawalRulesHelpful,
+        'Feeling About Penalty': feedback.reactionToTengaPesa.feelingAboutPenalty,
+        'Wants Spending Insights': feedback.reactionToTengaPesa.wantsSpendingInsights,
+        'Thinks Tenga Pesa Helps': feedback.finalThoughts.thinksTengaPesaHelps,
+        'Desired Features': feedback.finalThoughts.desiredFeatures,
+        'Concerns': feedback.finalThoughts.concerns
+      }));
+      
+      // Create worksheet
+      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+      
+      // Create workbook
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Tenga Pesa Feedback');
+      
+      // Generate Excel file and trigger download
+      const today = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(workbook, `tenga-pesa-feedback-${today}.xlsx`);
+      
+      toast.success('Data downloaded successfully');
+    }).catch(error => {
+      console.error('Error downloading data:', error);
+      toast.error('Failed to download data');
+    });
+  }, [feedbacks]);  // Modern vibrant color palette for charts
   const COLORS = [
     'hsl(222, 47%, 40%)',  // Primary blue
     'hsl(186, 86%, 53%)',  // Bright cyan
@@ -442,8 +485,17 @@ const Admin = () => {
               
               <TabsContent value="responses">
                 <Card className="shadow-md">
-                  <CardHeader>
+                  <CardHeader className="flex flex-row items-center justify-between">
                     <h2 className="text-xl font-bold">All Responses</h2>
+                    <Button
+                      variant="outline"
+                      onClick={handleDownloadData}
+                      className="flex items-center gap-1 text-sm sm:text-base"
+                      disabled={isLoading || feedbacks.length === 0}
+                    >
+                      <Download className="h-4 w-4" />
+                      <span>Download Excel</span>
+                    </Button>
                   </CardHeader>
                   <CardContent>
                     <div className="overflow-x-auto -mx-4 sm:mx-0">

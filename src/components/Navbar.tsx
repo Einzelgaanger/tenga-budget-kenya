@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -9,13 +8,11 @@ import {
   Menu, 
   X, 
   ChevronRight, 
-  Sparkles, 
   LogOut, 
   AlertTriangle,
   Bell,
-  Zap,
-  Star,
-  Heart
+  Wallet,
+  BarChart3
 } from 'lucide-react';
 
 const Navbar: React.FC = () => {
@@ -27,7 +24,6 @@ const Navbar: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
   
-  // Add scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -37,30 +33,32 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu when changing routes
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location]);
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled ? 'bg-brand-primary/95 shadow-lg backdrop-blur-md' : 'bg-brand-primary'
-    }`}>
-      <div className="container mx-auto flex items-center justify-between p-4">
-        <Link to="/" className="text-2xl font-bold flex items-center group">
-          <Sparkles size={24} className="text-accent-orange mr-2 animate-pulse-slow" />
-          <span className="text-white">Tenga</span>
-          <span className="text-accent-orange relative ml-1">
-            Pesa
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-orange transition-all duration-300 group-hover:w-full"></span>
-          </span>
+    <nav 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled ? 'bg-white shadow-md backdrop-blur-sm' : 'bg-white/80 backdrop-blur-sm'
+      }`}
+    >
+      <div className="container mx-auto flex items-center justify-between py-3 px-4">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2">
+          <div className="bg-indigo-600 p-1.5 rounded-lg">
+            <Wallet size={20} className="text-white" />
+          </div>
+          <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">TengaBudget</span>
         </Link>
-        
+
         {/* Mobile menu button */}
-        <button 
-          className="md:hidden flex items-center text-white p-2 rounded-full hover:bg-white/10 transition-colors"
+        <button
+          className="md:hidden flex items-center text-slate-700 p-2 rounded-full hover:bg-slate-100 transition-colors"
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
@@ -68,65 +66,62 @@ const Navbar: React.FC = () => {
         </button>
 
         {/* Desktop navigation */}
-        <div className="hidden md:flex gap-4 items-center">
+        <div className="hidden md:flex gap-2 items-center">
           <Link to="/">
             <Button 
               variant="ghost" 
-              className={`text-white hover:text-white hover:bg-brand-secondary/30 flex gap-2 items-center transition-all duration-200 ${
-                isActive('/') ? 'bg-brand-secondary/50' : ''
+              className={`text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 flex gap-2 items-center transition-all duration-200 ${
+                isActive('/') ? 'bg-indigo-50 text-indigo-600' : ''
               }`}
             >
-              <Home size={18} className="text-accent-blue" />
+              <Home size={18} />
               <span>Home</span>
-              <Star size={12} className="text-accent-yellow ml-1" />
             </Button>
           </Link>
           <Link to="/feedback">
             <Button 
               variant="ghost" 
-              className={`text-white hover:text-white hover:bg-brand-secondary/30 flex gap-2 items-center transition-all duration-200 ${
-                isActive('/feedback') ? 'bg-brand-secondary/50' : ''
+              className={`text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 flex gap-2 items-center transition-all duration-200 ${
+                isActive('/feedback') ? 'bg-indigo-50 text-indigo-600' : ''
               }`}
             >
-              <MessageCircle size={18} className="text-accent-green" />
+              <MessageCircle size={18} />
               <span>Feedback</span>
-              <Heart size={12} className="text-accent-red ml-1" />
             </Button>
           </Link>
           <Link to="/admin-login">
             <Button 
               variant="outline" 
-              className={`bg-transparent border-accent-orange text-white hover:bg-accent-orange/30 flex gap-2 items-center transition-all duration-200 ${
-                isActive('/admin') || isActive('/admin-login') ? 'bg-accent-orange/30' : ''
+              className={`border-indigo-200 text-slate-700 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 flex gap-2 items-center transition-all duration-200 ${
+                isActive('/admin') || isActive('/admin-login') ? 'bg-indigo-50 border-indigo-300 text-indigo-600' : ''
               }`}
             >
-              <ShieldCheck size={18} className="text-accent-purple" />
+              <ShieldCheck size={18} />
               <span>Admin</span>
-              <LogOut size={16} className="ml-1 text-white/80" />
             </Button>
           </Link>
           <Button 
             variant="ghost"
             size="icon"
-            className="rounded-full bg-accent-blue/20 text-accent-blue hover:bg-accent-blue/30"
+            className="rounded-full text-slate-500 hover:text-indigo-600 hover:bg-indigo-50"
           >
-            <Bell size={18} />
+            <BarChart3 size={18} />
           </Button>
         </div>
       </div>
 
       {/* Mobile navigation menu - animated slide down */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-brand-primary shadow-lg animate-in slide-in-from-top duration-300">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg animate-in slide-in-from-top duration-300">
           <div className="flex flex-col p-4 space-y-2">
             <Link to="/">
               <Button 
                 variant="ghost" 
-                className={`w-full text-white justify-start hover:bg-brand-secondary/30 flex gap-2 items-center ${
-                  isActive('/') ? 'bg-brand-secondary/50' : ''
+                className={`w-full text-slate-700 justify-start hover:bg-indigo-50 hover:text-indigo-600 flex gap-2 items-center ${
+                  isActive('/') ? 'bg-indigo-50 text-indigo-600' : ''
                 }`}
               >
-                <Home size={18} className="text-accent-blue" />
+                <Home size={18} />
                 <span>Home</span>
                 <ChevronRight size={16} className="ml-auto" />
               </Button>
@@ -134,11 +129,11 @@ const Navbar: React.FC = () => {
             <Link to="/feedback">
               <Button 
                 variant="ghost" 
-                className={`w-full text-white justify-start hover:bg-brand-secondary/30 flex gap-2 items-center ${
-                  isActive('/feedback') ? 'bg-brand-secondary/50' : ''
+                className={`w-full text-slate-700 justify-start hover:bg-indigo-50 hover:text-indigo-600 flex gap-2 items-center ${
+                  isActive('/feedback') ? 'bg-indigo-50 text-indigo-600' : ''
                 }`}
               >
-                <MessageCircle size={18} className="text-accent-green" />
+                <MessageCircle size={18} />
                 <span>Feedback</span>
                 <ChevronRight size={16} className="ml-auto" />
               </Button>
@@ -146,13 +141,13 @@ const Navbar: React.FC = () => {
             <Link to="/admin-login">
               <Button 
                 variant="outline" 
-                className={`w-full bg-transparent border-accent-orange text-white justify-start hover:bg-accent-orange/30 flex gap-2 items-center ${
-                  isActive('/admin') || isActive('/admin-login') ? 'bg-accent-orange/30' : ''
+                className={`w-full border-indigo-200 text-slate-700 justify-start hover:bg-indigo-50 hover:text-indigo-600 flex gap-2 items-center ${
+                  isActive('/admin') || isActive('/admin-login') ? 'bg-indigo-50 border-indigo-300 text-indigo-600' : ''
                 }`}
               >
-                <ShieldCheck size={18} className="text-accent-purple" />
+                <ShieldCheck size={18} />
                 <span>Admin</span>
-                <AlertTriangle size={16} className="ml-auto text-accent-red" />
+                <AlertTriangle size={16} className="ml-auto text-amber-500" />
               </Button>
             </Link>
           </div>
