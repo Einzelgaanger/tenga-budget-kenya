@@ -36,11 +36,11 @@ const Navbar: React.FC = () => {
     }`}>
       <div className="container mx-auto flex items-center justify-between p-4">
         <Link to="/" className="text-2xl font-bold flex items-center group">
-          <Sparkles size={24} className="text-white mr-2 animate-pulse-slow" />
+          <Sparkles size={24} className="text-accent-orange mr-2 animate-pulse-slow" />
           <span className="text-white">Tenga</span>
-          <span className="text-white relative ml-1">
+          <span className="text-accent-orange relative ml-1">
             Pesa
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"></span>
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-orange transition-all duration-300 group-hover:w-full"></span>
           </span>
         </Link>
         
@@ -58,8 +58,8 @@ const Navbar: React.FC = () => {
           <Link to="/">
             <Button 
               variant="ghost" 
-              className={`text-white hover:text-white hover:bg-brand-dark/30 flex gap-2 items-center transition-all duration-200 ${
-                isActive('/') ? 'bg-brand-dark/50' : ''
+              className={`text-white hover:text-white hover:bg-brand-secondary/30 flex gap-2 items-center transition-all duration-200 ${
+                isActive('/') ? 'bg-brand-secondary/50' : ''
               }`}
             >
               <Home size={18} />
@@ -69,8 +69,8 @@ const Navbar: React.FC = () => {
           <Link to="/feedback">
             <Button 
               variant="ghost" 
-              className={`text-white hover:text-white hover:bg-brand-dark/30 flex gap-2 items-center transition-all duration-200 ${
-                isActive('/feedback') ? 'bg-brand-dark/50' : ''
+              className={`text-white hover:text-white hover:bg-brand-secondary/30 flex gap-2 items-center transition-all duration-200 ${
+                isActive('/feedback') ? 'bg-brand-secondary/50' : ''
               }`}
             >
               <MessageCircle size={18} />
@@ -80,8 +80,8 @@ const Navbar: React.FC = () => {
           <Link to="/admin-login">
             <Button 
               variant="outline" 
-              className={`bg-transparent border-white text-white hover:bg-brand-dark/30 flex gap-2 items-center transition-all duration-200 ${
-                isActive('/admin') || isActive('/admin-login') ? 'bg-brand-dark/30' : ''
+              className={`bg-transparent border-accent-orange text-white hover:bg-accent-orange/30 flex gap-2 items-center transition-all duration-200 ${
+                isActive('/admin') || isActive('/admin-login') ? 'bg-accent-orange/30' : ''
               }`}
             >
               <ShieldCheck size={18} />
@@ -99,8 +99,8 @@ const Navbar: React.FC = () => {
             <Link to="/">
               <Button 
                 variant="ghost" 
-                className={`w-full text-white justify-start hover:bg-brand-dark/30 flex gap-2 items-center ${
-                  isActive('/') ? 'bg-brand-dark/50' : ''
+                className={`w-full text-white justify-start hover:bg-brand-secondary/30 flex gap-2 items-center ${
+                  isActive('/') ? 'bg-brand-secondary/50' : ''
                 }`}
               >
                 <Home size={18} />
@@ -111,8 +111,8 @@ const Navbar: React.FC = () => {
             <Link to="/feedback">
               <Button 
                 variant="ghost" 
-                className={`w-full text-white justify-start hover:bg-brand-dark/30 flex gap-2 items-center ${
-                  isActive('/feedback') ? 'bg-brand-dark/50' : ''
+                className={`w-full text-white justify-start hover:bg-brand-secondary/30 flex gap-2 items-center ${
+                  isActive('/feedback') ? 'bg-brand-secondary/50' : ''
                 }`}
               >
                 <MessageCircle size={18} />
@@ -123,13 +123,13 @@ const Navbar: React.FC = () => {
             <Link to="/admin-login">
               <Button 
                 variant="outline" 
-                className={`w-full bg-transparent border-white text-white justify-start hover:bg-brand-dark/30 flex gap-2 items-center ${
-                  isActive('/admin') || isActive('/admin-login') ? 'bg-brand-dark/30' : ''
+                className={`w-full bg-transparent border-accent-orange text-white justify-start hover:bg-accent-orange/30 flex gap-2 items-center ${
+                  isActive('/admin') || isActive('/admin-login') ? 'bg-accent-orange/30' : ''
                 }`}
               >
                 <ShieldCheck size={18} />
                 <span>Admin</span>
-                <AlertTriangle size={16} className="ml-auto text-red-300" />
+                <AlertTriangle size={16} className="ml-auto text-accent-red" />
               </Button>
             </Link>
           </div>

@@ -32,21 +32,22 @@ export default {
 					darkblue: '#2980B9',
 				},
 				brand: {
-					primary: '#6E59A5',
-					secondary: '#9b87f5',
-					tertiary: '#D6BCFA',
-					light: '#E5DEFF',
-					dark: '#1A1F2C',
+					primary: '#121212',    // Black
+					secondary: '#1E88E5',  // Blue
+					tertiary: '#FF5722',   // Orange
+					light: '#E3F2FD',      // Light blue
+					dark: '#0D0D0D',       // Dark black
 				},
 				accent: {
-					green: '#F2FCE2',
-					yellow: '#FEF7CD',
-					orange: '#FEC6A1',
-					purple: '#E5DEFF',
-					pink: '#FFDEE2',
-					peach: '#FDE1D3',
-					blue: '#D3E4FD',
-					gray: '#F1F0FB',
+					green: '#4CAF50',      // Green
+					yellow: '#FFEB3B',     // Yellow
+					orange: '#FF5722',     // Orange
+					red: '#F44336',        // Red
+					blue: '#2196F3',       // Blue
+					purple: '#9C27B0',     // Keeping purple
+					pink: '#E91E63',       // Keeping pink
+					peach: '#FFAB91',      // Keeping peach
+					gray: '#ECEFF1',       // Light gray
 				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
