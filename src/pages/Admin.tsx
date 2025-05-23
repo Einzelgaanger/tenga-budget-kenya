@@ -161,8 +161,7 @@ const Admin = () => {
                     <h3 className="font-medium text-gray-700">Total Submissions</h3>
                     <p className="text-3xl font-bold text-emerald-600">{feedbacks.length}</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-md text-center">
-                    <h3 className="font-medium text-gray-700">M-PESA Users</h3>
+                  <div className="bg-gray-50 p-4 rounded-md text-center">                    <h3 className="font-medium text-gray-700">Mpesa App Users</h3>
                     <p className="text-3xl font-bold text-emerald-600">
                       {feedbacks.filter(f => f.demographic.usesMpesa).length}
                     </p>
@@ -253,7 +252,7 @@ const Admin = () => {
                       </div>
                       
                       <div>
-                        <h3 className="text-lg font-medium mb-2">M-PESA Usage</h3>
+                        <h3 className="text-lg font-medium mb-2">Mpesa App Usage</h3>
                         <div className="h-64">
                           <ResponsiveContainer width="100%" height="100%">
                             <PieChart>

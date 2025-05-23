@@ -249,7 +249,7 @@ const Feedback = () => {
                 
                 {/* M-PESA Usage */}
                 <div>
-                  <Label className="text-base font-medium mb-2 block">Do you use M-PESA?</Label>
+                  <Label className="text-base font-medium mb-2 block">Do you use the Mpesa app?</Label>
                   <RadioGroup 
                     value={usesMpesa === null ? undefined : usesMpesa ? 'yes' : 'no'} 
                     onValueChange={(v) => setUsesMpesa(v === 'yes')} 

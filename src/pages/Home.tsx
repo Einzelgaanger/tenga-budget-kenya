@@ -13,9 +13,8 @@ const Home = () => {
         <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 md:mb-8 bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent leading-tight animate-in fade-in slide-in-from-bottom-4 duration-700">
             Tenga Pesa Research
-          </h1>
-          <p className="text-base md:text-lg text-gray-700 mb-6 md:mb-8 px-2 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-100">
-            Help us understand how we can build better financial management tools for M-PESA users in Kenya
+          </h1>          <p className="text-base md:text-lg text-gray-700 mb-6 md:mb-8 px-2 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-100">
+            Help us understand how we can build better financial management tools for Mpesa app users in Kenya
           </p>
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center animate-in fade-in slide-in-from-bottom duration-700 delay-200">
             <Link to="/feedback" className="w-full sm:w-auto">
