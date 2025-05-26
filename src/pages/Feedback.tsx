@@ -198,9 +198,8 @@ const Feedback = () => {
                         {['18-24', '25-34', '35-44', '45-54', '55+'].map((age) => (
                           <div key={age} className="flex items-center">
                             <RadioGroupItem value={age} id={`age-${age}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`age-${age}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:bg-mpesa-green/5 hover:bg-gray-50 transition-all"
+                            <Label                              htmlFor={`age-${age}`}
+                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {age}
                             </Label>
@@ -220,9 +219,8 @@ const Feedback = () => {
                         {['Student', 'Employed', 'Self-employed', 'Business Owner', 'Other'].map((occ) => (
                           <div key={occ} className="flex items-center">
                             <RadioGroupItem value={occ} id={`occ-${occ}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`occ-${occ}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:bg-mpesa-green/5 hover:bg-gray-50 transition-all"
+                            <Label                              htmlFor={`occ-${occ}`}
+                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {occ}
                             </Label>
@@ -257,9 +255,8 @@ const Feedback = () => {
                         {['Below 20,000', '20,000 - 50,000', '50,000 - 100,000', 'Above 100,000'].map((range) => (
                           <div key={range} className="flex items-center">
                             <RadioGroupItem value={range} id={`income-${range}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`income-${range}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:bg-mpesa-green/5 hover:bg-gray-50 transition-all"
+                            <Label                              htmlFor={`income-${range}`}
+                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {range}
                             </Label>
@@ -270,7 +267,7 @@ const Feedback = () => {
 
                     {/* M-PESA Usage */}
                     <div className="space-y-4">
-                      <Label className="text-base font-medium text-gray-900">Do you use M-PESA?</Label>
+                      <Label className="text-base font-medium text-gray-900">Do you use M-PESA App?</Label>
                       <div className="flex gap-4">
                         <Button
                           type="button"
@@ -312,9 +309,8 @@ const Feedback = () => {
                         {['Always', 'Sometimes', 'Never'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`budget-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`budget-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:bg-mpesa-green/5 hover:bg-gray-50 transition-all"
+                            <Label                              htmlFor={`budget-${option}`}
+                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
                             </Label>
@@ -364,9 +360,8 @@ const Feedback = () => {
                         {['Often', 'Sometimes', 'Rarely', 'Never'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`money-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`money-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:bg-mpesa-green/5 hover:bg-gray-50 transition-all"
+                            <Label                              htmlFor={`money-${option}`}
+                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
                             </Label>
@@ -386,9 +381,8 @@ const Feedback = () => {
                         {['Yes', 'Sometimes', 'No'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`saves-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`saves-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:bg-mpesa-green/5 hover:bg-gray-50 transition-all"
+                            <Label                              htmlFor={`saves-${option}`}
+                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
                             </Label>
@@ -420,9 +414,8 @@ const Feedback = () => {
                         {['Definitely', 'Maybe', 'No'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`use-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`use-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:bg-mpesa-green/5 hover:bg-gray-50 transition-all"
+                            <Label                              htmlFor={`use-${option}`}
+                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
                             </Label>
@@ -444,9 +437,8 @@ const Feedback = () => {
                         {['Very Helpful', 'Somewhat Helpful', 'Not Helpful'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`rules-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`rules-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:bg-mpesa-green/5 hover:bg-gray-50 transition-all"
+                            <Label                              htmlFor={`rules-${option}`}
+                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
                             </Label>
@@ -468,9 +460,8 @@ const Feedback = () => {
                         {['Acceptable as motivation', 'Prefer no penalties', 'Need more information', 'Not sure'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`penalty-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`penalty-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:bg-mpesa-green/5 hover:bg-gray-50 transition-all"
+                            <Label                              htmlFor={`penalty-${option}`}
+                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
                             </Label>
@@ -492,9 +483,8 @@ const Feedback = () => {
                         {['Yes, regularly', 'Sometimes', 'No'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`insights-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`insights-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:bg-mpesa-green/5 hover:bg-gray-50 transition-all"
+                            <Label                              htmlFor={`insights-${option}`}
+                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
                             </Label>
@@ -516,9 +506,8 @@ const Feedback = () => {
                         {['Yes, definitely', 'Maybe', 'No'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`helps-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`helps-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:bg-mpesa-green/5 hover:bg-gray-50 transition-all"
+                            <Label                              htmlFor={`helps-${option}`}
+                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
                             </Label>

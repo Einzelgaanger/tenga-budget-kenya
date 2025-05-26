@@ -2,21 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {  :root {
-    --background: 0 0% 100%;
-    --foreground: 145 63% 42%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 145 63% 42%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 145 63% 42%;
-
-    --primary: 145 63% 42%;
+@layer base {
+  :root {
+    /* Main colors */
+    --primary: 229 84% 5%; /* Deep navy blue */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 145 63% 42%;
-    --secondary-foreground: 0 0% 100%;
+    /* Background colors */
+    --background: 0 0% 100%;
+    --foreground: 229 84% 5%;
+
+    /* Card and UI elements */
+    --card: 210 40% 98%;
+    --card-foreground: 229 84% 5%;
+    --card-hover: 210 40% 96%;
 
     --muted: 210 20% 96%;
     --muted-foreground: 210 10% 50%;

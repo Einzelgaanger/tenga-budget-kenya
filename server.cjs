@@ -14,6 +14,10 @@ app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
+  // Add Cache-Control header for static assets
+  if (req.url.match(/\.(css|js|jpg|jpeg|png|gif|ico|svg)$/)) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
+  }
   next();
 });
 
