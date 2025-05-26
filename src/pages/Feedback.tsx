@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFeedback } from '@/hooks/use-feedback';
@@ -10,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
+import { cn } from '@/lib/utils';
 import { ChevronRight, CheckCircle2, User, Briefcase, Wallet, PiggyBank, Info, Star } from 'lucide-react';
 import type { FeedbackData } from '@/types/feedback';
 
