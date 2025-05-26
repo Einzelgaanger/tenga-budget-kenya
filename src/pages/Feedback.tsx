@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFeedback } from '@/hooks/use-feedback';
@@ -62,6 +61,35 @@ const Feedback = () => {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Custom RadioOption component for better visual feedback
+  const RadioOption = ({ value, currentValue, onValueChange, children, id }: {
+    value: string;
+    currentValue: string;
+    onValueChange: (value: string) => void;
+    children: React.ReactNode;
+    id: string;
+  }) => {
+    const isSelected = currentValue === value;
+    
+    return (
+      <div className="flex items-center">
+        <RadioGroupItem value={value} id={id} className="sr-only" />
+        <Label
+          htmlFor={id}
+          onClick={() => onValueChange(value)}
+          className={cn(
+            "flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer transition-all duration-200",
+            isSelected 
+              ? "border-mpesa-green bg-mpesa-green/10 text-mpesa-green font-medium shadow-sm" 
+              : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+          )}
+        >
+          {children}
+        </Label>
+      </div>
+    );
+  };
 
   const updateFormField = <T extends keyof FormData>(
     section: T,
@@ -228,15 +256,15 @@ const Feedback = () => {
                         className="grid grid-cols-2 sm:grid-cols-3 gap-4"
                       >
                         {['18-24', '25-34', '35-44', '45-54', '55+'].map((age) => (
-                          <div key={age} className="flex items-center">
-                            <RadioGroupItem value={age} id={`age-${age}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`age-${age}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
-                            >
-                              {age}
-                            </Label>
-                          </div>
+                          <RadioOption
+                            key={age}
+                            value={age}
+                            currentValue={formData.demographic.ageGroup}
+                            onValueChange={(value) => updateFormField('demographic', 'ageGroup', value)}
+                            id={`age-${age}`}
+                          >
+                            {age}
+                          </RadioOption>
                         ))}
                       </RadioGroup>
                     </div>
@@ -250,15 +278,15 @@ const Feedback = () => {
                         className="grid grid-cols-2 gap-4"
                       >
                         {['Student', 'Employed', 'Self-employed', 'Business Owner', 'Other'].map((occ) => (
-                          <div key={occ} className="flex items-center">
-                            <RadioGroupItem value={occ} id={`occ-${occ}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`occ-${occ}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
-                            >
-                              {occ}
-                            </Label>
-                          </div>
+                          <RadioOption
+                            key={occ}
+                            value={occ}
+                            currentValue={formData.demographic.occupation}
+                            onValueChange={(value) => updateFormField('demographic', 'occupation', value)}
+                            id={`occ-${occ}`}
+                          >
+                            {occ}
+                          </RadioOption>
                         ))}
                       </RadioGroup>
                     </div>
@@ -286,15 +314,15 @@ const Feedback = () => {
                         className="grid grid-cols-2 gap-4"
                       >
                         {['Below 20,000', '20,000 - 50,000', '50,000 - 100,000', 'Above 100,000'].map((range) => (
-                          <div key={range} className="flex items-center">
-                            <RadioGroupItem value={range} id={`income-${range}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`income-${range}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
-                            >
-                              {range}
-                            </Label>
-                          </div>
+                          <RadioOption
+                            key={range}
+                            value={range}
+                            currentValue={formData.demographic.incomeRange}
+                            onValueChange={(value) => updateFormField('demographic', 'incomeRange', value)}
+                            id={`income-${range}`}
+                          >
+                            {range}
+                          </RadioOption>
                         ))}
                       </RadioGroup>
                     </div>
@@ -306,7 +334,7 @@ const Feedback = () => {
                           type="button"
                           variant={formData.demographic.usesMpesa ? "default" : "outline"}
                           onClick={() => updateFormField('demographic', 'usesMpesa', true)}
-                          className={formData.demographic.usesMpesa ? 'bg-mpesa-green text-white' : ''}
+                          className={formData.demographic.usesMpesa ? 'bg-mpesa-green hover:bg-mpesa-darkgreen text-white' : ''}
                         >
                           Yes
                         </Button>
@@ -314,7 +342,7 @@ const Feedback = () => {
                           type="button"
                           variant={!formData.demographic.usesMpesa ? "default" : "outline"}
                           onClick={() => updateFormField('demographic', 'usesMpesa', false)}
-                          className={!formData.demographic.usesMpesa ? 'bg-mpesa-green text-white' : ''}
+                          className={!formData.demographic.usesMpesa ? 'bg-mpesa-green hover:bg-mpesa-darkgreen text-white' : ''}
                         >
                           No
                         </Button>
@@ -339,15 +367,15 @@ const Feedback = () => {
                         className="grid grid-cols-1 sm:grid-cols-3 gap-4"
                       >
                         {['Always', 'Sometimes', 'Never'].map((option) => (
-                          <div key={option} className="flex items-center">
-                            <RadioGroupItem value={option} id={`budget-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`budget-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
-                            >
-                              {option}
-                            </Label>
-                          </div>
+                          <RadioOption
+                            key={option}
+                            value={option}
+                            currentValue={formData.financialHabits.followsBudget}
+                            onValueChange={(value) => updateFormField('financialHabits', 'followsBudget', value)}
+                            id={`budget-${option}`}
+                          >
+                            {option}
+                          </RadioOption>
                         ))}
                       </RadioGroup>
                     </div>
@@ -389,15 +417,15 @@ const Feedback = () => {
                         className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                       >
                         {['Often', 'Sometimes', 'Rarely', 'Never'].map((option) => (
-                          <div key={option} className="flex items-center">
-                            <RadioGroupItem value={option} id={`money-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`money-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
-                            >
-                              {option}
-                            </Label>
-                          </div>
+                          <RadioOption
+                            key={option}
+                            value={option}
+                            currentValue={formData.financialHabits.runsOutOfMoney}
+                            onValueChange={(value) => updateFormField('financialHabits', 'runsOutOfMoney', value)}
+                            id={`money-${option}`}
+                          >
+                            {option}
+                          </RadioOption>
                         ))}
                       </RadioGroup>
                     </div>
@@ -410,15 +438,15 @@ const Feedback = () => {
                         className="grid grid-cols-1 sm:grid-cols-3 gap-4"
                       >
                         {['Yes', 'Sometimes', 'No'].map((option) => (
-                          <div key={option} className="flex items-center">
-                            <RadioGroupItem value={option} id={`saves-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`saves-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
-                            >
-                              {option}
-                            </Label>
-                          </div>
+                          <RadioOption
+                            key={option}
+                            value={option}
+                            currentValue={formData.financialHabits.savesMoney}
+                            onValueChange={(value) => updateFormField('financialHabits', 'savesMoney', value)}
+                            id={`saves-${option}`}
+                          >
+                            {option}
+                          </RadioOption>
                         ))}
                       </RadioGroup>
                     </div>
@@ -442,15 +470,15 @@ const Feedback = () => {
                         className="grid grid-cols-1 sm:grid-cols-3 gap-4"
                       >
                         {['Definitely', 'Maybe', 'No'].map((option) => (
-                          <div key={option} className="flex items-center">
-                            <RadioGroupItem value={option} id={`use-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`use-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
-                            >
-                              {option}
-                            </Label>
-                          </div>
+                          <RadioOption
+                            key={option}
+                            value={option}
+                            currentValue={formData.reactionToTengaPesa.wouldUseFeature}
+                            onValueChange={(value) => updateFormField('reactionToTengaPesa', 'wouldUseFeature', value)}
+                            id={`use-${option}`}
+                          >
+                            {option}
+                          </RadioOption>
                         ))}
                       </RadioGroup>
                     </div>
@@ -465,15 +493,15 @@ const Feedback = () => {
                         className="grid grid-cols-1 sm:grid-cols-3 gap-4"
                       >
                         {['Very Helpful', 'Somewhat Helpful', 'Not Helpful'].map((option) => (
-                          <div key={option} className="flex items-center">
-                            <RadioGroupItem value={option} id={`rules-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`rules-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
-                            >
-                              {option}
-                            </Label>
-                          </div>
+                          <RadioOption
+                            key={option}
+                            value={option}
+                            currentValue={formData.reactionToTengaPesa.findWithdrawalRulesHelpful}
+                            onValueChange={(value) => updateFormField('reactionToTengaPesa', 'findWithdrawalRulesHelpful', value)}
+                            id={`rules-${option}`}
+                          >
+                            {option}
+                          </RadioOption>
                         ))}
                       </RadioGroup>
                     </div>
@@ -488,15 +516,15 @@ const Feedback = () => {
                         className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                       >
                         {['Acceptable as motivation', 'Prefer no penalties', 'Need more information', 'Not sure'].map((option) => (
-                          <div key={option} className="flex items-center">
-                            <RadioGroupItem value={option} id={`penalty-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`penalty-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
-                            >
-                              {option}
-                            </Label>
-                          </div>
+                          <RadioOption
+                            key={option}
+                            value={option}
+                            currentValue={formData.reactionToTengaPesa.feelingAboutPenalty}
+                            onValueChange={(value) => updateFormField('reactionToTengaPesa', 'feelingAboutPenalty', value)}
+                            id={`penalty-${option}`}
+                          >
+                            {option}
+                          </RadioOption>
                         ))}
                       </RadioGroup>
                     </div>
@@ -511,15 +539,15 @@ const Feedback = () => {
                         className="grid grid-cols-1 sm:grid-cols-3 gap-4"
                       >
                         {['Yes, regularly', 'Sometimes', 'No'].map((option) => (
-                          <div key={option} className="flex items-center">
-                            <RadioGroupItem value={option} id={`insights-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`insights-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
-                            >
-                              {option}
-                            </Label>
-                          </div>
+                          <RadioOption
+                            key={option}
+                            value={option}
+                            currentValue={formData.reactionToTengaPesa.wantsSpendingInsights}
+                            onValueChange={(value) => updateFormField('reactionToTengaPesa', 'wantsSpendingInsights', value)}
+                            id={`insights-${option}`}
+                          >
+                            {option}
+                          </RadioOption>
                         ))}
                       </RadioGroup>
                     </div>
@@ -534,15 +562,15 @@ const Feedback = () => {
                         className="grid grid-cols-1 sm:grid-cols-3 gap-4"
                       >
                         {['Yes, definitely', 'Maybe', 'No'].map((option) => (
-                          <div key={option} className="flex items-center">
-                            <RadioGroupItem value={option} id={`helps-${option}`} className="peer sr-only" />
-                            <Label
-                              htmlFor={`helps-${option}`}
-                              className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
-                            >
-                              {option}
-                            </Label>
-                          </div>
+                          <RadioOption
+                            key={option}
+                            value={option}
+                            currentValue={formData.finalThoughts.thinksTengaPesaHelps}
+                            onValueChange={(value) => updateFormField('finalThoughts', 'thinksTengaPesaHelps', value)}
+                            id={`helps-${option}`}
+                          >
+                            {option}
+                          </RadioOption>
                         ))}
                       </RadioGroup>
                     </div>
