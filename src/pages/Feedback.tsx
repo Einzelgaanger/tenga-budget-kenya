@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFeedback } from '@/hooks/use-feedback';
@@ -10,7 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
-import { ChevronRight, CheckCircle2, User, Briefcase, Wallet, PiggyBank } from 'lucide-react';
+import { ChevronRight, CheckCircle2, User, Briefcase, Wallet, PiggyBank, Info, Star } from 'lucide-react';
 import type { FeedbackData } from '@/types/feedback';
 
 type FormData = Omit<FeedbackData, 'id' | 'timestamp'>;
@@ -46,7 +47,6 @@ const Feedback = () => {
     }
   });
 
-  // Track other form state
   const [tempFormData, setTempFormData] = useState({
     otherOccupation: '',
     spendingAreas: {
@@ -115,7 +115,7 @@ const Feedback = () => {
         toast.success("Thank you for your feedback!", {
           description: "Your responses have been recorded successfully."
         });
-        navigate('/');
+        navigate('/feedback');
       } else {
         toast.error("Failed to submit feedback");
       }
@@ -164,13 +164,45 @@ const Feedback = () => {
     <Layout>
       <div className="min-h-screen py-12 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
+          {/* Survey Briefing Section */}
+          <Card className="mb-8 border-2 border-mpesa-green/20 bg-gradient-to-r from-mpesa-green/5 to-green-50">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="bg-mpesa-green p-3 rounded-full">
+                  <Info className="text-white" size={24} />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <Star className="text-mpesa-green" size={24} />
+                    TengaPesa Research Survey
+                  </h2>
+                  <div className="space-y-3 text-gray-700">
+                    <p className="text-lg font-medium">
+                      Help us understand how we can build better financial management tools for M-PESA users in Kenya.
+                    </p>
+                    <div className="bg-white/70 p-4 rounded-lg border border-mpesa-green/20">
+                      <h3 className="font-semibold text-mpesa-green mb-2">What is TengaPesa?</h3>
+                      <p className="text-sm">
+                        TengaPesa is a proposed M-PESA feature that helps you manage your money by creating a special savings wallet with customizable withdrawal rules. You set aside money and create your own rules for when and how you can withdraw it, helping you stick to your financial goals.
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <CheckCircle2 size={16} className="text-mpesa-green" />
+                      <span>Anonymous responses • Takes 5-7 minutes • Your privacy is protected</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              Help Us Improve TengaPesa
+              Share Your Feedback
             </h1>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Your feedback will help shape the future of mobile money management in Kenya.
-              All responses are anonymous and will be used to improve our services.
+              Your input will help shape the future of mobile money management in Kenya.
+              All responses are completely anonymous and confidential.
             </p>
           </div>
 
@@ -198,7 +230,8 @@ const Feedback = () => {
                         {['18-24', '25-34', '35-44', '45-54', '55+'].map((age) => (
                           <div key={age} className="flex items-center">
                             <RadioGroupItem value={age} id={`age-${age}`} className="peer sr-only" />
-                            <Label                              htmlFor={`age-${age}`}
+                            <Label
+                              htmlFor={`age-${age}`}
                               className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {age}
@@ -219,7 +252,8 @@ const Feedback = () => {
                         {['Student', 'Employed', 'Self-employed', 'Business Owner', 'Other'].map((occ) => (
                           <div key={occ} className="flex items-center">
                             <RadioGroupItem value={occ} id={`occ-${occ}`} className="peer sr-only" />
-                            <Label                              htmlFor={`occ-${occ}`}
+                            <Label
+                              htmlFor={`occ-${occ}`}
                               className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {occ}
@@ -244,7 +278,6 @@ const Feedback = () => {
                       </div>
                     )}
 
-                    {/* Income Range */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">Monthly Income Range (KES)</Label>
                       <RadioGroup
@@ -255,7 +288,8 @@ const Feedback = () => {
                         {['Below 20,000', '20,000 - 50,000', '50,000 - 100,000', 'Above 100,000'].map((range) => (
                           <div key={range} className="flex items-center">
                             <RadioGroupItem value={range} id={`income-${range}`} className="peer sr-only" />
-                            <Label                              htmlFor={`income-${range}`}
+                            <Label
+                              htmlFor={`income-${range}`}
                               className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {range}
@@ -265,7 +299,6 @@ const Feedback = () => {
                       </RadioGroup>
                     </div>
 
-                    {/* M-PESA Usage */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">Do you use M-PESA App?</Label>
                       <div className="flex gap-4">
@@ -298,7 +331,6 @@ const Feedback = () => {
                   </div>
 
                   <div className="space-y-6">
-                    {/* Budget Following */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">Do you follow a monthly budget?</Label>
                       <RadioGroup
@@ -309,7 +341,8 @@ const Feedback = () => {
                         {['Always', 'Sometimes', 'Never'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`budget-${option}`} className="peer sr-only" />
-                            <Label                              htmlFor={`budget-${option}`}
+                            <Label
+                              htmlFor={`budget-${option}`}
                               className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
@@ -319,7 +352,6 @@ const Feedback = () => {
                       </RadioGroup>
                     </div>
 
-                    {/* Spending Areas */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">What are your main spending areas?</Label>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -349,7 +381,6 @@ const Feedback = () => {
                       </div>
                     </div>
 
-                    {/* Money Management */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">How often do you run out of money before month-end?</Label>
                       <RadioGroup
@@ -360,7 +391,8 @@ const Feedback = () => {
                         {['Often', 'Sometimes', 'Rarely', 'Never'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`money-${option}`} className="peer sr-only" />
-                            <Label                              htmlFor={`money-${option}`}
+                            <Label
+                              htmlFor={`money-${option}`}
                               className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
@@ -370,7 +402,6 @@ const Feedback = () => {
                       </RadioGroup>
                     </div>
 
-                    {/* Savings */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">Do you regularly save money?</Label>
                       <RadioGroup
@@ -381,7 +412,8 @@ const Feedback = () => {
                         {['Yes', 'Sometimes', 'No'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`saves-${option}`} className="peer sr-only" />
-                            <Label                              htmlFor={`saves-${option}`}
+                            <Label
+                              htmlFor={`saves-${option}`}
                               className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
@@ -393,7 +425,6 @@ const Feedback = () => {
                   </div>
                 </div>
 
-                {/* Step 3: TengaPesa Feedback */}
                 <div className={`p-6 space-y-6 ${currentStep === 3 ? 'block' : 'hidden'}`}>
                   <div className="flex items-center gap-2 text-xl font-semibold text-gray-900 mb-6">
                     <PiggyBank className="text-mpesa-green" size={24} />
@@ -401,7 +432,6 @@ const Feedback = () => {
                   </div>
 
                   <div className="space-y-6">
-                    {/* Would Use Feature */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">
                         Would you use TengaPesa to help manage your M-PESA spending?
@@ -414,7 +444,8 @@ const Feedback = () => {
                         {['Definitely', 'Maybe', 'No'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`use-${option}`} className="peer sr-only" />
-                            <Label                              htmlFor={`use-${option}`}
+                            <Label
+                              htmlFor={`use-${option}`}
                               className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
@@ -424,7 +455,6 @@ const Feedback = () => {
                       </RadioGroup>
                     </div>
 
-                    {/* Withdrawal Rules */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">
                         Would you find withdrawal rules helpful for managing your spending?
@@ -437,7 +467,8 @@ const Feedback = () => {
                         {['Very Helpful', 'Somewhat Helpful', 'Not Helpful'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`rules-${option}`} className="peer sr-only" />
-                            <Label                              htmlFor={`rules-${option}`}
+                            <Label
+                              htmlFor={`rules-${option}`}
                               className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
@@ -447,7 +478,6 @@ const Feedback = () => {
                       </RadioGroup>
                     </div>
 
-                    {/* Penalty Feelings */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">
                         How do you feel about small penalties for breaking spending rules?
@@ -460,7 +490,8 @@ const Feedback = () => {
                         {['Acceptable as motivation', 'Prefer no penalties', 'Need more information', 'Not sure'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`penalty-${option}`} className="peer sr-only" />
-                            <Label                              htmlFor={`penalty-${option}`}
+                            <Label
+                              htmlFor={`penalty-${option}`}
                               className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
@@ -470,7 +501,6 @@ const Feedback = () => {
                       </RadioGroup>
                     </div>
 
-                    {/* Spending Insights */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">
                         Would you like to receive insights about your spending habits?
@@ -483,7 +513,8 @@ const Feedback = () => {
                         {['Yes, regularly', 'Sometimes', 'No'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`insights-${option}`} className="peer sr-only" />
-                            <Label                              htmlFor={`insights-${option}`}
+                            <Label
+                              htmlFor={`insights-${option}`}
                               className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
@@ -493,7 +524,6 @@ const Feedback = () => {
                       </RadioGroup>
                     </div>
 
-                    {/* Overall Opinion */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">
                         Do you think TengaPesa would help you manage your money better?
@@ -506,7 +536,8 @@ const Feedback = () => {
                         {['Yes, definitely', 'Maybe', 'No'].map((option) => (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem value={option} id={`helps-${option}`} className="peer sr-only" />
-                            <Label                              htmlFor={`helps-${option}`}
+                            <Label
+                              htmlFor={`helps-${option}`}
                               className="flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer peer-checked:border-mpesa-green peer-checked:border-3 peer-checked:bg-mpesa-green/10 peer-checked:text-mpesa-green peer-checked:font-medium hover:bg-gray-50 transition-all duration-200"
                             >
                               {option}
@@ -516,7 +547,6 @@ const Feedback = () => {
                       </RadioGroup>
                     </div>
 
-                    {/* Desired Features */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">
                         What features would you like to see in TengaPesa?
@@ -529,7 +559,6 @@ const Feedback = () => {
                       />
                     </div>
 
-                    {/* Concerns */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">
                         Do you have any concerns about using TengaPesa?

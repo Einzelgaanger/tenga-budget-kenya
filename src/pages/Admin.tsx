@@ -29,7 +29,7 @@ const Admin = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/admin/login');
+      navigate('/admin-login');
       return;
     }
     // Fetch data when component mounts and we're authenticated
@@ -75,7 +75,10 @@ const Admin = () => {
   };
 
   const handleDownloadData = useCallback(() => {
-    if (feedbacks.length === 0) return;
+    if (feedbacks.length === 0) {
+      toast.error("No data available to download");
+      return;
+    }
     
     // Dynamically import xlsx to avoid bundling it unnecessarily
     import('xlsx').then(XLSX => {
@@ -85,7 +88,7 @@ const Admin = () => {
         'Age Group': feedback.demographic.ageGroup,
         'Occupation': feedback.demographic.occupation,
         'Income Range': feedback.demographic.incomeRange,
-        'Uses Mpesa': feedback.demographic.usesMpesa ? 'Yes' : 'No',
+        'Uses M-PESA': feedback.demographic.usesMpesa ? 'Yes' : 'No',
         'Follows Budget': feedback.financialHabits.followsBudget,
         'Most Spending Areas': feedback.financialHabits.mostSpendingAreas.join(', '),
         'Runs Out Of Money': feedback.financialHabits.runsOutOfMoney,
@@ -94,7 +97,7 @@ const Admin = () => {
         'Withdrawal Rules Helpful': feedback.reactionToTengaPesa.findWithdrawalRulesHelpful,
         'Feeling About Penalty': feedback.reactionToTengaPesa.feelingAboutPenalty,
         'Wants Spending Insights': feedback.reactionToTengaPesa.wantsSpendingInsights,
-        'Thinks Tenga Pesa Helps': feedback.finalThoughts.thinksTengaPesaHelps,
+        'Thinks TengaPesa Helps': feedback.finalThoughts.thinksTengaPesaHelps,
         'Desired Features': feedback.finalThoughts.desiredFeatures,
         'Concerns': feedback.finalThoughts.concerns
       }));
@@ -104,18 +107,20 @@ const Admin = () => {
       
       // Create workbook
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Tenga Pesa Feedback');
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'TengaPesa Feedback');
       
       // Generate Excel file and trigger download
       const today = new Date().toISOString().split('T')[0];
-      XLSX.writeFile(workbook, `tenga-pesa-feedback-${today}.xlsx`);
+      XLSX.writeFile(workbook, `tengapesa-feedback-${today}.xlsx`);
       
       toast.success('Data downloaded successfully');
     }).catch(error => {
       console.error('Error downloading data:', error);
       toast.error('Failed to download data');
     });
-  }, [feedbacks]);  // Modern vibrant color palette for charts
+  }, [feedbacks]);
+
+  // Modern vibrant color palette for charts
   const COLORS = [
     'hsl(222, 47%, 40%)',  // Primary blue
     'hsl(186, 86%, 53%)',  // Bright cyan
@@ -124,30 +129,6 @@ const Admin = () => {
     'hsl(38, 92%, 50%)',   // Warm amber
     'hsl(199, 89%, 48%)'   // Sky blue
   ];
-
-  // Enhanced chart global options
-  const chartOptions = {
-    style: {
-      background: 'transparent'
-    },
-    animate: {
-      duration: 1000,
-      easing: 'ease-out'
-    },
-    legend: {
-      iconSize: 12,
-      iconType: 'circle',
-      formatter: (value: string) => value.toUpperCase()
-    },
-    tooltip: {
-      contentStyle: {
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        padding: '8px 12px'
-      }
-    }
-  };
   
   return (
     <Layout>
@@ -155,6 +136,15 @@ const Admin = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
           <div className="flex flex-wrap w-full sm:w-auto gap-2">
+            <Button 
+              variant="outline" 
+              onClick={handleDownloadData}
+              disabled={isLoading || feedbacks.length === 0}
+              className="flex items-center gap-1 text-sm sm:text-base flex-1 sm:flex-none justify-center bg-green-50 hover:bg-green-100 border-green-300 text-green-700"
+            >
+              <Download className="h-4 w-4" />
+              <span>Download Excel</span>
+            </Button>
             <Button 
               variant="outline" 
               onClick={handleRefresh}
@@ -204,13 +194,14 @@ const Admin = () => {
                     <h3 className="font-medium text-gray-700">Total Submissions</h3>
                     <p className="text-3xl font-bold text-emerald-600">{feedbacks.length}</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-md text-center">                    <h3 className="font-medium text-gray-700">Mpesa App Users</h3>
+                  <div className="bg-gray-50 p-4 rounded-md text-center">
+                    <h3 className="font-medium text-gray-700">M-PESA Users</h3>
                     <p className="text-3xl font-bold text-emerald-600">
                       {feedbacks.filter(f => f.demographic.usesMpesa).length}
                     </p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-md text-center">
-                    <h3 className="font-medium text-gray-700">Would Use Tenga Pesa</h3>
+                    <h3 className="font-medium text-gray-700">Would Use TengaPesa</h3>
                     <p className="text-3xl font-bold text-emerald-600">
                       {feedbacks.filter(f => f.reactionToTengaPesa.wouldUseFeature === "Definitely").length}
                     </p>
@@ -295,7 +286,7 @@ const Admin = () => {
                       </div>
                       
                       <div>
-                        <h3 className="text-lg font-medium mb-2">Mpesa App Usage</h3>
+                        <h3 className="text-lg font-medium mb-2">M-PESA Usage</h3>
                         <div className="h-64">
                           <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
@@ -407,7 +398,7 @@ const Admin = () => {
               <TabsContent value="reactions">
                 <Card className="shadow-md">
                   <CardHeader>
-                    <h2 className="text-xl font-bold">Reactions to Tenga Pesa</h2>
+                    <h2 className="text-xl font-bold">Reactions to TengaPesa</h2>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -455,7 +446,7 @@ const Admin = () => {
                       </div>
                       
                       <div>
-                        <h3 className="text-lg font-medium mb-2">Thinks Tenga Pesa Helps</h3>
+                        <h3 className="text-lg font-medium mb-2">Thinks TengaPesa Helps</h3>
                         <div className="h-64">
                           <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
@@ -490,7 +481,7 @@ const Admin = () => {
                     <Button
                       variant="outline"
                       onClick={handleDownloadData}
-                      className="flex items-center gap-1 text-sm sm:text-base"
+                      className="flex items-center gap-1 text-sm sm:text-base bg-green-50 hover:bg-green-100 border-green-300 text-green-700"
                       disabled={isLoading || feedbacks.length === 0}
                     >
                       <Download className="h-4 w-4" />
