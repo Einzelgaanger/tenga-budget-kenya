@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
-import { ChevronRight, CheckCircle2, User, Briefcase, Wallet, PiggyBank, Info, Star } from 'lucide-react';
+import { ChevronRight, CheckCircle2, User, Briefcase, Wallet, PiggyBank, Info, Star, Shield, Clock } from 'lucide-react';
 import type { FeedbackData } from '@/types/feedback';
 
 type FormData = Omit<FeedbackData, 'id' | 'timestamp'>;
@@ -192,47 +192,94 @@ const Feedback = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen py-12 px-4 sm:px-6">
+      <div className="min-h-screen py-8 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
-          {/* Survey Briefing Section */}
-          <Card className="mb-8 border-2 border-mpesa-green/20 bg-gradient-to-r from-mpesa-green/5 to-green-50">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="bg-mpesa-green p-3 rounded-full">
-                  <Info className="text-white" size={24} />
-                </div>
-                <div className="flex-1">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-3 flex items-center gap-2">
-                    <Star className="text-mpesa-green" size={24} />
-                    TengaPesa Research Survey
-                  </h2>
-                  <div className="space-y-3 text-gray-700">
-                    <p className="text-lg font-medium">
-                      Help us understand how we can build better financial management tools for M-PESA users in Kenya.
-                    </p>
-                    <div className="bg-white/70 p-4 rounded-lg border border-mpesa-green/20">
-                      <h3 className="font-semibold text-mpesa-green mb-2">What is TengaPesa?</h3>
-                      <p className="text-sm">
-                        TengaPesa is a proposed M-PESA feature that helps you manage your money by creating a special savings wallet with customizable withdrawal rules. You set aside money and create your own rules for when and how you can withdraw it, helping you stick to your financial goals.
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <CheckCircle2 size={16} className="text-mpesa-green" />
-                      <span>Anonymous responses • Takes 5-7 minutes • Your privacy is protected</span>
+          {/* Improved Survey Briefing Section */}
+          <div className="mb-8 space-y-4">
+            {/* Main Title Card */}
+            <Card className="border-2 border-mpesa-green/20 bg-gradient-to-br from-mpesa-green/10 via-green-50/50 to-white">
+              <CardContent className="p-6 sm:p-8">
+                <div className="text-center space-y-4">
+                  <div className="flex justify-center">
+                    <div className="bg-mpesa-green p-4 rounded-full shadow-lg">
+                      <Star className="text-white" size={32} />
                     </div>
                   </div>
+                  <div className="space-y-2">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                      TengaPesa Research Survey
+                    </h1>
+                    <p className="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto">
+                      Help us build better financial management tools for M-PESA users in Kenya
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            {/* What is TengaPesa Card */}
+            <Card className="border border-gray-200 hover:border-mpesa-green/30 transition-colors">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-mpesa-green/10 p-2 rounded-lg">
+                      <PiggyBank className="text-mpesa-green" size={20} />
+                    </div>
+                    <h3 className="text-lg font-semibold text-mpesa-green">What is TengaPesa?</h3>
+                  </div>
+                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
+                    TengaPesa is a proposed M-PESA feature that helps you manage your money by creating a special savings wallet with customizable withdrawal rules. You set aside money and create your own rules for when and how you can withdraw it, helping you stick to your financial goals.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Survey Info Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Card className="border border-gray-200">
+                <CardContent className="p-4 text-center">
+                  <div className="flex justify-center mb-2">
+                    <div className="bg-blue-100 p-2 rounded-full">
+                      <Shield className="text-blue-600" size={20} />
+                    </div>
+                  </div>
+                  <h4 className="font-medium text-gray-900 mb-1">Anonymous</h4>
+                  <p className="text-sm text-gray-600">Your privacy is protected</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border border-gray-200">
+                <CardContent className="p-4 text-center">
+                  <div className="flex justify-center mb-2">
+                    <div className="bg-green-100 p-2 rounded-full">
+                      <Clock className="text-green-600" size={20} />
+                    </div>
+                  </div>
+                  <h4 className="font-medium text-gray-900 mb-1">Quick Survey</h4>
+                  <p className="text-sm text-gray-600">Takes 5-7 minutes</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border border-gray-200">
+                <CardContent className="p-4 text-center">
+                  <div className="flex justify-center mb-2">
+                    <div className="bg-purple-100 p-2 rounded-full">
+                      <CheckCircle2 className="text-purple-600" size={20} />
+                    </div>
+                  </div>
+                  <h4 className="font-medium text-gray-900 mb-1">Confidential</h4>
+                  <p className="text-sm text-gray-600">Secure responses</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Share Your Feedback
-            </h1>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
               Your input will help shape the future of mobile money management in Kenya.
-              All responses are completely anonymous and confidential.
             </p>
           </div>
 
