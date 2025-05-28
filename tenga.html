@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TengaPesa Home</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="./favicon.ico" sizes="any" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <style>
+        body {
+    background: #111;
+    color: #fff;
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.mpesa-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 18px 0 18px;
+}
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.profile-pic {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    object-fit: cover;
+}
+.greeting {
+    font-size: 1rem;
+    color: #bdbdbd;
+}
+.username {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+}
+.wave {
+    font-size: 1.2rem;
+}
+.header-icons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.header-icons .material-icons {
+    color: #fff;
+    font-size: 1.7rem;
+    cursor: pointer;
+    position: relative;
+}
+.header-icons .material-icons:first-child::after {
+    content: "9+";
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background: #e53935;
+    color: #fff;
+    font-size: 0.7rem;
+    border-radius: 10px;
+    padding: 1px 5px;
+}
+.balance-card {
+    background: #222;
+    border-radius: 18px;
+    margin: 18px 18px 0 18px;
+    padding: 18px 20px 12px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+}
+.balance-label {
+    font-size: 1.1rem;
+    color: #bdbdbd;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.balance-label .warning {
+    color: #ffd600;
+    font-size: 1.1rem;
+}
+.balance-amount {
+    font-size: 2.1rem;
+    font-weight: 500;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.balance-amount .eye {
+    font-size: 1.5rem;
+    color: #bdbdbd;
+    cursor: pointer;
+}
+.fuliza {
+    color: #21ae1f;
+    font-size: 1rem;
+    margin-top: 2px;
+}
+.actions-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 22px 0 0 0;
+    padding: 0 10px;
+}
+.action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+.action-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    font-size: 2rem;
+}
+.action-icon.green { background: #21ae1f; color: #fff; }
+.action-icon.blue { background: #2196f3; color: #fff; }
+.action-icon.red { background: #e53935; color: #fff; }
+.action-label {
+    font-size: 0.95rem;
+    color: #fff;
+    text-align: center;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+.statements-section {
+    background: none;
+    margin: 24px 18px 0 18px;
+}
+.statements-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #bdbdbd;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+.see-all {
+    color: #21ae1f;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+}
+.statement {
+    display: flex;
+    align-items: center;
+    background: #181818;
+    border-radius: 14px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+}
+.statement-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #fff;
+    color: #2196f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-right: 12px;
+}
+.statement-info {
+    flex: 1;
+}
+.statement-name {
+    color: #fff;
+    font-weight: 500;
+    font-size: 1rem;
+}
+.statement-date {
+    color: #bdbdbd;
+    font-size: 0.9rem;
+}
+.statement-amount {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+}
+.carousel {
+    margin: 18px 18px 0 18px;
+}
+.carousel-card {
+    background: #21ae1f;
+    border-radius: 18px;
+    padding: 18px 0;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #bdbdbd;
+}
+.dot.active {
+    background: #21ae1f;
+}
+.financial-section {
+    margin: 24px 18px 0 18px;
+}
+.financial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.financial-icons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+.financial-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #fff;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #222;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.15);
+}
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #bdbdbd;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+.nav-item.active {
+    color: #21ae1f;
+}
+.nav-item .material-icons {
+    font-size: 1.8rem;
+    margin-bottom: 2px;
+}
+.account-type-card {
+    background: #222;
+    border-radius: 18px;
+    margin: 18px 18px 0 18px;
+    padding: 18px 20px 12px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+}
+.balance-dropdown {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    background: #333;
+    color: white;
+    border: 1px solid #444;
+    font-size: 1.1rem;
+}
+.custom-penalty-container {
+    margin-top: 12px;
+    display: none;
+}
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+    <div class="mpesa-header">
+        <div class="profile-section">
+            <img src="data:image/png;base64,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" alt="Profile" class="profile-pic">
+            <div>
+                <div class="greeting" style="display: flex; align-items: center;">
+                    Good evening,                    <button id="transact-label" style="display: flex; flex-direction: column; align-items: center; margin-left: 28px; cursor: pointer; background: none; border: none;">
+                        <span class="material-icons" id="transact-icon" title="Transfer between accounts" style="font-size: 38px; color: #21ae1f;">
+                            swap_horiz
+                        </span>
+                        <span style="font-size: 0.85em; font-weight: 500; color: #21ae1f; margin-top: 2px;">Transact</span>
+                    </button>
+                    <button id="lock-label" style="display: flex; flex-direction: column; align-items: center; margin-left: 28px; cursor: pointer; background: none; border: none;">
+                        <span class="material-icons" id="lock-icon" title="Lock your money" style="font-size: 34px; color: #1976d2;">
+                            lock
+                        </span>
+                        <span style="font-size: 0.85em; font-weight: 500; color: #1976d2; margin-top: 2px;">Lock</span>
+                    </button>
+                </div>
+                <div class="username">PETER <span class="wave">👋</span></div>
+            </div>
+        </div>
+        <div class="header-icons">
+            <span class="material-icons">notifications</span>
+            <span class="material-icons">history</span>
+            <span class="material-icons">qr_code</span>
+        </div>
+    </div>
+    <h2 id="account-title" style="text-align:center; font-size:40px; margin: 18px 0 0 0; font-weight: 500;">
+        MAIN
+    </h2>
+    <div class="account-type-card">
+        <div class="balance-label" style="margin-bottom: 0.7em;">
+            <label for="account-type">Choose Account Type:</label>
+        </div>
+        <select id="account-type" class="balance-dropdown" style="margin-bottom: 1.2em;" aria-label="Select account type">
+            <option value="main">Main</option>
+            <!-- Mini accounts will be added here dynamically -->
+        </select>
+        <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px;">
+            <button id="create-account" style="background: #21ae1f; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">
+                <span class="material-icons" style="font-size: 16px; margin-right: 4px; vertical-align: middle;">add</span> Create Mini Account
+            </button>
+            <button id="delete-account" style="background: #e53935; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">
+                <span class="material-icons" style="font-size: 16px; margin-right: 4px; vertical-align: middle;">delete</span> Delete Account
+            </button>
+        </div>
+    </div>
+        
+        <!-- Create Mini Account Modal -->
+        <div id="create-account-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(33,174,31,0.10); z-index:1000; align-items:center; justify-content:center;">
+            <div style="background:#fff; border-radius:18px; padding:32px 24px 24px 24px; min-width:340px; max-width:92vw; box-shadow:0 8px 32px rgba(33,174,31,0.13); position:relative;">
+                <button type="button" id="cancel-create-account" style="position:absolute; top:18px; right:18px; background:none; border:none; font-size:1.6em; color:#aaa; cursor:pointer;">
+                    <span class="material-icons">close</span>
+                </button>
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+                    <span class="material-icons" style="font-size:2.2em; color:#21ae1f; background:#eafbe7; border-radius:50%; padding:10px;">account_balance_wallet</span>
+                    <h3 style="margin:0; font-size:1.25em; color:#21ae1f; font-weight:700; letter-spacing:0.5px;">Create Mini Account</h3>
+                </div>
+                <form id="create-account-form">
+                    <div style="margin-bottom:24px;">
+                        <label for="account-name" style="font-weight:500; color:#222; font-size:1em;">Account Name</label>
+                        <input type="text" id="account-name" placeholder="e.g., Holiday" style="width:100%;padding:10px 12px;margin-top:6px;border-radius:8px;border:1px solid #e0e0e0; background:#f8f8f8; font-size:1em;" required>
+                    </div>
+                    <p style="color: #666; font-size: 0.9em; margin-bottom: 20px;">New accounts start with KES 0.00. You can transfer money from your Main account after creation.</p>
+                    <button type="submit" style="width:100%;padding:12px 0; background:#21ae1f; color:#fff; border:none; border-radius:8px; font-size:1.1em; font-weight:600; letter-spacing:0.5px; box-shadow:0 2px 8px rgba(33,174,31,0.08); cursor:pointer; transition:background 0.2s;">
+                        Create Account
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Delete Account Confirmation Modal -->
+        <div id="delete-account-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(229,57,53,0.10); z-index:1000; align-items:center; justify-content:center;">
+            <div style="background:#fff; border-radius:18px; padding:32px 24px 24px 24px; min-width:340px; max-width:92vw; box-shadow:0 8px 32px rgba(229,57,53,0.13); position:relative;">
+                <button type="button" id="cancel-delete-account" style="position:absolute; top:18px; right:18px; background:none; border:none; font-size:1.6em; color:#aaa; cursor:pointer;">
+                    <span class="material-icons">close</span>
+                </button>
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+                    <span class="material-icons" style="font-size:2.2em; color:#e53935; background:#ffebee; border-radius:50%; padding:10px;">warning</span>
+                    <h3 style="margin:0; font-size:1.25em; color:#e53935; font-weight:700; letter-spacing:0.5px;">Delete Account</h3>
+                </div>
+                <div id="delete-account-content">
+                    <div id="delete-first-confirmation">
+                        <p style="color: #333; font-size: 1em; margin-bottom: 12px;">Are you sure you want to delete the <span id="delete-account-name" style="font-weight:700;">ACCOUNT</span> account?</p>
+                        <div id="account-balance-info" style="background: #f5f5f5; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+                            <p style="margin: 0 0 8px 0; font-size: 0.95em; color: #333;">Current balance: <span id="delete-account-balance" style="font-weight:600;">KES 0</span></p>
+                            <p style="margin: 0; font-size: 0.9em; color: #666;">Any remaining funds will be transferred to your Main account.</p>
+                        </div>
+                        <div id="locked-funds-warning" style="display: none; background: #ffebee; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+                            <p style="margin: 0; font-size: 0.95em; color: #d32f2f; display: flex; align-items: center;">
+                                <span class="material-icons" style="font-size: 1.2em; margin-right: 6px;">lock</span>
+                                This account has locked funds and cannot be deleted until the lock period ends.
+                            </p>
+                        </div>
+                        <button id="confirm-delete-first" style="width:100%;padding:12px 0; background:#e53935; color:#fff; border:none; border-radius:8px; font-size:1.1em; font-weight:600; letter-spacing:0.5px; box-shadow:0 2px 8px rgba(229,57,53,0.08); cursor:pointer; transition:background 0.2s; margin-bottom: 10px;">
+                            Continue to Delete
+                        </button>
+                        <button id="cancel-delete-btn" style="width:100%;padding:12px 0; background:#f5f5f5; color:#333; border:none; border-radius:8px; font-size:1.1em; font-weight:500; letter-spacing:0.5px; cursor:pointer; transition:background 0.2s;">
+                            Cancel
+                        </button>
+                    </div>
+                    
+                    <div id="delete-final-confirmation" style="display: none;">
+                        <p style="color: #d32f2f; font-size: 1em; font-weight: 500; margin-bottom: 12px;">⚠️ Final Warning</p>
+                        <p style="color: #333; font-size: 0.95em; margin-bottom: 16px;">This action cannot be undone. Type <strong>DELETE</strong> below to confirm.</p>
+                        <div style="margin-bottom:24px;">
+                            <input type="text" id="delete-confirmation-text" placeholder="Type DELETE here" style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #e0e0e0; background:#f8f8f8; font-size:1em;" required>
+                        </div>
+                        <button id="confirm-delete-final" style="width:100%;padding:12px 0; background:#e53935; color:#fff; border:none; border-radius:8px; font-size:1.1em; font-weight:600; letter-spacing:0.5px; box-shadow:0 2px 8px rgba(229,57,53,0.08); cursor:pointer; transition:background 0.2s; margin-bottom: 10px;" disabled>
+                            Permanently Delete Account
+                        </button>
+                        <button id="back-to-first-confirmation" style="width:100%;padding:12px 0; background:#f5f5f5; color:#333; border:none; border-radius:8px; font-size:1.1em; font-weight:500; letter-spacing:0.5px; cursor:pointer; transition:background 0.2s;">
+                            Go Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="balance-card">
+            <div class="balance-label">
+                Balance <span class="material-icons warning">error_outline</span>
+            </div>
+            <div id="balance-display" class="balance-amount">
+                <!-- Balance will be populated dynamically -->
+            </div>
+            <div id="locked-funds-indicator" style="display:none; margin-top:10px; background:#e7f0fb; border-radius:8px; padding:12px; text-align:center;">
+                <div style="display:flex; align-items:center; justify-content:center; margin-bottom:8px;">
+                    <span class="material-icons" style="color:#1976d2; margin-right:8px;">lock</span>
+                    <span id="locked-amount" style="font-weight:600; color:#1976d2;">KES 0</span>
+                    <span style="margin-left:5px; color:#444;">locked until</span>
+                    <span id="locked-until-date" style="margin-left:5px; font-weight:600; color:#1976d2;">01/01/2025</span>
+                </div>
+                <button id="unlock-funds" style="background:#1976d2; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:500;">
+                    <span class="material-icons" style="font-size:16px; margin-right:4px; vertical-align:middle;">lock_open</span> Unlock Early (with penalty)
+                </button>
+            </div>
+        </div>
+        <div class="actions-row">
+            <div class="action">
+                <div class="action-icon green"><span class="material-icons">compare_arrows</span></div>
+                <div class="action-label">SEND AND REQUEST</div>
+            </div>
+            <div class="action">
+                <div class="action-icon blue"><span class="material-icons">payments</span></div>
+                <div class="action-label">PAY</div>
+            </div>
+            <div class="action">
+                <div class="action-icon red"><span class="material-icons">attach_money</span></div>
+                <div class="action-label">WITHDRAW</div>
+            </div>
+            <div class="action">
+                <div class="action-icon blue"><span class="material-icons">phone_iphone</span></div>
+                <div class="action-label">AIRTIME</div>
+            </div>
+        </div>
+        <div class="statements-section">
+            <div class="statements-header">
+                <span>M-PESA STATEMENTS</span>
+                <a href="#" class="see-all">SEE ALL</a>
+            </div>
+            <div class="statement">
+                <div class="statement-avatar">KS</div>
+                <div class="statement-info">
+                    <div class="statement-name">KASINA SUITES</div>
+                    <div class="statement-date">3 May, 07:13 PM</div>
+                </div>
+                <div class="statement-amount">- KSH. 7,000.00</div>
+            </div>
+        </div>
+        <div class="carousel">
+            <div class="carousel-dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+        <div class="financial-section">
+            <div class="financial-header">
+                <span>Financial Services</span>
+                <a href="#" class="see-all">View All</a>
+            </div>
+            <div class="financial-icons">
+                <div class="financial-icon">Pochi</div>
+                <div class="financial-icon">MALI</div>
+                <div class="financial-icon">Ziidi</div>
+                <div class="financial-icon">KCB</div>
+            </div>
+        </div>
+        <nav class="bottom-nav">
+            <div class="nav-item active">
+                <span class="material-icons">home</span>
+                <span>HOME</span>
+            </div>
+            <div class="nav-item">
+                <span class="material-icons">swap_horiz</span>
+                <span>TRANSACT</span>
+            </div>
+            <div class="nav-item">
+                <span class="material-icons">apps</span>
+                <span>SERVICES</span>
+            </div>
+            <div class="nav-item">
+                <span class="material-icons">show_chart</span>
+                <span>GROW</span>
+            </div>
+        </nav>
+        <div id="transact-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(33,174,31,0.10); z-index:1000; align-items:center; justify-content:center;">
+            <div style="background:#fff; border-radius:18px; padding:32px 24px 24px 24px; min-width:340px; max-width:92vw; box-shadow:0 8px 32px rgba(33,174,31,0.13); position:relative;">
+                <button type="button" id="cancel-transact" style="position:absolute; top:18px; right:18px; background:none; border:none; font-size:1.6em; color:#aaa; cursor:pointer;">
+                    <span class="material-icons">close</span>
+                </button>
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+                    <span class="material-icons" style="font-size:2.2em; color:#21ae1f; background:#eafbe7; border-radius:50%; padding:10px;">swap_horiz</span>
+                    <h3 style="margin:0; font-size:1.25em; color:#21ae1f; font-weight:700; letter-spacing:0.5px;">Transfer Between Accounts</h3>
+                </div>
+                <form id="transact-form">
+                    <div style="margin-bottom:18px;">
+                        <label for="from-account" style="font-weight:500; color:#222; font-size:1em;">From</label>
+                        <select id="from-account" style="width:100%;padding:10px 12px;margin-top:6px;border-radius:8px;border:1px solid #e0e0e0; background:#f8f8f8; font-size:1em;">
+                            <!-- Account options will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div style="margin-bottom:18px;">
+                        <label for="to-account" style="font-weight:500; color:#222; font-size:1em;">To</label>
+                        <select id="to-account" style="width:100%;padding:10px 12px;margin-top:6px;border-radius:8px;border:1px solid #e0e0e0; background:#f8f8f8; font-size:1em;">
+                            <!-- Account options will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div style="margin-bottom:24px;">
+                        <label for="amount" style="font-weight:500; color:#222; font-size:1em;">Amount</label>
+                        <input type="number" id="amount" min="1" placeholder="KES 0.00" style="width:100%;padding:10px 12px;margin-top:6px;border-radius:8px;border:1px solid #e0e0e0; background:#f8f8f8; font-size:1em;" required>
+                    </div>
+                    <button type="submit" style="width:100%;padding:12px 0; background:#21ae1f; color:#fff; border:none; border-radius:8px; font-size:1.1em; font-weight:600; letter-spacing:0.5px; box-shadow:0 2px 8px rgba(33,174,31,0.08); cursor:pointer; transition:background 0.2s;">
+                        Send Money
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div id="lock-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(25,118,210,0.10); z-index:1001; align-items:center; justify-content:center;">
+            <div style="background:#fff; border-radius:18px; padding:32px 24px 24px 24px; min-width:340px; max-width:92vw; box-shadow:0 8px 32px rgba(25,118,210,0.13); position:relative;">
+                <button type="button" id="cancel-lock" style="position:absolute; top:18px; right:18px; background:none; border:none; font-size:1.6em; color:#aaa; cursor:pointer;">
+                    <span class="material-icons">close</span>
+                </button>
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+                    <span class="material-icons" style="font-size:2.2em; color:#1976d2; background:#e7f0fb; border-radius:50%; padding:10px;">lock</span>
+                    <h3 style="margin:0; font-size:1.18em; color:#1976d2; font-weight:700; letter-spacing:0.5px;">Lock Your Savings</h3>
+                </div>
+                <form id="lock-form">
+                    <div style="margin-bottom:18px;">
+                        <label style="font-weight:500; color:#222; font-size:1em;">Account</label>
+                        <div id="lock-account-label" style="margin-top:6px; font-size:1.05em; font-weight:600; color:#1976d2; background:#f8f8f8; border-radius:8px; padding:10px 12px; border:1px solid #e0e0e0;">
+                            Savings
+                        </div>
+                    </div>
+                    <div style="margin-bottom:18px;">
+                        <label for="lock-amount" style="font-weight:500; color:#222; font-size:1em;">Amount to Lock</label>
+                        <input type="number" id="lock-amount" min="1" placeholder="KES 0.00" style="width:100%;padding:10px 12px;margin-top:6px;border-radius:8px;border:1px solid #e0e0e0; background:#f8f8f8; font-size:1em;" required>
+                    </div>
+                    <div style="margin-bottom:18px;">
+                        <label style="font-weight:500; color:#222; font-size:1em;">Lock Period</label>
+                        <div style="display:flex; gap:10px; margin-top:6px;">
+                            <div style="flex:1;">
+                                <label for="lock-years" style="font-size:0.85em; color:#555;">Years</label>
+                                <input type="number" id="lock-years" min="0" max="10" value="0" style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #e0e0e0; background:#f8f8f8; font-size:1em;">
+                            </div>
+                            <div style="flex:1;">
+                                <label for="lock-months" style="font-size:0.85em; color:#555;">Months</label>
+                                <input type="number" id="lock-months" min="0" max="11" value="0" style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #e0e0e0; background:#f8f8f8; font-size:1em;">
+                            </div>
+                            <div style="flex:1;">
+                                <label for="lock-days" style="font-size:0.85em; color:#555;">Days</label>
+                                <input type="number" id="lock-days" min="1" max="30" value="1" style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #e0e0e0; background:#f8f8f8; font-size:1em;">
+                            </div>
+                        </div>
+                        <p id="lock-period-error" style="color:#e53935; font-size:0.85em; margin-top:5px; display:none;">Please select at least 1 day for the lock period</p>
+                    </div>
+                    <div style="margin-bottom:18px;">
+                        <label for="lock-penalty" style="font-weight:500; color:#222; font-size:1em;">Penalty for Early Withdrawal (%)</label>
+                        <div style="display:flex; align-items:center; margin-top:6px;">
+                            <input type="number" id="lock-penalty" min="1" value="1" style="flex:1; padding:10px 12px; border-radius:8px; border:1px solid #e0e0e0; background:#f8f8f8; font-size:1em;" required>
+                            <span style="margin-left:10px; font-size:1.2em; font-weight:bold;">%</span>
+                        </div>
+                        <p style="color:#666; font-size:0.85em; margin-top:5px;">Minimum penalty is 1% of the locked amount. This fee will be deducted if you withdraw before the lock period ends.</p>
+                    </div>
+                    <button type="submit" style="width:100%;padding:12px 0; background:#1976d2; color:#fff; border:none; border-radius:8px; font-size:1.1em; font-weight:600; letter-spacing:0.5px; box-shadow:0 2px 8px rgba(25,118,210,0.08); cursor:pointer; transition:background 0.2s;">
+                        Lock Money
+                    </button>
+                </form>
+            </div>
+        </div>
+        <!-- Example for Savings -->
+        <span id="balance-savings">KES 0</span>
+        <!-- Example for Rent -->
+        <span id="balance-rent">KES 0</span>
+        <!-- ...repeat for each account... -->
+        <script>
+            const select = document.getElementById('account-type');
+            const display = document.getElementById('balance-display');
+            const title = document.getElementById('account-title');
+            const createAccountBtn = document.getElementById('create-account');
+            const deleteAccountBtn = document.getElementById('delete-account');
+            const createAccountModal = document.getElementById('create-account-modal');
+            const cancelCreateAccountBtn = document.getElementById('cancel-create-account');
+            const createAccountForm = document.getElementById('create-account-form');
+            
+            // Initialize default accounts or load from localStorage
+            let balances = {
+                main: 'KES 100,000'
+            };
+            
+            let titles = {
+                main: 'MAIN'
+            };
+            
+            // Load accounts from localStorage if they exist
+            function loadAccounts() {
+                const savedBalances = localStorage.getItem('tengapesa_balances');
+                const savedTitles = localStorage.getItem('tengapesa_titles');
+                
+                if (savedBalances && savedTitles) {
+                    balances = JSON.parse(savedBalances);
+                    titles = JSON.parse(savedTitles);
+                    
+                    // Ensure main account exists and cannot be deleted
+                    if (!balances.main) {
+                        balances.main = 'KES 100,000';
+                        titles.main = 'MAIN';
+                    }
+                    
+                    // Force update the main account title to ensure it's always MAIN
+                    titles.main = 'MAIN';
+                    
+                    // Save changes to localStorage to ensure consistency
+                    saveAccounts();
+                    
+                    // Update the dropdown with all accounts
+                    updateAccountDropdown();
+                }
+            }
+            
+            // Update the account dropdown with all accounts
+            function updateAccountDropdown() {
+                // Clear all options except the first one (main account)
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+                
+                // Add all accounts to dropdown
+                for (const [key, value] of Object.entries(balances)) {
+                    if (key !== 'main') { // Skip main account as it's already there
+                        const option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = titles[key];
+                        select.appendChild(option);
+                    }
+                }
+                
+                // Always check if we need to hide the delete button
+                if (select.value === 'main') {
+                    document.getElementById('delete-account').style.display = 'none';
+                } else {
+                    document.getElementById('delete-account').style.display = 'block';
+                }
+            }
+            
+            // Save accounts to localStorage
+            function saveAccounts() {
+                localStorage.setItem('tengapesa_balances', JSON.stringify(balances));
+                localStorage.setItem('tengapesa_titles', JSON.stringify(titles));
+            }
+            
+            // Load accounts on page load
+            loadAccounts();
+            
+            // Function to format date as DD/MM/YYYY
+            function formatDate(date) {
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            }
+            
+            // Function to update the locked status UI
+            function updateLockedStatus() {
+                const selectedAccount = select.value;
+                const lockedFundsIndicator = document.getElementById('locked-funds-indicator');
+                const lockedAmount = document.getElementById('locked-amount');
+                const lockedUntilDate = document.getElementById('locked-until-date');
+                
+                // Check if the current account has locked funds
+                if (lockedFunds[selectedAccount]) {
+                    // Update the UI with locked funds information
+                    lockedAmount.textContent = `KES ${lockedFunds[selectedAccount].amount.toLocaleString()}`;
+                    lockedUntilDate.textContent = formatDate(new Date(lockedFunds[selectedAccount].until));
+                    lockedFundsIndicator.style.display = 'block';
+                } else {
+                    // Hide the locked funds indicator if no funds are locked
+                    lockedFundsIndicator.style.display = 'none';
+                }
+            }
+            
+            // Update display when account is changed
+            select.addEventListener('change', function() {
+                const selectedValue = this.value;
+                const deleteButton = document.getElementById('delete-account');
+                
+                // Show/hide delete button based on selected account
+                if (selectedValue === 'main') {
+                    deleteButton.style.display = 'none';
+                } else {
+                    deleteButton.style.display = 'block';
+                }
+                
+                // Initial display update
+                display.innerHTML = balances[this.value] + ' <span class="material-icons eye">visibility_off</span>';
+                title.textContent = titles[this.value];
+                
+                // Update locked status UI on initial load
+                updateLockedStatus();
+                
+                // Update lock modal account label
+                lockAccountLabel.textContent = titles[this.value];
+                updateLockedStatus();
+            });
+            
+            // Show modal on transact icon click
+            document.getElementById('transact-label').onclick = function() {
+                // Update the transaction dropdowns with current accounts
+                updateTransactionDropdowns();
+                document.getElementById('transact-modal').style.display = 'flex';
+            };
+            
+            // Hide modal on cancel (close icon)
+            document.getElementById('cancel-transact').onclick = function() {
+                document.getElementById('transact-modal').style.display = 'none';
+            };
+            
+            // Update the from and to account dropdowns in the transaction modal
+            function updateTransactionDropdowns() {
+                const fromAccount = document.getElementById('from-account');
+                const toAccount = document.getElementById('to-account');
+                
+                // Clear existing options
+                fromAccount.innerHTML = '';
+                toAccount.innerHTML = '';
+                
+                // Add all accounts to both dropdowns
+                for (const [key, value] of Object.entries(balances)) {
+                    const fromOption = document.createElement('option');
+                    fromOption.value = key;
+                    fromOption.textContent = titles[key];
+                    fromAccount.appendChild(fromOption);
+                    
+                    const toOption = document.createElement('option');
+                    toOption.value = key;
+                    toOption.textContent = titles[key];
+                    toAccount.appendChild(toOption);
+                }
+                
+                // Set default selections (different accounts if possible)
+                if (Object.keys(balances).length > 1) {
+                    const keys = Object.keys(balances);
+                    fromAccount.value = keys[0]; // Usually 'main'
+                    toAccount.value = keys[1] || keys[0]; // Any other account or fallback to main
+                }
+            }
+            
+            // Format currency string to number
+            function currencyToNumber(currencyStr) {
+                return parseFloat(currencyStr.replace('KES ', '').replace(/,/g, ''));
+            }
+            
+            // Format number to currency string
+            function numberToCurrency(num) {
+                return `KES ${num.toLocaleString()}`;
+            }
+            
+            // Prevent sending to same account and handle actual money transfer
+            document.getElementById('transact-form').onsubmit = function(e) {
+                e.preventDefault();
+                
+                const from = document.getElementById('from-account').value;
+                const to = document.getElementById('to-account').value;
+                const amountInput = document.getElementById('amount');
+                const amount = parseFloat(amountInput.value);
+                
+                // Validate inputs
+                if (from === to) {
+                    showCustomAlert('warning', 'Invalid Selection', 'Please select different accounts for From and To.');
+                    return;
+                }
+                
+                if (isNaN(amount) || amount <= 0) {
+                    showCustomAlert('warning', 'Invalid Amount', 'Please enter a valid amount greater than 0.');
+                    return;
+                }
+                
+                // Get current balances
+                const fromBalance = currencyToNumber(balances[from]);
+                const toBalance = currencyToNumber(balances[to]);
+                
+                // Check if enough funds
+                if (fromBalance < amount) {
+                    showCustomAlert('error', 'Insufficient Funds', `You don't have enough money in your ${titles[from]} account. Available balance: ${balances[from]}`);
+                    return;
+                }
+                
+                // Perform the transfer
+                const newFromBalance = fromBalance - amount;
+                const newToBalance = toBalance + amount;
+                
+                // Update balances
+                balances[from] = numberToCurrency(newFromBalance);
+                balances[to] = numberToCurrency(newToBalance);
+                
+                // Save to localStorage
+                saveAccounts();
+                
+                // Update display if the current account is affected
+                const currentAccount = select.value;
+                if (currentAccount === from || currentAccount === to) {
+                    display.innerHTML = balances[currentAccount] + ' <span class="material-icons eye">visibility_off</span>';
+                }
+                
+                // Show success message
+                showCustomAlert('transfer', 'Transfer Complete', `Successfully transferred KES ${amount.toLocaleString()} from ${titles[from]} to ${titles[to]}!`);
+                
+                // Reset form and close modal
+                amountInput.value = '';
+                document.getElementById('transact-modal').style.display = 'none';
+            };
+            
+            // Show modal on lock icon click
+            document.getElementById('lock-label').onclick = function() {
+                document.getElementById('lock-modal').style.display = 'flex';
+            };
+            
+            // Hide modal on cancel (close icon)
+            document.getElementById('cancel-lock').onclick = function() {
+                document.getElementById('lock-modal').style.display = 'none';
+            };
+            
+            // Show custom penalty input if selected
+            document.getElementById('lock-penalty').onchange = function() {
+                const custom = document.getElementById('custom-penalty');
+                
+                if(this.value === 'custom') {
+                    custom.style.display = 'block';
+                    custom.required = true;
+                } else {
+                    custom.style.display = 'none';
+                    custom.required = false;
+                }
+            };
+            
+            // Handle lock form submit
+            document.getElementById('lock-form').onsubmit = function(e) {
+                e.preventDefault();
+                
+                const selectedAccount = select.value;
+                const lockAmount = parseFloat(document.getElementById('lock-amount').value);
+                const lockYears = parseInt(document.getElementById('lock-years').value) || 0;
+                const lockMonths = parseInt(document.getElementById('lock-months').value) || 0;
+                const lockDays = parseInt(document.getElementById('lock-days').value) || 0;
+                const penaltyPercent = parseFloat(document.getElementById('lock-penalty').value);
+                
+                // Validate inputs
+                if (isNaN(lockAmount) || lockAmount <= 0) {
+                    showCustomAlert('error', 'Invalid Amount', 'Please enter a valid amount to lock');
+                    return;
+                }
+                
+                if (lockYears === 0 && lockMonths === 0 && lockDays === 0) {
+                    showCustomAlert('error', 'Invalid Lock Period', 'Please specify a lock period (years, months, or days)');
+                    return;
+                }
+                
+                if (isNaN(penaltyPercent) || penaltyPercent < 1) {
+                    showCustomAlert('error', 'Invalid Penalty', 'Please enter a valid penalty percentage (minimum 1%)');
+                    return;
+                }
+                
+                // Check if account has sufficient balance
+                const currentBalance = currencyToNumber(balances[selectedAccount]);
+                if (lockAmount > currentBalance) {
+                    showCustomAlert('error', 'Insufficient Balance', 'You do not have enough funds in your account to lock this amount');
+                    return;
+                }
+                
+                // Calculate lock end date
+                const now = new Date();
+                const lockEndDate = new Date(now);
+                lockEndDate.setFullYear(lockEndDate.getFullYear() + lockYears);
+                lockEndDate.setMonth(lockEndDate.getMonth() + lockMonths);
+                lockEndDate.setDate(lockEndDate.getDate() + lockDays);
+                
+                // Format dates for display
+                const formattedStartDate = formatDate(now);
+                const formattedEndDate = formatDate(lockEndDate);
+                
+                // Format the lock period for display
+                let periodText = '';
+                if (lockYears > 0) {
+                    periodText += lockYears + (lockYears === 1 ? ' year ' : ' years ');
+                }
+                if (lockMonths > 0) {
+                    periodText += lockMonths + (lockMonths === 1 ? ' month ' : ' months ');
+                }
+                if (lockDays > 0) {
+                    periodText += lockDays + (lockDays === 1 ? ' day' : ' days');
+                }
+                periodText = periodText.trim();
+                
+                // Confirm with user
+                const confirmLock = confirm(`Are you sure you want to lock KES ${lockAmount.toLocaleString()} until ${formattedEndDate}?
+
+Lock period: ${periodText}
+Penalty for early withdrawal: ${penaltyPercent}%`);
+                
+                if (!confirmLock) {
+                    return;
+                }
+                
+                // Deduct from balance
+                const newBalance = currentBalance - lockAmount;
+                balances[selectedAccount] = numberToCurrency(newBalance);
+                
+                // Store locked funds information
+                lockedFunds[selectedAccount] = {
+                    amount: lockAmount,
+                    from: now.getTime(),
+                    until: lockEndDate.getTime(),
+                    penalty: penaltyPercent
+                };
+                
+                // Save to localStorage
+                saveAccounts();
+                saveLockedFunds();
+                
+                // Update display
+                display.innerHTML = balances[selectedAccount] + ' <span class="material-icons eye">visibility_off</span>';
+                updateLockedStatus();
+                
+                // Close modal
+                document.getElementById('lock-modal').style.display = 'none';
+                
+                // Show success message
+                showCustomAlert('success', 'Funds Locked Successfully', `KES ${lockAmount.toLocaleString()} has been locked until ${formattedEndDate}
+
+Lock period: ${periodText}
+Penalty for early withdrawal: ${penaltyPercent}%`);
+                
+                // Reset form and close modal
+                amountInput.value = '';
+                document.getElementById('lock-years').value = '0';
+                document.getElementById('lock-months').value = '0';
+                document.getElementById('lock-days').value = '1';
+                document.getElementById('lock-penalty').value = '1';
+                document.getElementById('lock-modal').style.display = 'none';
+                
+                // Update the UI to show locked status
+                updateLockedStatus();
+            };
+            
+            // Initialize the last selected value
+            select.dataset.lastValue = select.value;
+            
+            // Create account button click handler
+            document.getElementById('create-account').addEventListener('click', function() {
+                createAccountModal.style.display = 'flex';
+            });
+            
+            // Initialize variables for locked funds
+            let lockedFunds = {
+                // Format: account_key: { amount: number, until: Date, penalty: number }
+            };
+            
+            // Load locked funds from localStorage if they exist
+            function loadLockedFunds() {
+                const savedLockedFunds = localStorage.getItem('tengapesa_locked_funds');
+                
+                if (savedLockedFunds) {
+                    // Parse the saved data
+                    const parsedData = JSON.parse(savedLockedFunds);
+                    
+                    // Convert string dates back to Date objects
+                    lockedFunds = {};
+                    for (const [key, value] of Object.entries(parsedData)) {
+                        lockedFunds[key] = {
+                            ...value,
+                            until: new Date(value.until)
+                        };
+                    }
+                }
+            }
+            
+            // Save locked funds to localStorage
+            function saveLockedFunds() {
+                localStorage.setItem('tengapesa_locked_funds', JSON.stringify(lockedFunds));
+            }
+            
+            // Load locked funds on page load
+            loadLockedFunds();
+            
+            // Function to handle early withdrawal with penalty
+            document.getElementById('unlock-funds').addEventListener('click', function() {
+                const selectedAccount = select.value;
+                
+                // Check if the account has locked funds
+                if (!lockedFunds[selectedAccount]) {
+                    return;
+                }
+                
+                // Get locked funds details
+                const lockedAmount = lockedFunds[selectedAccount].amount;
+                const penaltyPercent = lockedFunds[selectedAccount].penalty;
+                const penaltyAmount = (lockedAmount * penaltyPercent) / 100;
+                const amountToReturn = lockedAmount - penaltyAmount;
+                
+                // Confirm with the user
+                const confirmUnlock = confirm(`Are you sure you want to unlock KES ${lockedAmount.toLocaleString()} early?
+
+A penalty of ${penaltyPercent}% (KES ${penaltyAmount.toLocaleString()}) will be deducted.
+
+You will receive KES ${amountToReturn.toLocaleString()} back.`);
+                
+                if (!confirmUnlock) {
+                    return;
+                }
+                
+                // Get current account balance
+                const currentBalance = currencyToNumber(balances[selectedAccount]);
+                
+                // Add the returned amount (original amount minus penalty) to the account balance
+                const newBalance = currentBalance + amountToReturn;
+                balances[selectedAccount] = numberToCurrency(newBalance);
+                
+                // Remove the locked funds entry
+                delete lockedFunds[selectedAccount];
+                
+                // Save changes to localStorage
+                saveAccounts();
+                saveLockedFunds();
+                
+                // Update the UI
+                display.innerHTML = balances[selectedAccount] + ' <span class="material-icons eye">visibility_off</span>';
+                updateLockedStatus();
+                
+                // Show confirmation message
+                showCustomAlert('warning', 'Funds Unlocked Early', `Your locked funds have been unlocked with a penalty of ${penaltyPercent}%.
+
+KES ${penaltyAmount.toLocaleString()} has been deducted as a penalty fee.
+
+KES ${amountToReturn.toLocaleString()} has been returned to your account.`);
+            });
+            
+            // Delete account button click handler
+            document.getElementById('delete-account').addEventListener('click', function() {
+                const selectedAccount = select.value;
+                const deleteModal = document.getElementById('delete-account-modal');
+                const deleteAccountName = document.getElementById('delete-account-name');
+                const deleteAccountBalance = document.getElementById('delete-account-balance');
+                const lockedFundsWarning = document.getElementById('locked-funds-warning');
+                
+                // Prevent deleting main account
+                if (selectedAccount === 'main') {
+                    showCustomAlert('error', 'Cannot Delete', 'The Main account cannot be deleted. This is your primary account.');
+                    return;
+                }
+                
+                // Set account details in the modal
+                deleteAccountName.textContent = titles[selectedAccount];
+                deleteAccountBalance.textContent = balances[selectedAccount];
+                
+                // Check if account has locked funds
+                if (lockedFunds[selectedAccount]) {
+                    lockedFundsWarning.style.display = 'block';
+                    document.getElementById('confirm-delete-first').disabled = true;
+                    document.getElementById('confirm-delete-first').style.opacity = '0.5';
+                } else {
+                    lockedFundsWarning.style.display = 'none';
+                    document.getElementById('confirm-delete-first').disabled = false;
+                    document.getElementById('confirm-delete-first').style.opacity = '1';
+                }
+                
+                // Reset the confirmation UI state
+                document.getElementById('delete-first-confirmation').style.display = 'block';
+                document.getElementById('delete-final-confirmation').style.display = 'none';
+                document.getElementById('delete-confirmation-text').value = '';
+                document.getElementById('confirm-delete-final').disabled = true;
+                
+                // Show the modal
+                deleteModal.style.display = 'flex';
+            });
+            
+            // Cancel delete handlers
+            document.getElementById('cancel-delete-account').addEventListener('click', function() {
+                document.getElementById('delete-account-modal').style.display = 'none';
+            });
+            
+            document.getElementById('cancel-delete-btn').addEventListener('click', function() {
+                document.getElementById('delete-account-modal').style.display = 'none';
+            });
+            
+            // First confirmation handler
+            document.getElementById('confirm-delete-first').addEventListener('click', function() {
+                document.getElementById('delete-first-confirmation').style.display = 'none';
+                document.getElementById('delete-final-confirmation').style.display = 'block';
+            });
+            
+            // Back button handler
+            document.getElementById('back-to-first-confirmation').addEventListener('click', function() {
+                document.getElementById('delete-first-confirmation').style.display = 'block';
+                document.getElementById('delete-final-confirmation').style.display = 'none';
+            });
+            
+            // Confirmation text input handler
+            document.getElementById('delete-confirmation-text').addEventListener('input', function() {
+                const confirmBtn = document.getElementById('confirm-delete-final');
+                if (this.value === 'DELETE') {
+                    confirmBtn.disabled = false;
+                    confirmBtn.style.opacity = '1';
+                } else {
+                    confirmBtn.disabled = true;
+                    confirmBtn.style.opacity = '0.5';
+                }
+            });
+            
+            // Final delete confirmation handler
+            document.getElementById('confirm-delete-final').addEventListener('click', function() {
+                const selectedAccount = select.value;
+                const accountBalance = balances[selectedAccount];
+                
+                // Extract numeric value from balance string (e.g., 'KES 5,000' -> 5000)
+                const balanceStr = accountBalance.replace('KES ', '').replace(/,/g, '');
+                const balanceNum = parseFloat(balanceStr);
+                
+                // If account has funds, transfer to main account
+                if (balanceNum > 0) {
+                    // Extract numeric value from main balance
+                    const mainBalanceStr = balances.main.replace('KES ', '').replace(/,/g, '');
+                    const mainBalanceNum = parseFloat(mainBalanceStr);
+                    
+                    // Add the deleted account's balance to main
+                    const newMainBalance = mainBalanceNum + balanceNum;
+                    balances.main = `KES ${newMainBalance.toLocaleString()}`;
+                }
+                
+                // Delete the account
+                delete balances[selectedAccount];
+                delete titles[selectedAccount];
+                
+                // Save to localStorage
+                saveAccounts();
+                
+                // Update dropdown
+                updateAccountDropdown();
+                
+                // Select main account
+                select.value = 'main';
+                select.dispatchEvent(new Event('change'));
+                
+                // Hide the modal
+                document.getElementById('delete-account-modal').style.display = 'none';
+                
+                // Show confirmation message
+                if (balanceNum > 0) {
+                    showCustomAlert('success', 'Account Deleted', `Account deleted successfully. KES ${balanceNum.toLocaleString()} has been transferred to your Main account.`);
+                } else {
+                    showCustomAlert('success', 'Account Deleted', 'Account has been deleted successfully.');
+                }
+            });
+            
+            // Cancel create account button click handler
+            cancelCreateAccountBtn.addEventListener('click', function() {
+                createAccountModal.style.display = 'none';
+                createAccountForm.reset();
+            });
+            
+            // Create account form submit handler
+            createAccountForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const accountName = document.getElementById('account-name').value.trim();
+                
+                if (!accountName) {
+                    showCustomAlert('warning', 'Missing Information', 'Please enter an account name to create a new account.');
+                    return;
+                }
+                
+                // Create a key from the account name (lowercase, no spaces)
+                const accountKey = accountName.toLowerCase().replace(/\s+/g, '_');
+                
+                // Check if account already exists
+                if (balances[accountKey]) {
+                    showCustomAlert('warning', 'Duplicate Account', 'An account with this name already exists. Please choose a different name.');
+                    return;
+                }
+                
+                // Add the new account with zero balance
+                balances[accountKey] = 'KES 0';
+                titles[accountKey] = accountName.toUpperCase();
+                
+                // Save to localStorage
+                saveAccounts();
+                
+                // Update dropdown
+                updateAccountDropdown();
+                
+                // Select the new account
+                select.value = accountKey;
+                select.dispatchEvent(new Event('change'));
+                
+                // Close modal and reset form
+                createAccountModal.style.display = 'none';
+                createAccountForm.reset();
+                
+                // Show a message about transferring money
+                alert(`${accountName.toUpperCase()} account created with KES 0. You can transfer money from your Main account using the Transact button.`);
+            });
+            
+            // Display the current account balance
+            function displayBalances() {
+                // Make sure we load accounts first to get the latest data
+                const savedBalances = localStorage.getItem('tengapesa_balances');
+                if (savedBalances) {
+                    balances = JSON.parse(savedBalances);
+                }
+                
+                // Get the current selected account
+                const currentAccount = select.value;
+                
+                // Update the balance display with the current account balance
+                if (balances[currentAccount]) {
+                    display.innerHTML = balances[currentAccount] + ' <span class="material-icons eye">visibility_off</span>';
+                }
+            }
+            
+            // Call on page load
+            window.addEventListener('DOMContentLoaded', function() {
+                // Load accounts first
+                loadAccounts();
+                
+                // Then display balances (which now uses the loaded accounts)
+                displayBalances();
+                
+                // Hide delete button if Main account is selected initially
+                if (select.value === 'main') {
+                    document.getElementById('delete-account').style.display = 'none';
+                }
+                
+                // Force update the account title to ensure it shows MAIN instead of SAVINGS
+                if (select.value === 'main') {
+                    title.textContent = 'MAIN';
+                }
+            });
+        </script>
+    </body>
+</html>
+
+<!-- Custom Alert/Notification System -->
+<div id="custom-alert" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center;">
+    <div id="alert-box" style="background:#fff; border-radius:18px; padding:24px; min-width:320px; max-width:92vw; box-shadow:0 8px 32px rgba(0,0,0,0.2); text-align:center;">
+        <div id="alert-icon-container" style="margin-bottom:16px;">
+            <span id="alert-icon" class="material-icons" style="font-size:3em; border-radius:50%; padding:15px;"></span>
+        </div>
+        <h3 id="alert-title" style="margin:0 0 8px 0; font-size:1.3em; font-weight:700;"></h3>
+        <p id="alert-message" style="margin:0 0 20px 0; font-size:1.05em; color:#444;"></p>
+        <button id="alert-button" style="padding:12px 32px; border:none; border-radius:8px; font-size:1.1em; font-weight:600; cursor:pointer; transition:background 0.2s;">OK</button>
+    </div>
+</div>
+
+<script>
+    // Custom alert function
+    function showCustomAlert(type, title, message) {
+        const alertBox = document.getElementById('custom-alert');
+        const alertIcon = document.getElementById('alert-icon');
+        const alertTitle = document.getElementById('alert-title');
+        const alertMessage = document.getElementById('alert-message');
+        const alertButton = document.getElementById('alert-button');
+        const iconContainer = document.getElementById('alert-icon-container');
+        
+        // Set content
+        alertTitle.textContent = title;
+        alertMessage.textContent = message;
+        
+        // Style based on type
+        switch(type) {
+            case 'success':
+                alertIcon.textContent = 'check_circle';
+                alertIcon.style.color = '#21ae1f';
+                alertIcon.style.background = '#eafbe7';
+                alertButton.style.background = '#21ae1f';
+                alertButton.style.color = '#fff';
+                break;
+            case 'error':
+                alertIcon.textContent = 'error';
+                alertIcon.style.color = '#e53935';
+                alertIcon.style.background = '#ffebee';
+                alertButton.style.background = '#e53935';
+                alertButton.style.color = '#fff';
+                break;
+            case 'warning':
+                alertIcon.textContent = 'warning';
+                alertIcon.style.color = '#ff9800';
+                alertIcon.style.background = '#fff8e1';
+                alertButton.style.background = '#ff9800';
+                alertButton.style.color = '#fff';
+                break;
+            case 'info':
+                alertIcon.textContent = 'info';
+                alertIcon.style.color = '#1976d2';
+                alertIcon.style.background = '#e7f0fb';
+                alertButton.style.background = '#1976d2';
+                alertButton.style.color = '#fff';
+                break;
+            case 'transfer':
+                alertIcon.textContent = 'swap_horiz';
+                alertIcon.style.color = '#21ae1f';
+                alertIcon.style.background = '#eafbe7';
+                alertButton.style.background = '#21ae1f';
+                alertButton.style.color = '#fff';
+                break;
+        }
+        
+        // Show the alert
+        alertBox.style.display = 'flex';
+        
+        // Add click event to close
+        alertButton.onclick = function() {
+            alertBox.style.display = 'none';
+        };
+    }
+</script>
