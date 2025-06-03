@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFeedback } from '@/hooks/use-feedback';
@@ -160,14 +159,26 @@ const Feedback = () => {
   const nextStep = () => {
     if (currentStep < 3) {
       setCurrentStep(prev => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Scroll to the form section instead of top
+      setTimeout(() => {
+        const formElement = document.getElementById('feedback-form');
+        if (formElement) {
+          formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     }
   };
 
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Scroll to the form section instead of top
+      setTimeout(() => {
+        const formElement = document.getElementById('feedback-form');
+        if (formElement) {
+          formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     }
   };
 
@@ -285,7 +296,7 @@ const Feedback = () => {
 
           <Progress />
 
-          <Card className="border-0 shadow-lg rounded-xl overflow-hidden bg-white">
+          <Card id="feedback-form" className="border-0 shadow-lg rounded-xl overflow-hidden bg-white">
             <CardContent className="p-0">
               <form onSubmit={handleSubmit} className="divide-y divide-gray-100">
                 {/* Step 1: Demographic Information */}
