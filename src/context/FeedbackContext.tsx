@@ -35,7 +35,9 @@ export const FeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setError(null);
     
     try {
+      console.log('Fetching feedbacks from Supabase...');
       const data = await getFeedbacks();
+      console.log('Feedbacks fetched successfully:', data);
       setFeedbacks(data);
       setRetryCount(0); // Reset retry count on success
     } catch (err) {
@@ -53,7 +55,7 @@ export const FeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, retryCount]);
+  }, [isLoading, retryCount]); // Removed the problematic dependency
 
   const addFeedback = async (feedback: Omit<FeedbackData, "id" | "timestamp">) => {
     setIsLoading(true);
@@ -82,21 +84,10 @@ export const FeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  // Initial fetch on mount
+  // Initial fetch on mount - simplified to avoid infinite loops
   useEffect(() => {
-    let mounted = true;
-    
-    const initFetch = async () => {
-      if (!mounted) return;
-      await fetchFeedbacks();
-    };
-
-    initFetch();
-
-    return () => {
-      mounted = false;
-    };
-  }, [fetchFeedbacks]);
+    fetchFeedbacks();
+  }, []); // Empty dependency array
 
   return (
     <FeedbackContext.Provider value={{ 

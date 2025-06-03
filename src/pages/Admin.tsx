@@ -165,7 +165,7 @@ const Admin = () => {
             </Button>
             <Button 
               variant="outline" 
-              onClick={() => window.location.href = '/tenga.html'}
+              onClick={() => navigate('/prototype')}
               className="flex items-center gap-1 text-sm sm:text-base flex-1 sm:flex-none justify-center bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700"
             >
               Prototype
