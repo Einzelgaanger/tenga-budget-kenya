@@ -159,8 +159,38 @@ const Feedback = () => {
 
   const nextStep = () => {
     if (currentStep < 3) {
+      // Prevent any click events from propagating to the next UI state
+      // This helps prevent the submit button from being automatically clicked
+      // when it appears in the same position as the Next button
+      document.body.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }, { once: true, capture: true });
+      
       setCurrentStep(prev => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // If moving from first to second page, scroll to the 'Share Your Feedback' section
+      // instead of the top of the page
+      if (currentStep === 1) {
+        setTimeout(() => {
+          const feedbackSection = document.querySelector('h2.text-2xl.font-bold.text-gray-900.mb-4');
+          if (feedbackSection) {
+            feedbackSection.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }, 100); // Small timeout to ensure state update has completed
+      } else {
+        // When moving to the third page, add extra protection against accidental submission
+        if (currentStep === 2) {
+          // Scroll to top with a slight delay to ensure UI has updated
+          setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }, 50);
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
     }
   };
 
