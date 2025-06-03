@@ -20,13 +20,10 @@ export const FeedbackContext = createContext<FeedbackContextType>({
   refetchFeedbacks: async () => {},
 });
 
-// Hook moved to src/hooks/use-feedback.ts
-
 export const FeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [feedbacks, setFeedbacks] = useState<FeedbackData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
 
   const fetchFeedbacks = useCallback(async () => {
     if (isLoading) return;
@@ -39,23 +36,15 @@ export const FeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const data = await getFeedbacks();
       console.log('Feedbacks fetched successfully:', data);
       setFeedbacks(data);
-      setRetryCount(0); // Reset retry count on success
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load feedback data';
       console.error('Error fetching feedbacks:', errorMessage);
       setError(errorMessage);
-      
-      // Only show toast on first error
-      if (retryCount === 0) {
-        toast.error('Failed to load feedback data');
-      }
-      
-      // Increment retry count
-      setRetryCount(prev => prev + 1);
+      toast.error('Failed to load feedback data');
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, retryCount]); // Removed the problematic dependency
+  }, [isLoading]);
 
   const addFeedback = async (feedback: Omit<FeedbackData, "id" | "timestamp">) => {
     setIsLoading(true);
@@ -84,10 +73,10 @@ export const FeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  // Initial fetch on mount - simplified to avoid infinite loops
+  // Initial fetch on mount - no dependencies to avoid loops
   useEffect(() => {
     fetchFeedbacks();
-  }, []); // Empty dependency array
+  }, []);
 
   return (
     <FeedbackContext.Provider value={{ 
