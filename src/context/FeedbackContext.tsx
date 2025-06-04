@@ -26,13 +26,11 @@ export const FeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [error, setError] = useState<string | null>(null);
 
   const fetchFeedbacks = useCallback(async () => {
-    if (isLoading) return;
-    
+    console.log('Fetching feedbacks from Supabase...');
     setIsLoading(true);
     setError(null);
     
     try {
-      console.log('Fetching feedbacks from Supabase...');
       const data = await getFeedbacks();
       console.log('Feedbacks fetched successfully:', data);
       setFeedbacks(data);
@@ -44,7 +42,7 @@ export const FeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading]);
+  }, []);
 
   const addFeedback = async (feedback: Omit<FeedbackData, "id" | "timestamp">) => {
     setIsLoading(true);
@@ -73,7 +71,7 @@ export const FeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  // Initial fetch on mount - no dependencies to avoid loops
+  // Initial fetch on mount - only once
   useEffect(() => {
     fetchFeedbacks();
   }, []);
