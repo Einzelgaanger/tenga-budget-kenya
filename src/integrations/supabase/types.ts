@@ -16,7 +16,7 @@ export type Database = {
           financial_habits: Json
           id: string
           reaction_to_tenga_pesa: Json
-          timestamp: string | null
+          timestamp: string
         }
         Insert: {
           demographic: Json
@@ -24,7 +24,7 @@ export type Database = {
           financial_habits: Json
           id?: string
           reaction_to_tenga_pesa: Json
-          timestamp?: string | null
+          timestamp?: string
         }
         Update: {
           demographic?: Json
@@ -32,7 +32,7 @@ export type Database = {
           financial_habits?: Json
           id?: string
           reaction_to_tenga_pesa?: Json
-          timestamp?: string | null
+          timestamp?: string
         }
         Relationships: []
       }
