@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFeedback } from '@/hooks/use-feedback';
@@ -80,6 +81,7 @@ const Feedback = () => {
           htmlFor={id}
           onClick={(e) => {
             e.preventDefault();
+            e.stopPropagation();
             onValueChange(value);
           }}
           className={cn(
@@ -109,14 +111,51 @@ const Feedback = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const resetForm = () => {
+    setFormData({
+      demographic: {
+        ageGroup: '',
+        occupation: '',
+        incomeRange: '',
+        usesMpesa: false,
+      },
+      financialHabits: {
+        followsBudget: '',
+        mostSpendingAreas: [],
+        runsOutOfMoney: '',
+        savesMoney: ''
+      },
+      reactionToTengaPesa: {
+        wouldUseFeature: '',
+        findWithdrawalRulesHelpful: '',
+        feelingAboutPenalty: '',
+        wantsSpendingInsights: ''
+      },
+      finalThoughts: {
+        thinksTengaPesaHelps: '',
+        desiredFeatures: '',
+        concerns: ''
+      }
+    });
     
-    // Only allow submission on step 3
-    if (currentStep !== 3) {
-      return;
-    }
+    setTempFormData({
+      otherOccupation: '',
+      spendingAreas: {
+        rent: false,
+        food: false,
+        transport: false,
+        entertainment: false,
+        savings: false,
+        other: false
+      },
+      otherSpendingArea: ''
+    });
+    
+    setCurrentStep(1);
+  };
+
+  const handleSubmit = async () => {
+    console.log('Submit button clicked - handling submission');
     
     // Basic validation
     if (!formData.demographic.ageGroup || 
@@ -155,14 +194,19 @@ const Feedback = () => {
         }
       };
 
+      console.log('Submitting feedback:', finalFormData);
       const success = await addFeedback(finalFormData);
       
       if (success) {
         toast.success("Thank you for your feedback!", {
           description: "Your responses have been recorded successfully."
         });
-        // Navigate to home and scroll to top
+        
+        // Reset form and navigate to home
+        resetForm();
         navigate('/');
+        
+        // Scroll to top after navigation
         setTimeout(() => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 100);
@@ -534,6 +578,7 @@ const Feedback = () => {
                   </div>
                 </div>
 
+                {/* Step 3: TengaPesa Feedback */}
                 <div className={`p-6 space-y-6 ${currentStep === 3 ? 'block' : 'hidden'}`}>
                   <div className="flex items-center gap-2 text-xl font-semibold text-gray-900 mb-6">
                     <PiggyBank className="text-green-600" size={24} />
