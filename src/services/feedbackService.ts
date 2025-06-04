@@ -1,55 +1,31 @@
+
+import { supabase } from "@/integrations/supabase/client";
 import { FeedbackData } from "@/types/feedback";
-
-const STORAGE_KEY = 'tenga_feedback_data';
-
-// Helper to generate UUID
-const generateId = () => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-};
-
-// Helper to get stored feedbacks
-const getStoredFeedbacks = (): FeedbackData[] => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-      // Import sample data only when needed
-      import('./sampleData').then(({ sampleFeedbacks }) => {
-        saveFeedbacks(sampleFeedbacks);
-      });
-      return [];
-    }
-    return JSON.parse(stored);
-  } catch (error) {
-    console.error('Error reading from localStorage:', error);
-    return [];
-  }
-};
-
-// Helper to save feedbacks
-const saveFeedbacks = (feedbacks: FeedbackData[]): void => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(feedbacks));
-  } catch (error) {
-    console.error('Error writing to localStorage:', error);
-  }
-};
 
 export const submitFeedback = async (feedback: Omit<FeedbackData, "id" | "timestamp">): Promise<{ success: boolean; error?: string }> => {
   try {
-    const feedbacks = getStoredFeedbacks();
-    const newFeedback: FeedbackData = {
-      ...feedback,
-      id: generateId(),
-      timestamp: new Date().toISOString()
-    };
+    console.log('Submitting feedback to Supabase:', feedback);
     
-    feedbacks.push(newFeedback);
-    saveFeedbacks(feedbacks);
-    
+    const { data, error } = await supabase
+      .from('feedbacks')
+      .insert({
+        demographic: feedback.demographic,
+        financial_habits: feedback.financialHabits,
+        reaction_to_tenga_pesa: feedback.reactionToTengaPesa,
+        final_thoughts: feedback.finalThoughts
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Supabase error:', error);
+      return { 
+        success: false, 
+        error: error.message 
+      };
+    }
+
+    console.log('Feedback submitted successfully:', data);
     return { success: true };
   } catch (error) {
     console.error('Error submitting feedback:', error);
@@ -62,10 +38,31 @@ export const submitFeedback = async (feedback: Omit<FeedbackData, "id" | "timest
 
 export const getFeedbacks = async (): Promise<FeedbackData[]> => {
   try {
-    const feedbacks = getStoredFeedbacks();
-    return feedbacks.sort((a, b) => 
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
+    console.log('Fetching feedbacks from Supabase...');
+    
+    const { data, error } = await supabase
+      .from('feedbacks')
+      .select('*')
+      .order('timestamp', { ascending: false });
+
+    if (error) {
+      console.error('Supabase error:', error);
+      return [];
+    }
+
+    console.log('Feedbacks fetched successfully:', data);
+    
+    // Transform the data to match the FeedbackData interface
+    const transformedData: FeedbackData[] = data.map(item => ({
+      id: item.id,
+      timestamp: item.timestamp || new Date().toISOString(),
+      demographic: item.demographic as FeedbackData['demographic'],
+      financialHabits: item.financial_habits as FeedbackData['financialHabits'],
+      reactionToTengaPesa: item.reaction_to_tenga_pesa as FeedbackData['reactionToTengaPesa'],
+      finalThoughts: item.final_thoughts as FeedbackData['finalThoughts']
+    }));
+
+    return transformedData;
   } catch (error) {
     console.error('Error getting feedbacks:', error);
     return [];

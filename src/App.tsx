@@ -9,6 +9,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import Feedback from "./pages/Feedback";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
+import Prototype from "./pages/Prototype";
 import NotFound from "./pages/NotFound";
 import { useAuth } from "@/context/AuthContext";
 
@@ -31,6 +32,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Navigate to="/feedback" replace />} />
       <Route path="/feedback" element={<Feedback />} />
       <Route path="/admin-login" element={<AdminLogin />} />
+      <Route path="/prototype" element={<Prototype />} />
       <Route 
         path="/admin" 
         element={
