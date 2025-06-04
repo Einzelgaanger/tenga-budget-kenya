@@ -1,618 +1,487 @@
-
 import React, { useState, useEffect } from 'react';
-import Layout from '@/components/Layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Eye, EyeOff, Plus, Trash2, Send, Lock, LockOpen, AlertTriangle, CheckCircle, Info, DollarSign, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Label } from '@/components/ui/label';
+import { 
+  User, 
+  Bell, 
+  MoreHorizontal, 
+  QrCode, 
+  ArrowUpDown, 
+  CreditCard, 
+  Smartphone, 
+  DollarSign,
+  Eye,
+  EyeOff,
+  Plus,
+  Trash2,
+  Lock,
+  Unlock,
+  Home,
+  ArrowLeftRight,
+  BarChart3,
+  Grid3X3
+} from 'lucide-react';
+import Layout from '@/components/Layout';
 
 const Prototype = () => {
-  const navigate = useNavigate();
-  
-  // Initialize state from localStorage or defaults
-  const [balances, setBalances] = useState(() => {
-    const saved = localStorage.getItem('tengapesa_balances');
-    return saved ? JSON.parse(saved) : { main: 'KES 100,000' };
-  });
-  
-  const [titles, setTitles] = useState(() => {
-    const saved = localStorage.getItem('tengapesa_titles');
-    return saved ? JSON.parse(saved) : { main: 'MAIN' };
-  });
-  
-  const [lockedFunds, setLockedFunds] = useState(() => {
-    const saved = localStorage.getItem('tengapesa_locked_funds');
-    return saved ? JSON.parse(saved) : {};
-  });
-  
   const [selectedAccount, setSelectedAccount] = useState('main');
-  const [showBalance, setShowBalance] = useState(false);
+  const [balances, setBalances] = useState({
+    main: 15000,
+    savings: 5000,
+    investments: 10000,
+  });
+  const [titles, setTitles] = useState({
+    main: 'M-PESA',
+    savings: 'Savings',
+    investments: 'Investments',
+  });
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newAccountTitle, setNewAccountTitle] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [showTransactModal, setShowTransactModal] = useState(false);
+  const [transactionAmount, setTransactionAmount] = useState('');
   const [showLockModal, setShowLockModal] = useState(false);
-  const [deleteStep, setDeleteStep] = useState(1);
-  const [newAccountName, setNewAccountName] = useState('');
-  const [transferFrom, setTransferFrom] = useState('main');
-  const [transferTo, setTransferTo] = useState('');
-  const [transferAmount, setTransferAmount] = useState('');
   const [lockAmount, setLockAmount] = useState('');
-  const [lockYears, setLockYears] = useState(0);
-  const [lockMonths, setLockMonths] = useState(0);
-  const [lockDays, setLockDays] = useState(1);
-  const [lockPenalty, setLockPenalty] = useState(1);
-  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [lockDuration, setLockDuration] = useState('30');
+  const [lockedFunds, setLockedFunds] = useState<{ [key: string]: any }>({});
+  const [showBalance, setShowBalance] = useState(true);
 
-  // Save to localStorage whenever state changes
-  useEffect(() => {
-    localStorage.setItem('tengapesa_balances', JSON.stringify(balances));
-  }, [balances]);
-
-  useEffect(() => {
-    localStorage.setItem('tengapesa_titles', JSON.stringify(titles));
-  }, [titles]);
-
-  useEffect(() => {
-    localStorage.setItem('tengapesa_locked_funds', JSON.stringify(lockedFunds));
-  }, [lockedFunds]);
-
-  const currencyToNumber = (currencyStr) => {
-    return parseFloat(currencyStr.replace('KES ', '').replace(/,/g, ''));
-  };
-
-  const numberToCurrency = (num) => {
-    return `KES ${num.toLocaleString()}`;
-  };
-
-  const formatDate = (date) => {
-    return date.toLocaleDateString('en-GB');
-  };
-
-  const showAlert = (type, title, message) => {
-    alert(`${title}: ${message}`);
-  };
-
-  const createAccount = () => {
-    if (!newAccountName.trim()) return;
-    
-    const accountKey = newAccountName.toLowerCase().replace(/\s+/g, '');
-    if (balances[accountKey]) {
-      showAlert('error', 'Account Exists', 'An account with this name already exists');
-      return;
+  const loadAccounts = () => {
+    const storedTitles = localStorage.getItem('accountTitles');
+    if (storedTitles) {
+      setTitles(JSON.parse(storedTitles));
     }
+    const storedBalances = localStorage.getItem('accountBalances');
+    if (storedBalances) {
+      setBalances(JSON.parse(storedBalances));
+    }
+  };
 
-    setBalances(prev => ({ ...prev, [accountKey]: 'KES 0' }));
-    setTitles(prev => ({ ...prev, [accountKey]: newAccountName.trim() }));
-    setSelectedAccount(accountKey);
-    setNewAccountName('');
-    setShowCreateModal(false);
-    showAlert('success', 'Account Created', `${newAccountName} account created successfully`);
+  const saveAccounts = () => {
+    localStorage.setItem('accountTitles', JSON.stringify(titles));
+    localStorage.setItem('accountBalances', JSON.stringify(balances));
+  };
+
+  const createNewAccount = () => {
+    if (newAccountTitle && !titles[newAccountTitle]) {
+      const newKey = newAccountTitle.toLowerCase().replace(/\s+/g, '');
+      setTitles(prev => ({ ...prev, [newKey]: newAccountTitle }));
+      setBalances(prev => ({ ...prev, [newKey]: 0 }));
+      setSelectedAccount(newKey);
+      saveAccounts();
+      setShowCreateModal(false);
+      setNewAccountTitle('');
+    }
   };
 
   const deleteAccount = () => {
-    if (selectedAccount === 'main') return;
-    
-    if (deleteStep === 1) {
-      setDeleteStep(2);
-      return;
-    }
+    const { [selectedAccount]: deletedTitle, ...restTitles } = titles;
+    const { [selectedAccount]: deletedBalance, ...restBalances } = balances;
 
-    if (deleteConfirmText !== 'DELETE') {
-      showAlert('error', 'Invalid Confirmation', 'Please type DELETE to confirm');
-      return;
-    }
+    setTitles(restTitles);
+    setBalances(restBalances);
+    setSelectedAccount('main');
+    saveAccounts();
+    setShowDeleteModal(false);
+  };
 
-    // Transfer remaining balance to main
-    const remainingBalance = currencyToNumber(balances[selectedAccount]);
-    if (remainingBalance > 0) {
-      const mainBalance = currencyToNumber(balances.main);
+  const handleTransaction = () => {
+    const amount = parseFloat(transactionAmount);
+    if (!isNaN(amount)) {
       setBalances(prev => ({
         ...prev,
-        main: numberToCurrency(mainBalance + remainingBalance),
-        [selectedAccount]: undefined
+        [selectedAccount]: (prev[selectedAccount] || 0) + amount
       }));
-    } else {
-      setBalances(prev => {
-        const newBalances = { ...prev };
-        delete newBalances[selectedAccount];
-        return newBalances;
-      });
+      saveAccounts();
+      setShowTransactModal(false);
+      setTransactionAmount('');
     }
-
-    setTitles(prev => {
-      const newTitles = { ...prev };
-      delete newTitles[selectedAccount];
-      return newTitles;
-    });
-
-    if (lockedFunds[selectedAccount]) {
-      setLockedFunds(prev => {
-        const newLocked = { ...prev };
-        delete newLocked[selectedAccount];
-        return newLocked;
-      });
-    }
-
-    setSelectedAccount('main');
-    setShowDeleteModal(false);
-    setDeleteStep(1);
-    setDeleteConfirmText('');
-    showAlert('success', 'Account Deleted', 'Account deleted successfully');
   };
 
-  const transferMoney = () => {
-    if (transferFrom === transferTo) {
-      showAlert('error', 'Invalid Transfer', 'Cannot transfer to the same account');
-      return;
+  const loadLockedFunds = () => {
+    const storedLockedFunds = localStorage.getItem('lockedFunds');
+    if (storedLockedFunds) {
+      setLockedFunds(JSON.parse(storedLockedFunds));
     }
-
-    const amount = parseFloat(transferAmount);
-    if (isNaN(amount) || amount <= 0) {
-      showAlert('error', 'Invalid Amount', 'Please enter a valid amount');
-      return;
-    }
-
-    const fromBalance = currencyToNumber(balances[transferFrom]);
-    if (fromBalance < amount) {
-      showAlert('error', 'Insufficient Funds', 'Not enough funds in source account');
-      return;
-    }
-
-    const toBalance = currencyToNumber(balances[transferTo]);
-    setBalances(prev => ({
-      ...prev,
-      [transferFrom]: numberToCurrency(fromBalance - amount),
-      [transferTo]: numberToCurrency(toBalance + amount)
-    }));
-
-    setTransferAmount('');
-    setShowTransferModal(false);
-    showAlert('success', 'Transfer Complete', `KES ${amount.toLocaleString()} transferred successfully`);
   };
 
-  const lockFunds = () => {
+  const saveLockedFunds = (updatedLockedFunds: any) => {
+    localStorage.setItem('lockedFunds', JSON.stringify(updatedLockedFunds));
+    setLockedFunds(updatedLockedFunds);
+  };
+
+  const handleLockFunds = () => {
     const amount = parseFloat(lockAmount);
-    if (isNaN(amount) || amount <= 0) {
-      showAlert('error', 'Invalid Amount', 'Please enter a valid amount');
-      return;
+    if (!isNaN(amount) && amount > 0) {
+      const lockUntil = new Date();
+      lockUntil.setDate(lockUntil.getDate() + parseInt(lockDuration));
+
+      const updatedLockedFunds = {
+        ...lockedFunds,
+        [selectedAccount]: {
+          amount: amount,
+          until: lockUntil.getTime()
+        }
+      };
+
+      saveLockedFunds(updatedLockedFunds);
+      setShowLockModal(false);
+      setLockAmount('');
     }
-
-    if (lockYears === 0 && lockMonths === 0 && lockDays === 0) {
-      showAlert('error', 'Invalid Period', 'Please specify a lock period');
-      return;
-    }
-
-    const currentBalance = currencyToNumber(balances[selectedAccount]);
-    if (amount > currentBalance) {
-      showAlert('error', 'Insufficient Funds', 'Not enough funds to lock');
-      return;
-    }
-
-    const now = new Date();
-    const unlockDate = new Date(now);
-    unlockDate.setFullYear(unlockDate.getFullYear() + lockYears);
-    unlockDate.setMonth(unlockDate.getMonth() + lockMonths);
-    unlockDate.setDate(unlockDate.getDate() + lockDays);
-
-    setBalances(prev => ({
-      ...prev,
-      [selectedAccount]: numberToCurrency(currentBalance - amount)
-    }));
-
-    setLockedFunds(prev => ({
-      ...prev,
-      [selectedAccount]: {
-        amount,
-        until: unlockDate.getTime(),
-        penalty: lockPenalty
-      }
-    }));
-
-    setLockAmount('');
-    setLockYears(0);
-    setLockMonths(0);
-    setLockDays(1);
-    setLockPenalty(1);
-    setShowLockModal(false);
-    showAlert('success', 'Funds Locked', `KES ${amount.toLocaleString()} locked until ${formatDate(unlockDate)}`);
   };
 
-  const unlockFunds = () => {
-    const locked = lockedFunds[selectedAccount];
-    if (!locked) return;
+  const handleUnlockEarly = (account: string) => {
+    if (lockedFunds[account]) {
+      const penalty = lockedFunds[account].amount * 0.1;
+      setBalances(prev => ({
+        ...prev,
+        [account]: (prev[account] || 0) - penalty
+      }));
 
-    const penaltyAmount = locked.amount * (locked.penalty / 100);
-    const returnAmount = locked.amount - penaltyAmount;
-    const currentBalance = currencyToNumber(balances[selectedAccount]);
-
-    setBalances(prev => ({
-      ...prev,
-      [selectedAccount]: numberToCurrency(currentBalance + returnAmount)
-    }));
-
-    setLockedFunds(prev => {
-      const newLocked = { ...prev };
-      delete newLocked[selectedAccount];
-      return newLocked;
-    });
-
-    showAlert('info', 'Funds Unlocked', `KES ${returnAmount.toLocaleString()} returned (KES ${penaltyAmount.toLocaleString()} penalty applied)`);
+      const { [account]: removedLock, ...restLocks } = lockedFunds;
+      saveLockedFunds(restLocks);
+      saveAccounts();
+    }
   };
 
-  const accountKeys = Object.keys(balances);
-  const currentLocked = lockedFunds[selectedAccount];
-  const isLocked = currentLocked && new Date(currentLocked.until) > new Date();
+  useEffect(() => {
+    loadAccounts();
+    loadLockedFunds();
+  }, []);
+
+  const toggleBalanceVisibility = () => {
+    setShowBalance(!showBalance);
+  };
+
+  const displayBalance = (account: string) => {
+    if (!showBalance) return 'KES ***,***';
+    return balances[account] || 'KES 0';
+  };
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-900 text-white">
-        <div className="container mx-auto py-6 px-4 max-w-md">
+      <div className="min-h-screen bg-gray-50">
+        {/* Mobile App Container */}
+        <div className="max-w-sm mx-auto bg-white shadow-xl min-h-screen">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate('/admin')}
-              className="text-white hover:bg-gray-800 p-2"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="text-xl font-bold">TengaPesa</h1>
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800 p-2">
-                <Send className="h-5 w-5" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-white hover:bg-gray-800 p-2"
-                onClick={() => setShowLockModal(true)}
-              >
-                <Lock className="h-5 w-5" />
-              </Button>
+          <div className="bg-mpesa-green text-white p-4">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                  <User className="text-mpesa-green" size={20} />
+                </div>
+                <div>
+                  <p className="text-sm opacity-90">Good morning,</p>
+                  <p className="font-semibold">Alfred</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setShowTransactModal(true)}
+                  className="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
+                >
+                  <ArrowLeftRight size={18} />
+                </button>
+                <button 
+                  onClick={() => setShowLockModal(true)}
+                  className="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
+                >
+                  <Lock size={18} />
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <div className="flex gap-3">
+                <Bell size={20} className="opacity-80" />
+                <MoreHorizontal size={20} className="opacity-80" />
+              </div>
+              <QrCode size={20} className="opacity-80" />
             </div>
           </div>
 
-          <div className="text-center mb-4">
-            <p className="text-gray-400">Good morning, Alfred</p>
+          {/* Account Selection */}
+          <div className="p-4 bg-white border-b border-gray-100">
+            <div className="flex justify-between items-center mb-3">
+              <Label className="text-sm font-medium text-gray-700">Account</Label>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setShowCreateModal(true)}
+                  size="sm"
+                  className="bg-mpesa-green hover:bg-mpesa-darkgreen text-white h-8 px-3"
+                >
+                  <Plus size={14} className="mr-1" />
+                  Create
+                </Button>
+                {selectedAccount !== 'main' && (
+                  <Button
+                    onClick={() => setShowDeleteModal(true)}
+                    size="sm"
+                    variant="outline"
+                    className="border-red-300 text-red-600 hover:bg-red-50 h-8 px-3"
+                  >
+                    <Trash2 size={14} className="mr-1" />
+                    Delete
+                  </Button>
+                )}
+              </div>
+            </div>
+            
+            <select
+              value={selectedAccount}
+              onChange={(e) => setSelectedAccount(e.target.value)}
+              className="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-mpesa-green focus:border-transparent"
+            >
+              {Object.entries(titles).map(([key, title]) => (
+                <option key={key} value={key}>
+                  {title}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* Account Management */}
-          <Card className="bg-gray-800 border-gray-700 mb-6">
-            <CardContent className="p-4">
-              <div className="flex justify-between items-center mb-4">
-                <select 
-                  value={selectedAccount}
-                  onChange={(e) => setSelectedAccount(e.target.value)}
-                  className="bg-gray-700 text-white border-gray-600 rounded px-3 py-2 text-lg font-semibold"
-                >
-                  {accountKeys.map(key => (
-                    <option key={key} value={key}>{titles[key]}</option>
-                  ))}
-                </select>
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setShowCreateModal(true)}
-                    className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
+          {/* Balance Card */}
+          <div className="p-4">
+            <Card className="border border-gray-200 shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-sm text-gray-600 flex items-center gap-1">
+                    Balance
+                    {lockedFunds[selectedAccount] && (
+                      <Lock size={14} className="text-mpesa-blue" />
+                    )}
+                  </span>
+                  <button 
+                    onClick={toggleBalanceVisibility}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
                   >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                  {selectedAccount !== 'main' && (
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setShowDeleteModal(true)}
-                      className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
+                    {showBalance ? <Eye size={16} /> : <EyeOff size={16} />}
+                  </button>
                 </div>
-              </div>
-              
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 text-2xl font-bold mb-2">
-                  {showBalance ? balances[selectedAccount] : 'KES ••••••'}
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => setShowBalance(!showBalance)}
-                    className="text-white hover:bg-gray-700 p-1"
-                  >
-                    {showBalance ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
+                <div className="text-2xl font-bold text-gray-900 mb-4">
+                  {displayBalance(selectedAccount)}
                 </div>
                 
-                {isLocked && (
-                  <div className="bg-blue-900 rounded-lg p-3 mt-3">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                      <Lock className="h-4 w-4 text-blue-400" />
-                      <span className="text-blue-400 font-semibold">
-                        KES {currentLocked.amount.toLocaleString()} locked
-                      </span>
+                {/* Locked Funds Indicator */}
+                {lockedFunds[selectedAccount] && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Lock className="text-blue-600" size={16} />
+                        <span className="font-semibold text-blue-900">
+                          KES {lockedFunds[selectedAccount].amount.toLocaleString()}
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-xs text-blue-300 mb-2">
-                      Until: {formatDate(new Date(currentLocked.until))}
-                    </p>
-                    <Button 
-                      variant="outline" 
+                    <div className="text-sm text-blue-700 mb-3">
+                      Locked until {new Date(lockedFunds[selectedAccount].until).toLocaleDateString()}
+                    </div>
+                    <Button
+                      onClick={() => handleUnlockEarly(selectedAccount)}
                       size="sm"
-                      onClick={unlockFunds}
-                      className="border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white"
+                      className="bg-blue-600 hover:bg-blue-700 text-white h-8"
                     >
-                      <LockOpen className="h-4 w-4 mr-1" />
-                      Unlock Early (Penalty: {currentLocked.penalty}%)
+                      <Unlock size={14} className="mr-1" />
+                      Unlock Early (with penalty)
                     </Button>
                   </div>
                 )}
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <Button 
-              className="bg-green-600 hover:bg-green-700 h-16 flex-col gap-1"
-              onClick={() => setShowTransferModal(true)}
-            >
-              <Send className="h-5 w-5" />
-              <span className="text-xs">TRANSFER</span>
-            </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 h-16 flex-col gap-1">
-              <DollarSign className="h-5 w-5" />
-              <span className="text-xs">PAY</span>
-            </Button>
-          </div>
-
-          {/* Recent Transactions */}
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-white text-sm">RECENT TRANSACTIONS</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 pt-0">
-              <div className="flex items-center justify-between py-3 border-b border-gray-700 last:border-b-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center text-sm font-semibold">
-                    KS
-                  </div>
-                  <div>
-                    <p className="font-medium text-white">KASINA SUITES</p>
-                    <p className="text-xs text-gray-400">3 May, 07:13 PM</p>
-                  </div>
-                </div>
-                <span className="text-red-400 font-semibold">- KSH 7,000.00</span>
+          <div className="grid grid-cols-4 gap-3 p-4">
+            <div className="text-center">
+              <div className="w-14 h-14 bg-mpesa-green rounded-full flex items-center justify-center mx-auto mb-2">
+                <ArrowUpDown className="text-white" size={20} />
               </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Modals */}
-        {showCreateModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 w-full max-w-sm">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Create Mini Account</h3>
-                <Button variant="ghost" size="sm" onClick={() => setShowCreateModal(false)}>
-                  <X className="h-4 w-4 text-gray-600" />
-                </Button>
+              <span className="text-xs text-gray-700 font-medium">SEND & REQUEST</span>
+            </div>
+            <div className="text-center">
+              <div className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                <CreditCard className="text-white" size={20} />
               </div>
-              <Input
-                value={newAccountName}
-                onChange={(e) => setNewAccountName(e.target.value)}
-                placeholder="Account name (e.g., Holiday)"
-                className="mb-4"
-              />
-              <p className="text-sm text-gray-600 mb-4">
-                New accounts start with KES 0. Transfer money from your Main account after creation.
-              </p>
-              <Button onClick={createAccount} className="w-full bg-green-600 hover:bg-green-700">
-                Create Account
-              </Button>
+              <span className="text-xs text-gray-700 font-medium">PAY</span>
+            </div>
+            <div className="text-center">
+              <div className="w-14 h-14 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                <DollarSign className="text-white" size={20} />
+              </div>
+              <span className="text-xs text-gray-700 font-medium">WITHDRAW</span>
+            </div>
+            <div className="text-center">
+              <div className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Smartphone className="text-white" size={20} />
+              </div>
+              <span className="text-xs text-gray-700 font-medium">AIRTIME</span>
             </div>
           </div>
-        )}
 
-        {showDeleteModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 w-full max-w-sm">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-red-600">Delete Account</h3>
-                <Button variant="ghost" size="sm" onClick={() => { setShowDeleteModal(false); setDeleteStep(1); }}>
-                  <X className="h-4 w-4 text-gray-600" />
-                </Button>
+          {/* Statements Section */}
+          <div className="p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold text-gray-900">M-PESA STATEMENTS</h3>
+              <Button variant="ghost" size="sm" className="text-mpesa-green hover:text-mpesa-darkgreen">
+                SEE ALL
+              </Button>
+            </div>
+            
+            <Card className="border border-gray-200">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-semibold text-gray-700">KS</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-900">KASINA SUITES</p>
+                    <p className="text-sm text-gray-600">3 May, 07:13 PM</p>
+                  </div>
+                  <span className="font-semibold text-red-600">- KSH. 7,000.00</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Financial Services */}
+          <div className="p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold text-gray-900">Financial Services</h3>
+              <Button variant="ghost" size="sm" className="text-mpesa-green hover:text-mpesa-darkgreen">
+                View All
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-4 gap-3">
+              {['Pochi', 'MALI', 'Ziidi', 'KCB'].map((service) => (
+                <div key={service} className="text-center">
+                  <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <span className="text-xs font-semibold text-gray-700">{service}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom Navigation */}
+          <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-sm bg-white border-t border-gray-200">
+            <div className="grid grid-cols-4 p-2">
+              <div className="text-center py-2">
+                <Home className="text-mpesa-green mx-auto mb-1" size={20} />
+                <span className="text-xs text-mpesa-green font-medium">HOME</span>
               </div>
-              
-              {deleteStep === 1 ? (
-                <>
-                  <p className="text-gray-700 mb-4">
-                    Are you sure you want to delete the <strong>{titles[selectedAccount]}</strong> account?
-                  </p>
-                  <div className="bg-gray-100 rounded p-3 mb-4">
-                    <p className="text-sm text-gray-700">
-                      Current balance: <strong>{balances[selectedAccount]}</strong>
-                    </p>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Any remaining funds will be transferred to your Main account.
-                    </p>
-                  </div>
-                  <Button onClick={deleteAccount} className="w-full bg-red-600 hover:bg-red-700 mb-2">
-                    Continue to Delete
-                  </Button>
-                  <Button variant="outline" onClick={() => setShowDeleteModal(false)} className="w-full">
-                    Cancel
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2 mb-4">
-                    <AlertTriangle className="h-5 w-5 text-red-500" />
-                    <span className="font-semibold text-red-600">Final Warning</span>
-                  </div>
-                  <p className="text-gray-700 mb-4">
-                    This action cannot be undone. Type <strong>DELETE</strong> below to confirm.
-                  </p>
+              <div className="text-center py-2">
+                <ArrowLeftRight className="text-gray-400 mx-auto mb-1" size={20} />
+                <span className="text-xs text-gray-400">TRANSACT</span>
+              </div>
+              <div className="text-center py-2">
+                <Grid3X3 className="text-gray-400 mx-auto mb-1" size={20} />
+                <span className="text-xs text-gray-400">SERVICES</span>
+              </div>
+              <div className="text-center py-2">
+                <BarChart3 className="text-gray-400 mx-auto mb-1" size={20} />
+                <span className="text-xs text-gray-400">GROW</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Modals */}
+          {/* Create Account Modal */}
+          {showCreateModal && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+              <Card className="max-w-sm p-6">
+                <CardContent>
+                  <Label htmlFor="account-title" className="block mb-2">Account Title</Label>
                   <Input
-                    value={deleteConfirmText}
-                    onChange={(e) => setDeleteConfirmText(e.target.value)}
-                    placeholder="Type DELETE here"
+                    id="account-title"
+                    value={newAccountTitle}
+                    onChange={(e) => setNewAccountTitle(e.target.value)}
                     className="mb-4"
                   />
-                  <Button 
-                    onClick={deleteAccount} 
-                    disabled={deleteConfirmText !== 'DELETE'}
-                    className="w-full bg-red-600 hover:bg-red-700 mb-2"
+                  <div className="flex justify-end gap-2">
+                    <Button variant="ghost" onClick={() => setShowCreateModal(false)}>Cancel</Button>
+                    <Button onClick={createNewAccount}>Create Account</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Delete Account Modal */}
+          {showDeleteModal && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+              <Card className="max-w-sm p-6">
+                <CardContent>
+                  <p className="mb-4">Are you sure you want to delete the account "{titles[selectedAccount]}"?</p>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="ghost" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
+                    <Button variant="destructive" onClick={deleteAccount}>Delete Account</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Transact Modal */}
+          {showTransactModal && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+              <Card className="max-w-sm p-6">
+                <CardContent>
+                  <Label htmlFor="transaction-amount" className="block mb-2">Transaction Amount</Label>
+                  <Input
+                    id="transaction-amount"
+                    type="number"
+                    placeholder="Enter amount"
+                    value={transactionAmount}
+                    onChange={(e) => setTransactionAmount(e.target.value)}
+                    className="mb-4"
+                  />
+                  <div className="flex justify-end gap-2">
+                    <Button variant="ghost" onClick={() => setShowTransactModal(false)}>Cancel</Button>
+                    <Button onClick={handleTransaction}>Confirm Transaction</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Lock Funds Modal */}
+          {showLockModal && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+              <Card className="max-w-sm p-6">
+                <CardContent>
+                  <Label htmlFor="lock-amount" className="block mb-2">Amount to Lock</Label>
+                  <Input
+                    id="lock-amount"
+                    type="number"
+                    placeholder="Enter amount"
+                    value={lockAmount}
+                    onChange={(e) => setLockAmount(e.target.value)}
+                    className="mb-4"
+                  />
+                  <Label htmlFor="lock-duration" className="block mb-2">Lock Duration (days)</Label>
+                  <select
+                    id="lock-duration"
+                    value={lockDuration}
+                    onChange={(e) => setLockDuration(e.target.value)}
+                    className="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-mpesa-green focus:border-transparent mb-4"
                   >
-                    Permanently Delete Account
-                  </Button>
-                  <Button variant="outline" onClick={() => setDeleteStep(1)} className="w-full">
-                    Go Back
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
-        {showTransferModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 w-full max-w-sm">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Transfer Money</h3>
-                <Button variant="ghost" size="sm" onClick={() => setShowTransferModal(false)}>
-                  <X className="h-4 w-4 text-gray-600" />
-                </Button>
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">From</label>
-                <select 
-                  value={transferFrom}
-                  onChange={(e) => setTransferFrom(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
-                >
-                  {accountKeys.map(key => (
-                    <option key={key} value={key}>{titles[key]}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">To</label>
-                <select 
-                  value={transferTo}
-                  onChange={(e) => setTransferTo(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
-                >
-                  <option value="">Select account</option>
-                  {accountKeys.filter(key => key !== transferFrom).map(key => (
-                    <option key={key} value={key}>{titles[key]}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
-                <Input
-                  type="number"
-                  value={transferAmount}
-                  onChange={(e) => setTransferAmount(e.target.value)}
-                  placeholder="KES 0.00"
-                />
-              </div>
-              
-              <Button onClick={transferMoney} className="w-full bg-green-600 hover:bg-green-700">
-                Send Money
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {showLockModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 w-full max-w-sm">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-blue-600">Lock Your Savings</h3>
-                <Button variant="ghost" size="sm" onClick={() => setShowLockModal(false)}>
-                  <X className="h-4 w-4 text-gray-600" />
-                </Button>
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Account</label>
-                <div className="bg-gray-100 rounded px-3 py-2 font-semibold text-blue-600">
-                  {titles[selectedAccount]}
-                </div>
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Amount to Lock</label>
-                <Input
-                  type="number"
-                  value={lockAmount}
-                  onChange={(e) => setLockAmount(e.target.value)}
-                  placeholder="KES 0.00"
-                />
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Lock Period</label>
-                <div className="grid grid-cols-3 gap-2">
-                  <div>
-                    <label className="text-xs text-gray-600">Years</label>
-                    <Input
-                      type="number"
-                      min="0"
-                      max="10"
-                      value={lockYears}
-                      onChange={(e) => setLockYears(parseInt(e.target.value) || 0)}
-                    />
+                    <option value="30">30 Days</option>
+                    <option value="90">90 Days</option>
+                    <option value="180">180 Days</option>
+                    <option value="365">365 Days</option>
+                  </select>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="ghost" onClick={() => setShowLockModal(false)}>Cancel</Button>
+                    <Button onClick={handleLockFunds}>Lock Funds</Button>
                   </div>
-                  <div>
-                    <label className="text-xs text-gray-600">Months</label>
-                    <Input
-                      type="number"
-                      min="0"
-                      max="11"
-                      value={lockMonths}
-                      onChange={(e) => setLockMonths(parseInt(e.target.value) || 0)}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-600">Days</label>
-                    <Input
-                      type="number"
-                      min="1"
-                      max="30"
-                      value={lockDays}
-                      onChange={(e) => setLockDays(parseInt(e.target.value) || 1)}
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Penalty for Early Withdrawal (%)
-                </label>
-                <Input
-                  type="number"
-                  min="1"
-                  value={lockPenalty}
-                  onChange={(e) => setLockPenalty(parseFloat(e.target.value) || 1)}
-                />
-                <p className="text-xs text-gray-600 mt-1">
-                  Minimum penalty is 1%. This fee will be deducted if you withdraw before the lock period ends.
-                </p>
-              </div>
-              
-              <Button onClick={lockFunds} className="w-full bg-blue-600 hover:bg-blue-700">
-                Lock Money
-              </Button>
+                </CardContent>
+              </Card>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </Layout>
   );

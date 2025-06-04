@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
   Home, 
@@ -19,6 +20,7 @@ const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -41,6 +43,20 @@ const Navbar: React.FC = () => {
     return location.pathname === path;
   };
 
+  const handleHomeClick = () => {
+    navigate('/');
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
+
+  const handleFeedbackClick = () => {
+    navigate('/feedback');
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
+
   return (
     <nav 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -49,12 +65,12 @@ const Navbar: React.FC = () => {
     >
       <div className="container mx-auto flex items-center justify-between py-3 px-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
+        <button onClick={handleHomeClick} className="flex items-center gap-2">
           <div className="bg-black p-1.5 rounded-lg">
             <Wallet size={20} className="text-white" />
           </div>
           <span className="text-xl font-bold text-black">TengaPesa</span>
-        </Link>
+        </button>
 
         {/* Mobile menu button */}
         <button
@@ -67,28 +83,26 @@ const Navbar: React.FC = () => {
 
         {/* Desktop navigation */}
         <div className="hidden md:flex gap-2 items-center">
-          <Link to="/">
-            <Button 
-              variant="ghost" 
-              className={`text-black hover:text-black hover:bg-black/5 flex gap-2 items-center transition-all duration-200 ${
-                isActive('/') ? 'bg-black/5 text-black' : ''
-              }`}
-            >
-              <Home size={18} />
-              <span>Home</span>
-            </Button>
-          </Link>
-          <Link to="/feedback">
-            <Button 
-              variant="ghost" 
-              className={`text-black hover:text-black hover:bg-black/5 flex gap-2 items-center transition-all duration-200 ${
-                isActive('/feedback') ? 'bg-black/5 text-black' : ''
-              }`}
-            >
-              <MessageCircle size={18} />
-              <span>Feedback</span>
-            </Button>
-          </Link>
+          <Button 
+            onClick={handleHomeClick}
+            variant="ghost" 
+            className={`text-black hover:text-black hover:bg-black/5 flex gap-2 items-center transition-all duration-200 ${
+              isActive('/') ? 'bg-black/5 text-black' : ''
+            }`}
+          >
+            <Home size={18} />
+            <span>Home</span>
+          </Button>
+          <Button 
+            onClick={handleFeedbackClick}
+            variant="ghost" 
+            className={`text-black hover:text-black hover:bg-black/5 flex gap-2 items-center transition-all duration-200 ${
+              isActive('/feedback') ? 'bg-black/5 text-black' : ''
+            }`}
+          >
+            <MessageCircle size={18} />
+            <span>Feedback</span>
+          </Button>
           <Link to="/admin-login">
             <Button 
               variant="outline" 
@@ -114,30 +128,28 @@ const Navbar: React.FC = () => {
       {isMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg animate-in slide-in-from-top duration-300">
           <div className="flex flex-col p-4 space-y-2">
-            <Link to="/">
-              <Button 
-                variant="ghost" 
-                className={`w-full text-black justify-start hover:bg-black/5 hover:text-black flex gap-2 items-center ${
-                  isActive('/') ? 'bg-black/5 text-black' : ''
-                }`}
-              >
-                <Home size={18} />
-                <span>Home</span>
-                <ChevronRight size={16} className="ml-auto" />
-              </Button>
-            </Link>
-            <Link to="/feedback">
-              <Button 
-                variant="ghost" 
-                className={`w-full text-black justify-start hover:bg-black/5 hover:text-black flex gap-2 items-center ${
-                  isActive('/feedback') ? 'bg-black/5 text-black' : ''
-                }`}
-              >
-                <MessageCircle size={18} />
-                <span>Feedback</span>
-                <ChevronRight size={16} className="ml-auto" />
-              </Button>
-            </Link>
+            <Button 
+              onClick={handleHomeClick}
+              variant="ghost" 
+              className={`w-full text-black justify-start hover:bg-black/5 hover:text-black flex gap-2 items-center ${
+                isActive('/') ? 'bg-black/5 text-black' : ''
+              }`}
+            >
+              <Home size={18} />
+              <span>Home</span>
+              <ChevronRight size={16} className="ml-auto" />
+            </Button>
+            <Button 
+              onClick={handleFeedbackClick}
+              variant="ghost" 
+              className={`w-full text-black justify-start hover:bg-black/5 hover:text-black flex gap-2 items-center ${
+                isActive('/feedback') ? 'bg-black/5 text-black' : ''
+              }`}
+            >
+              <MessageCircle size={18} />
+              <span>Feedback</span>
+              <ChevronRight size={16} className="ml-auto" />
+            </Button>
             <Link to="/admin-login">
               <Button 
                 variant="outline" 

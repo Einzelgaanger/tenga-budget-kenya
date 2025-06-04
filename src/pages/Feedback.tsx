@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFeedback } from '@/hooks/use-feedback';
@@ -109,11 +110,17 @@ const Feedback = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Only allow submission on step 3
+    if (currentStep !== 3) {
+      return;
+    }
+    
     // Basic validation
     if (!formData.demographic.ageGroup || 
         !formData.demographic.occupation || 
         !formData.demographic.incomeRange) {
       toast.error("Please fill in all required demographic information");
+      setCurrentStep(1); // Go back to step 1 if validation fails
       return;
     }
 
@@ -121,8 +128,15 @@ const Feedback = () => {
     
     try {
       // Update occupation if "Other" was selected
+      let finalFormData = { ...formData };
       if (formData.demographic.occupation === 'Other') {
-        updateFormField('demographic', 'occupation', tempFormData.otherOccupation);
+        finalFormData = {
+          ...formData,
+          demographic: {
+            ...formData.demographic,
+            occupation: tempFormData.otherOccupation
+          }
+        };
       }
 
       // Collect selected spending areas
@@ -130,21 +144,22 @@ const Feedback = () => {
         .filter(([_, isChecked]) => isChecked)
         .map(([area]) => area === 'other' ? tempFormData.otherSpendingArea : area);
 
-      const updatedFormData: FormData = {
-        ...formData,
+      finalFormData = {
+        ...finalFormData,
         financialHabits: {
-          ...formData.financialHabits,
+          ...finalFormData.financialHabits,
           mostSpendingAreas: selectedSpendingAreas
         }
       };
 
-      const success = await addFeedback(updatedFormData);
+      const success = await addFeedback(finalFormData);
       
       if (success) {
         toast.success("Thank you for your feedback!", {
           description: "Your responses have been recorded successfully."
         });
-        navigate('/feedback');
+        // Navigate to home instead of staying on feedback page
+        navigate('/');
       } else {
         toast.error("Failed to submit feedback");
       }
