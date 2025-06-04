@@ -83,7 +83,7 @@ const Feedback = () => {
           className={cn(
             "flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer transition-all duration-200",
             isSelected 
-              ? "border-mpesa-green bg-mpesa-green/10 text-mpesa-green font-medium shadow-sm" 
+              ? "border-green-600 bg-green-50 text-green-600 font-medium shadow-sm" 
               : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
           )}
         >
@@ -158,8 +158,11 @@ const Feedback = () => {
         toast.success("Thank you for your feedback!", {
           description: "Your responses have been recorded successfully."
         });
-        // Navigate to home instead of staying on feedback page
+        // Navigate to home and scroll to top
         navigate('/');
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
       } else {
         toast.error("Failed to submit feedback");
       }
@@ -203,13 +206,13 @@ const Feedback = () => {
       {[1, 2, 3].map((step) => (
         <div key={step} className="flex items-center">
           <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 
-            ${currentStep >= step ? 'border-mpesa-green bg-mpesa-green text-white' : 'border-gray-300 text-gray-500'}`}>
+            ${currentStep >= step ? 'border-green-600 bg-green-600 text-white' : 'border-gray-300 text-gray-500'}`}>
             {step === 1 && <User size={20} />}
             {step === 2 && <Wallet size={20} />}
             {step === 3 && <PiggyBank size={20} />}
           </div>
           {step < 3 && (
-            <div className={`w-24 h-0.5 mx-2 ${currentStep > step ? 'bg-mpesa-green' : 'bg-gray-300'}`} />
+            <div className={`w-24 h-0.5 mx-2 ${currentStep > step ? 'bg-green-600' : 'bg-gray-300'}`} />
           )}
         </div>
       ))}
@@ -223,11 +226,11 @@ const Feedback = () => {
           {/* Improved Survey Briefing Section */}
           <div className="mb-8 space-y-4">
             {/* Main Title Card */}
-            <Card className="border-2 border-mpesa-green/20 bg-gradient-to-br from-mpesa-green/10 via-green-50/50 to-white">
+            <Card className="border-2 border-green-100 bg-gradient-to-br from-green-50 via-green-25 to-white">
               <CardContent className="p-6 sm:p-8">
                 <div className="text-center space-y-4">
                   <div className="flex justify-center">
-                    <div className="bg-mpesa-green p-4 rounded-full shadow-lg">
+                    <div className="bg-green-600 p-4 rounded-full shadow-lg">
                       <Star className="text-white" size={32} />
                     </div>
                   </div>
@@ -244,14 +247,14 @@ const Feedback = () => {
             </Card>
 
             {/* What is TengaPesa Card */}
-            <Card className="border border-gray-200 hover:border-mpesa-green/30 transition-colors">
+            <Card className="border border-gray-200 hover:border-green-300 transition-colors">
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="bg-mpesa-green/10 p-2 rounded-lg">
-                      <PiggyBank className="text-mpesa-green" size={20} />
+                    <div className="bg-green-100 p-2 rounded-lg">
+                      <PiggyBank className="text-green-600" size={20} />
                     </div>
-                    <h3 className="text-lg font-semibold text-mpesa-green">What is TengaPesa?</h3>
+                    <h3 className="text-lg font-semibold text-green-600">What is TengaPesa?</h3>
                   </div>
                   <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
                     TengaPesa is a proposed M-PESA feature that helps you manage your money by creating a special savings wallet with customizable withdrawal rules. You set aside money and create your own rules for when and how you can withdraw it, helping you stick to your financial goals.
@@ -317,7 +320,7 @@ const Feedback = () => {
                 {/* Step 1: Demographic Information */}
                 <div className={`p-6 space-y-6 ${currentStep === 1 ? 'block' : 'hidden'}`}>
                   <div className="flex items-center gap-2 text-xl font-semibold text-gray-900 mb-6">
-                    <User className="text-mpesa-green" size={24} />
+                    <User className="text-green-600" size={24} />
                     <h2>About You</h2>
                   </div>
 
@@ -409,7 +412,7 @@ const Feedback = () => {
                           type="button"
                           variant={formData.demographic.usesMpesa ? "default" : "outline"}
                           onClick={() => updateFormField('demographic', 'usesMpesa', true)}
-                          className={formData.demographic.usesMpesa ? 'bg-mpesa-green hover:bg-mpesa-darkgreen text-white' : ''}
+                          className={formData.demographic.usesMpesa ? 'bg-green-600 hover:bg-green-700 text-white' : ''}
                         >
                           Yes
                         </Button>
@@ -417,7 +420,7 @@ const Feedback = () => {
                           type="button"
                           variant={!formData.demographic.usesMpesa ? "default" : "outline"}
                           onClick={() => updateFormField('demographic', 'usesMpesa', false)}
-                          className={!formData.demographic.usesMpesa ? 'bg-mpesa-green hover:bg-mpesa-darkgreen text-white' : ''}
+                          className={!formData.demographic.usesMpesa ? 'bg-green-600 hover:bg-green-700 text-white' : ''}
                         >
                           No
                         </Button>
@@ -429,7 +432,7 @@ const Feedback = () => {
                 {/* Step 2: Financial Habits */}
                 <div className={`p-6 space-y-6 ${currentStep === 2 ? 'block' : 'hidden'}`}>
                   <div className="flex items-center gap-2 text-xl font-semibold text-gray-900 mb-6">
-                    <Wallet className="text-mpesa-green" size={24} />
+                    <Wallet className="text-green-600" size={24} />
                     <h2>Your Financial Habits</h2>
                   </div>
 
@@ -530,7 +533,7 @@ const Feedback = () => {
 
                 <div className={`p-6 space-y-6 ${currentStep === 3 ? 'block' : 'hidden'}`}>
                   <div className="flex items-center gap-2 text-xl font-semibold text-gray-900 mb-6">
-                    <PiggyBank className="text-mpesa-green" size={24} />
+                    <PiggyBank className="text-green-600" size={24} />
                     <h2>TengaPesa Feedback</h2>
                   </div>
 
@@ -682,7 +685,7 @@ const Feedback = () => {
                     <Button
                       type="button"
                       onClick={nextStep}
-                      className="bg-mpesa-green hover:bg-mpesa-darkgreen text-white flex items-center justify-center gap-2"
+                      className="bg-green-600 hover:bg-green-700 text-white flex items-center justify-center gap-2"
                     >
                       Next Step
                       <ChevronRight size={16} />
@@ -691,7 +694,7 @@ const Feedback = () => {
                     <Button
                       type="submit"
                       disabled={isSubmitting}
-                      className="bg-mpesa-green hover:bg-mpesa-darkgreen text-white flex items-center justify-center gap-2"
+                      className="bg-green-600 hover:bg-green-700 text-white flex items-center justify-center gap-2"
                     >
                       {isSubmitting ? (
                         "Submitting..."

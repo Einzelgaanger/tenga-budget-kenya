@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,12 +28,12 @@ import Layout from '@/components/Layout';
 
 const Prototype = () => {
   const [selectedAccount, setSelectedAccount] = useState('main');
-  const [balances, setBalances] = useState({
+  const [balances, setBalances] = useState<Record<string, number>>({
     main: 15000,
     savings: 5000,
     investments: 10000,
   });
-  const [titles, setTitles] = useState({
+  const [titles, setTitles] = useState<Record<string, string>>({
     main: 'M-PESA',
     savings: 'Savings',
     investments: 'Investments',
@@ -45,7 +46,7 @@ const Prototype = () => {
   const [showLockModal, setShowLockModal] = useState(false);
   const [lockAmount, setLockAmount] = useState('');
   const [lockDuration, setLockDuration] = useState('30');
-  const [lockedFunds, setLockedFunds] = useState<{ [key: string]: any }>({});
+  const [lockedFunds, setLockedFunds] = useState<Record<string, any>>({});
   const [showBalance, setShowBalance] = useState(true);
 
   const loadAccounts = () => {
@@ -157,7 +158,7 @@ const Prototype = () => {
 
   const displayBalance = (account: string) => {
     if (!showBalance) return 'KES ***,***';
-    return balances[account] || 'KES 0';
+    return `KES ${(balances[account] || 0).toLocaleString()}`;
   };
 
   return (
@@ -166,11 +167,11 @@ const Prototype = () => {
         {/* Mobile App Container */}
         <div className="max-w-sm mx-auto bg-white shadow-xl min-h-screen">
           {/* Header */}
-          <div className="bg-mpesa-green text-white p-4">
+          <div className="bg-green-600 text-white p-4">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                  <User className="text-mpesa-green" size={20} />
+                  <User className="text-green-600" size={20} />
                 </div>
                 <div>
                   <p className="text-sm opacity-90">Good morning,</p>
@@ -210,7 +211,7 @@ const Prototype = () => {
                 <Button
                   onClick={() => setShowCreateModal(true)}
                   size="sm"
-                  className="bg-mpesa-green hover:bg-mpesa-darkgreen text-white h-8 px-3"
+                  className="bg-green-600 hover:bg-green-700 text-white h-8 px-3"
                 >
                   <Plus size={14} className="mr-1" />
                   Create
@@ -232,7 +233,7 @@ const Prototype = () => {
             <select
               value={selectedAccount}
               onChange={(e) => setSelectedAccount(e.target.value)}
-              className="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-mpesa-green focus:border-transparent"
+              className="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
             >
               {Object.entries(titles).map(([key, title]) => (
                 <option key={key} value={key}>
@@ -250,7 +251,7 @@ const Prototype = () => {
                   <span className="text-sm text-gray-600 flex items-center gap-1">
                     Balance
                     {lockedFunds[selectedAccount] && (
-                      <Lock size={14} className="text-mpesa-blue" />
+                      <Lock size={14} className="text-blue-600" />
                     )}
                   </span>
                   <button 
@@ -295,7 +296,7 @@ const Prototype = () => {
           {/* Action Buttons */}
           <div className="grid grid-cols-4 gap-3 p-4">
             <div className="text-center">
-              <div className="w-14 h-14 bg-mpesa-green rounded-full flex items-center justify-center mx-auto mb-2">
+              <div className="w-14 h-14 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
                 <ArrowUpDown className="text-white" size={20} />
               </div>
               <span className="text-xs text-gray-700 font-medium">SEND & REQUEST</span>
@@ -324,7 +325,7 @@ const Prototype = () => {
           <div className="p-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-semibold text-gray-900">M-PESA STATEMENTS</h3>
-              <Button variant="ghost" size="sm" className="text-mpesa-green hover:text-mpesa-darkgreen">
+              <Button variant="ghost" size="sm" className="text-green-600 hover:text-green-700">
                 SEE ALL
               </Button>
             </div>
@@ -349,7 +350,7 @@ const Prototype = () => {
           <div className="p-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-semibold text-gray-900">Financial Services</h3>
-              <Button variant="ghost" size="sm" className="text-mpesa-green hover:text-mpesa-darkgreen">
+              <Button variant="ghost" size="sm" className="text-green-600 hover:text-green-700">
                 View All
               </Button>
             </div>
@@ -369,8 +370,8 @@ const Prototype = () => {
           <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-sm bg-white border-t border-gray-200">
             <div className="grid grid-cols-4 p-2">
               <div className="text-center py-2">
-                <Home className="text-mpesa-green mx-auto mb-1" size={20} />
-                <span className="text-xs text-mpesa-green font-medium">HOME</span>
+                <Home className="text-green-600 mx-auto mb-1" size={20} />
+                <span className="text-xs text-green-600 font-medium">HOME</span>
               </div>
               <div className="text-center py-2">
                 <ArrowLeftRight className="text-gray-400 mx-auto mb-1" size={20} />
@@ -466,7 +467,7 @@ const Prototype = () => {
                     id="lock-duration"
                     value={lockDuration}
                     onChange={(e) => setLockDuration(e.target.value)}
-                    className="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-mpesa-green focus:border-transparent mb-4"
+                    className="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent mb-4"
                   >
                     <option value="30">30 Days</option>
                     <option value="90">90 Days</option>
