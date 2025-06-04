@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFeedback } from '@/hooks/use-feedback';
@@ -79,7 +78,10 @@ const Feedback = () => {
         <RadioGroupItem value={value} id={id} className="sr-only" />
         <Label
           htmlFor={id}
-          onClick={() => onValueChange(value)}
+          onClick={(e) => {
+            e.preventDefault();
+            onValueChange(value);
+          }}
           className={cn(
             "flex items-center justify-center w-full p-3 text-gray-700 rounded-lg border-2 cursor-pointer transition-all duration-200",
             isSelected 
@@ -109,6 +111,7 @@ const Feedback = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     // Only allow submission on step 3
     if (currentStep !== 3) {
@@ -316,7 +319,7 @@ const Feedback = () => {
 
           <Card id="feedback-form" className="border-0 shadow-lg rounded-xl overflow-hidden bg-white">
             <CardContent className="p-0">
-              <form onSubmit={handleSubmit} className="divide-y divide-gray-100">
+              <div className="divide-y divide-gray-100">
                 {/* Step 1: Demographic Information */}
                 <div className={`p-6 space-y-6 ${currentStep === 1 ? 'block' : 'hidden'}`}>
                   <div className="flex items-center gap-2 text-xl font-semibold text-gray-900 mb-6">
@@ -692,7 +695,8 @@ const Feedback = () => {
                     </Button>
                   ) : (
                     <Button
-                      type="submit"
+                      type="button"
+                      onClick={handleSubmit}
                       disabled={isSubmitting}
                       className="bg-green-600 hover:bg-green-700 text-white flex items-center justify-center gap-2"
                     >
@@ -717,7 +721,7 @@ const Feedback = () => {
                     </Button>
                   )}
                 </div>
-              </form>
+              </div>
             </CardContent>
           </Card>
         </div>
