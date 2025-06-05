@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,14 +31,10 @@ import { toast } from '@/components/ui/sonner';
 const Prototype = () => {
   const [selectedAccount, setSelectedAccount] = useState('main');
   const [balances, setBalances] = useState<Record<string, number>>({
-    main: 15000,
-    savings: 5000,
-    investments: 10000,
+    main: 100000, // Only initialize main account with 100,000
   });
   const [titles, setTitles] = useState<Record<string, string>>({
-    main: 'M-PESA',
-    savings: 'Savings',
-    investments: 'Investments',
+    main: 'M-PESA', // Only initialize main account
   });
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newAccountTitle, setNewAccountTitle] = useState('');
@@ -48,19 +45,25 @@ const Prototype = () => {
   const [transferAmount, setTransferAmount] = useState('');
   const [showLockModal, setShowLockModal] = useState(false);
   const [lockAmount, setLockAmount] = useState('');
-  const [lockDuration, setLockDuration] = useState('30');
-  const [customPenalty, setCustomPenalty] = useState('10');
+  const [lockYears, setLockYears] = useState('0');
+  const [lockMonths, setLockMonths] = useState('0');
+  const [lockDays, setLockDays] = useState('1');
+  const [customPenalty, setCustomPenalty] = useState('1');
   const [lockedFunds, setLockedFunds] = useState<Record<string, any>>({});
   const [showBalance, setShowBalance] = useState(true);
 
   const loadAccounts = () => {
     const storedTitles = localStorage.getItem('accountTitles');
     if (storedTitles) {
-      setTitles(JSON.parse(storedTitles));
+      const parsed = JSON.parse(storedTitles);
+      // Ensure main account always exists
+      setTitles({ main: 'M-PESA', ...parsed });
     }
     const storedBalances = localStorage.getItem('accountBalances');
     if (storedBalances) {
-      setBalances(JSON.parse(storedBalances));
+      const parsed = JSON.parse(storedBalances);
+      // Ensure main account always has at least 100,000
+      setBalances({ main: 100000, ...parsed });
     }
   };
 
@@ -70,18 +73,54 @@ const Prototype = () => {
   };
 
   const createNewAccount = () => {
-    if (newAccountTitle && !titles[newAccountTitle]) {
+    if (newAccountTitle && !Object.values(titles).includes(newAccountTitle)) {
       const newKey = newAccountTitle.toLowerCase().replace(/\s+/g, '');
       setTitles(prev => ({ ...prev, [newKey]: newAccountTitle }));
       setBalances(prev => ({ ...prev, [newKey]: 0 }));
       setSelectedAccount(newKey);
-      saveAccounts();
       setShowCreateModal(false);
       setNewAccountTitle('');
+      saveAccounts();
+    } else {
+      toast.error("Account name already exists or is invalid");
     }
   };
 
   const deleteAccount = () => {
+    if (selectedAccount === 'main') {
+      toast.error("Cannot delete the main M-PESA account");
+      setShowDeleteModal(false);
+      return;
+    }
+
+    // Check if account has locked funds
+    if (lockedFunds[selectedAccount]) {
+      const lockedAmount = lockedFunds[selectedAccount].amount;
+      const penalty = lockedFunds[selectedAccount].penalty;
+      const penaltyAmount = lockedAmount * (penalty / 100);
+      const netAmount = lockedAmount - penaltyAmount;
+      
+      toast.warning(`Account has locked funds! Penalty of KES ${penaltyAmount.toFixed(2)} will apply. Remaining KES ${netAmount.toFixed(2)} will go to main account.`);
+      
+      // Add net amount to main account
+      setBalances(prev => ({
+        ...prev,
+        main: (prev.main || 0) + netAmount + (balances[selectedAccount] || 0)
+      }));
+      
+      // Remove locked funds
+      const { [selectedAccount]: removedLock, ...restLocks } = lockedFunds;
+      setLockedFunds(restLocks);
+      saveLockedFunds(restLocks);
+    } else {
+      // Transfer available balance to main account
+      setBalances(prev => ({
+        ...prev,
+        main: (prev.main || 0) + (balances[selectedAccount] || 0)
+      }));
+    }
+
+    // Remove account
     const { [selectedAccount]: deletedTitle, ...restTitles } = titles;
     const { [selectedAccount]: deletedBalance, ...restBalances } = balances;
 
@@ -90,6 +129,7 @@ const Prototype = () => {
     setSelectedAccount('main');
     saveAccounts();
     setShowDeleteModal(false);
+    toast.success("Account deleted and funds transferred to main account");
   };
 
   const handleTransfer = () => {
@@ -116,7 +156,10 @@ const Prototype = () => {
     }
 
     // Check if funds are locked
-    if (lockedFunds[transferFromAccount] && lockedFunds[transferFromAccount].amount >= amount) {
+    const lockedAmount = lockedFunds[transferFromAccount]?.amount || 0;
+    const availableBalance = (balances[transferFromAccount] || 0) - lockedAmount;
+    
+    if (availableBalance < amount) {
       toast.error("Insufficient unlocked funds in source account");
       return;
     }
@@ -149,6 +192,22 @@ const Prototype = () => {
     setLockedFunds(updatedLockedFunds);
   };
 
+  const validateLockDuration = () => {
+    const years = parseInt(lockYears);
+    const months = parseInt(lockMonths);
+    const days = parseInt(lockDays);
+    
+    if (years === 0 && months === 0 && days === 0) {
+      return false;
+    }
+    
+    if (years === 0 && months === 0 && days < 1) {
+      return false;
+    }
+    
+    return true;
+  };
+
   const handleLockFunds = () => {
     const amount = parseFloat(lockAmount);
     const penalty = parseFloat(customPenalty);
@@ -158,18 +217,36 @@ const Prototype = () => {
       return;
     }
     
+    if (!validateLockDuration()) {
+      toast.error("Please enter a valid lock duration");
+      return;
+    }
+    
     if ((balances[selectedAccount] || 0) < amount) {
       toast.error("Insufficient funds to lock");
       return;
     }
     
-    if (penalty < 0 || penalty > 100) {
-      toast.error("Penalty must be between 0% and 100%");
+    if (penalty < 1 || penalty > 100) {
+      toast.error("Penalty must be between 1% and 100%");
       return;
     }
 
+    // Calculate lock duration
     const lockUntil = new Date();
-    lockUntil.setDate(lockUntil.getDate() + parseInt(lockDuration));
+    const years = parseInt(lockYears);
+    const months = parseInt(lockMonths);
+    const days = parseInt(lockDays);
+    
+    lockUntil.setFullYear(lockUntil.getFullYear() + years);
+    lockUntil.setMonth(lockUntil.getMonth() + months);
+    lockUntil.setDate(lockUntil.getDate() + days);
+
+    // Deduct the locked amount from the account balance
+    setBalances(prev => ({
+      ...prev,
+      [selectedAccount]: (prev[selectedAccount] || 0) - amount
+    }));
 
     const updatedLockedFunds = {
       ...lockedFunds,
@@ -181,35 +258,43 @@ const Prototype = () => {
     };
 
     saveLockedFunds(updatedLockedFunds);
+    saveAccounts();
     setShowLockModal(false);
     setLockAmount('');
-    setCustomPenalty('10');
+    setLockYears('0');
+    setLockMonths('0');
+    setLockDays('1');
+    setCustomPenalty('1');
     
     toast.success(`KES ${amount.toLocaleString()} locked until ${lockUntil.toLocaleDateString()}`);
   };
 
   const handleUnlockEarly = (account: string) => {
     if (lockedFunds[account]) {
-      const penaltyAmount = lockedFunds[account].amount * (lockedFunds[account].penalty / 100);
-      const netAmount = lockedFunds[account].amount - penaltyAmount;
+      const lockedAmount = lockedFunds[account].amount;
+      const penaltyRate = lockedFunds[account].penalty;
+      const penaltyAmount = lockedAmount * (penaltyRate / 100);
+      const netAmount = lockedAmount - penaltyAmount;
       
+      // Add the net amount back to the account
       setBalances(prev => ({
         ...prev,
         [account]: (prev[account] || 0) + netAmount
       }));
 
+      // Remove the lock
       const { [account]: removedLock, ...restLocks } = lockedFunds;
       saveLockedFunds(restLocks);
       saveAccounts();
       
-      toast.warning(`Funds unlocked early. Penalty: KES ${penaltyAmount.toFixed(2)}`);
+      toast.warning(`Funds unlocked early. Penalty: KES ${penaltyAmount.toFixed(2)}. Net received: KES ${netAmount.toFixed(2)}`);
     }
   };
 
   const getAvailableBalance = (account: string) => {
     const totalBalance = balances[account] || 0;
     const lockedAmount = lockedFunds[account]?.amount || 0;
-    return Math.max(0, totalBalance - lockedAmount);
+    return totalBalance; // Available balance is just the current balance (locked funds are already deducted)
   };
 
   const isLockExpired = (account: string) => {
@@ -230,6 +315,10 @@ const Prototype = () => {
     loadAccounts();
     loadLockedFunds();
   }, []);
+
+  useEffect(() => {
+    saveAccounts();
+  }, [balances, titles]);
 
   return (
     <Layout>
@@ -321,7 +410,7 @@ const Prototype = () => {
               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-2">
                   <span className="text-sm text-gray-600 flex items-center gap-1">
-                    Total Balance
+                    Available Balance
                     {lockedFunds[selectedAccount] && (
                       <Lock size={14} className="text-blue-600" />
                     )}
@@ -337,13 +426,6 @@ const Prototype = () => {
                   {displayBalance(selectedAccount)}
                 </div>
                 
-                {/* Available Balance */}
-                {lockedFunds[selectedAccount] && (
-                  <div className="text-sm text-gray-600 mb-4">
-                    Available: {showBalance ? `KES ${getAvailableBalance(selectedAccount).toLocaleString()}` : 'KES ***,***'}
-                  </div>
-                )}
-                
                 {/* Locked Funds Indicator */}
                 {lockedFunds[selectedAccount] && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
@@ -351,7 +433,7 @@ const Prototype = () => {
                       <div className="flex items-center gap-2">
                         <Lock className="text-blue-600" size={16} />
                         <span className="font-semibold text-blue-900">
-                          KES {lockedFunds[selectedAccount].amount.toLocaleString()}
+                          KES {lockedFunds[selectedAccount].amount.toLocaleString()} Locked
                         </span>
                       </div>
                       <span className="text-xs text-blue-700 bg-blue-100 px-2 py-1 rounded">
@@ -360,21 +442,19 @@ const Prototype = () => {
                     </div>
                     <div className="text-sm text-blue-700 mb-3">
                       {isLockExpired(selectedAccount) ? (
-                        <span className="text-green-600 font-medium">Lock expired - funds available</span>
+                        <span className="text-green-600 font-medium">Lock expired - funds available for unlock</span>
                       ) : (
                         `Locked until ${new Date(lockedFunds[selectedAccount].until).toLocaleDateString()}`
                       )}
                     </div>
-                    {!isLockExpired(selectedAccount) && (
-                      <Button
-                        onClick={() => handleUnlockEarly(selectedAccount)}
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-white h-8"
-                      >
-                        <Unlock size={14} className="mr-1" />
-                        Unlock Early ({lockedFunds[selectedAccount].penalty}% penalty)
-                      </Button>
-                    )}
+                    <Button
+                      onClick={() => handleUnlockEarly(selectedAccount)}
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700 text-white h-8"
+                    >
+                      <Unlock size={14} className="mr-1" />
+                      {isLockExpired(selectedAccount) ? 'Unlock Funds' : `Unlock Early (${lockedFunds[selectedAccount].penalty}% penalty)`}
+                    </Button>
                   </div>
                 )}
               </CardContent>
@@ -503,7 +583,19 @@ const Prototype = () => {
             <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
               <Card className="max-w-sm p-6">
                 <CardContent>
-                  <p className="mb-4">Are you sure you want to delete the account "{titles[selectedAccount]}"?</p>
+                  <p className="mb-4">
+                    Are you sure you want to delete the account "{titles[selectedAccount]}"?
+                    {lockedFunds[selectedAccount] && (
+                      <span className="block text-red-600 text-sm mt-2">
+                        This account has locked funds. Penalty will apply and remaining funds will go to main account.
+                      </span>
+                    )}
+                    {!lockedFunds[selectedAccount] && (
+                      <span className="block text-gray-600 text-sm mt-2">
+                        All funds will be transferred to your main account.
+                      </span>
+                    )}
+                  </p>
                   <div className="flex justify-end gap-2">
                     <Button variant="ghost" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
                     <Button variant="destructive" onClick={deleteAccount}>Delete Account</Button>
@@ -604,20 +696,42 @@ const Prototype = () => {
                     </div>
                     
                     <div>
-                      <Label htmlFor="lock-duration" className="block mb-2">Lock Duration</Label>
-                      <select
-                        id="lock-duration"
-                        value={lockDuration}
-                        onChange={(e) => setLockDuration(e.target.value)}
-                        className="w-full p-3 border border-gray-200 rounded-lg"
-                      >
-                        <option value="1">1 Day</option>
-                        <option value="7">7 Days</option>
-                        <option value="30">30 Days</option>
-                        <option value="90">90 Days</option>
-                        <option value="180">180 Days</option>
-                        <option value="365">365 Days</option>
-                      </select>
+                      <Label className="block mb-2">Lock Duration</Label>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <Label htmlFor="lock-years" className="block mb-1 text-xs">Years</Label>
+                          <Input
+                            id="lock-years"
+                            type="number"
+                            min="0"
+                            max="10"
+                            value={lockYears}
+                            onChange={(e) => setLockYears(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="lock-months" className="block mb-1 text-xs">Months</Label>
+                          <Input
+                            id="lock-months"
+                            type="number"
+                            min="0"
+                            max="11"
+                            value={lockMonths}
+                            onChange={(e) => setLockMonths(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="lock-days" className="block mb-1 text-xs">Days</Label>
+                          <Input
+                            id="lock-days"
+                            type="number"
+                            min={parseInt(lockYears) === 0 && parseInt(lockMonths) === 0 ? "1" : "0"}
+                            max="30"
+                            value={lockDays}
+                            onChange={(e) => setLockDays(e.target.value)}
+                          />
+                        </div>
+                      </div>
                     </div>
                     
                     <div>
@@ -625,14 +739,14 @@ const Prototype = () => {
                       <Input
                         id="custom-penalty"
                         type="number"
-                        placeholder="10"
+                        placeholder="1"
                         value={customPenalty}
                         onChange={(e) => setCustomPenalty(e.target.value)}
-                        min="0"
+                        min="1"
                         max="100"
                       />
                       <p className="text-xs text-gray-500 mt-1">
-                        Penalty for early withdrawal (0-100%)
+                        Penalty for early withdrawal (1-100%)
                       </p>
                     </div>
                   </div>

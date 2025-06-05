@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
   };
 
   const handleHomeClick = () => {
-    navigate('/');
+    navigate('/home');
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
@@ -56,6 +56,29 @@ const Navbar: React.FC = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
   };
+
+  // Hide navigation buttons on feedback page
+  const isFeedbackPage = location.pathname === '/feedback' || location.pathname === '/';
+
+  if (isFeedbackPage) {
+    return (
+      <nav 
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled ? 'bg-white shadow-md backdrop-blur-sm' : 'bg-white/80 backdrop-blur-sm'
+        }`}
+      >
+        <div className="container mx-auto flex items-center justify-between py-3 px-4">
+          {/* Logo only */}
+          <div className="flex items-center gap-2">
+            <div className="bg-black p-1.5 rounded-lg">
+              <Wallet size={20} className="text-white" />
+            </div>
+            <span className="text-xl font-bold text-black">TengaPesa</span>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav 
@@ -87,7 +110,7 @@ const Navbar: React.FC = () => {
             onClick={handleHomeClick}
             variant="ghost" 
             className={`text-black hover:text-black hover:bg-black/5 flex gap-2 items-center transition-all duration-200 ${
-              isActive('/') ? 'bg-black/5 text-black' : ''
+              isActive('/home') ? 'bg-black/5 text-black' : ''
             }`}
           >
             <Home size={18} />
@@ -132,7 +155,7 @@ const Navbar: React.FC = () => {
               onClick={handleHomeClick}
               variant="ghost" 
               className={`w-full text-black justify-start hover:bg-black/5 hover:text-black flex gap-2 items-center ${
-                isActive('/') ? 'bg-black/5 text-black' : ''
+                isActive('/home') ? 'bg-black/5 text-black' : ''
               }`}
             >
               <Home size={18} />

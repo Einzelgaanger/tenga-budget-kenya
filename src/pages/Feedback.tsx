@@ -202,9 +202,9 @@ const Feedback = () => {
           description: "Your responses have been recorded successfully."
         });
         
-        // Reset form and navigate to home
+        // Reset form and redirect to feedback page at the top
         resetForm();
-        navigate('/');
+        navigate('/feedback');
         
         // Scroll to top after navigation
         setTimeout(() => {
