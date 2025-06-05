@@ -164,25 +164,25 @@ const Prototype = () => {
       localStorage.setItem('lockedFunds', JSON.stringify(restLocks));
     }
 
-    const newBalances = {
+    const newBalances: Record<string, number> = {
       ...balances,
       main: (balances.main || 0) + totalTransferAmount
     };
     
     const { [selectedAccount]: deletedTitle, ...restTitles } = titles;
     const { [selectedAccount]: deletedDescription, ...restDescriptions } = descriptions;
-    const { [selectedAccount]: deletedBalance, ...restBalances } = newBalances;
+    const { [selectedAccount]: deletedBalance, ...remainingBalances } = newBalances;
 
-    delete restBalances[selectedAccount];
+    delete remainingBalances[selectedAccount];
 
     setTitles(restTitles);
     setDescriptions(restDescriptions);
-    setBalances(restBalances);
+    setBalances(remainingBalances);
     setSelectedAccount('main');
     
     localStorage.setItem('accountTitles', JSON.stringify(restTitles));
     localStorage.setItem('accountDescriptions', JSON.stringify(restDescriptions));
-    localStorage.setItem('accountBalances', JSON.stringify(restBalances));
+    localStorage.setItem('accountBalances', JSON.stringify(remainingBalances));
     
     setShowDeleteModal(false);
     
