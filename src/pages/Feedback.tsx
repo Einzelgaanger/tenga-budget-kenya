@@ -282,15 +282,7 @@ const Feedback = () => {
                       We appreciate your time and valuable input in helping us improve TengaPesa.
                     </p>
                     
-                    <div className="pt-4">
-                      <Button
-                        onClick={handleAlreadySubmittedAction}
-                        variant="outline"
-                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                      >
-                        Reset & Submit Again (for testing)
-                      </Button>
-                    </div>
+                    
                   </div>
                 </div>
               </CardContent>
