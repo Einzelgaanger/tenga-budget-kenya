@@ -62,11 +62,11 @@ const Footer: React.FC = () => {
             <div className="space-y-3">
               <span className="flex items-center text-sm text-gray-300/80 hover:text-white transition-colors">
                 <Mail size={16} className="mr-2 text-gray-400" />
-                contact@tengapesa.co.ke
+                binfred.ke@gmail.com
               </span>
               <span className="flex items-center text-sm text-gray-300/80 hover:text-white transition-colors">
                 <Phone size={16} className="mr-2 text-gray-400" />
-                +254 700 123 456
+                +254 700 8611 29
               </span>
               <span className="flex items-center text-sm text-gray-300/80 hover:text-white transition-colors">
                 <MapPin size={16} className="mr-2 text-gray-400" />
