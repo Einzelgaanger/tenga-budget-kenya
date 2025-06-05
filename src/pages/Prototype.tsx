@@ -34,10 +34,10 @@ import { toast } from '@/components/ui/sonner';
 const Prototype = () => {
   const [selectedAccount, setSelectedAccount] = useState('main');
   const [balances, setBalances] = useState<Record<string, number>>({
-    main: 100000, // Only initialize main account with 100,000
+    main: 100000,
   });
   const [titles, setTitles] = useState<Record<string, string>>({
-    main: 'M-PESA', // Only initialize main account
+    main: 'M-PESA',
   });
   const [descriptions, setDescriptions] = useState<Record<string, string>>({
     main: 'Main M-PESA account for all transactions',
@@ -131,7 +131,6 @@ const Prototype = () => {
     setNewAccountTitle('');
     setNewAccountDescription('');
     
-    // Save immediately
     localStorage.setItem('accountTitles', JSON.stringify(newTitles));
     localStorage.setItem('accountDescriptions', JSON.stringify(newDescriptions));
     localStorage.setItem('accountBalances', JSON.stringify(newBalances));
@@ -149,7 +148,6 @@ const Prototype = () => {
     const accountBalance = balances[selectedAccount] || 0;
     let totalTransferAmount = accountBalance;
 
-    // Check if account has locked funds
     if (lockedFunds[selectedAccount]) {
       const lockedAmount = lockedFunds[selectedAccount].amount;
       const penalty = lockedFunds[selectedAccount].penalty;
@@ -161,24 +159,20 @@ const Prototype = () => {
       showEnhancedToast('warning', 'Locked Funds Penalty Applied', 
         `Penalty of KES ${penaltyAmount.toFixed(2)} applied. Net transfer: KES ${totalTransferAmount.toFixed(2)}`);
       
-      // Remove locked funds
       const { [selectedAccount]: removedLock, ...restLocks } = lockedFunds;
       setLockedFunds(restLocks);
       localStorage.setItem('lockedFunds', JSON.stringify(restLocks));
     }
 
-    // Transfer all funds to main account
     const newBalances = {
       ...balances,
       main: (balances.main || 0) + totalTransferAmount
     };
     
-    // Remove the account from all records
     const { [selectedAccount]: deletedTitle, ...restTitles } = titles;
     const { [selectedAccount]: deletedDescription, ...restDescriptions } = descriptions;
     const { [selectedAccount]: deletedBalance, ...restBalances } = newBalances;
 
-    // Remove the deleted account from restBalances
     delete restBalances[selectedAccount];
 
     setTitles(restTitles);
@@ -186,7 +180,6 @@ const Prototype = () => {
     setBalances(restBalances);
     setSelectedAccount('main');
     
-    // Save to localStorage
     localStorage.setItem('accountTitles', JSON.stringify(restTitles));
     localStorage.setItem('accountDescriptions', JSON.stringify(restDescriptions));
     localStorage.setItem('accountBalances', JSON.stringify(restBalances));
@@ -220,7 +213,6 @@ const Prototype = () => {
       return;
     }
 
-    // Check if funds are locked
     const lockedAmount = lockedFunds[transferFromAccount]?.amount || 0;
     const availableBalance = (balances[transferFromAccount] || 0) - lockedAmount;
     
@@ -230,7 +222,6 @@ const Prototype = () => {
       return;
     }
 
-    // Perform transfer
     const newBalances = {
       ...balances,
       [transferFromAccount]: (balances[transferFromAccount] || 0) - amount,
@@ -301,7 +292,6 @@ const Prototype = () => {
       return;
     }
 
-    // Calculate lock duration
     const lockUntil = new Date();
     const years = parseInt(lockYears);
     const months = parseInt(lockMonths);
@@ -311,7 +301,6 @@ const Prototype = () => {
     lockUntil.setMonth(lockUntil.getMonth() + months);
     lockUntil.setDate(lockUntil.getDate() + days);
 
-    // Deduct the locked amount from the account balance
     const newBalances = {
       ...balances,
       [selectedAccount]: (balances[selectedAccount] || 0) - amount
@@ -347,7 +336,6 @@ const Prototype = () => {
       const penaltyAmount = lockedAmount * (penaltyRate / 100);
       const netAmount = lockedAmount - penaltyAmount;
       
-      // Add the net amount back to the account
       const newBalances = {
         ...balances,
         [account]: (balances[account] || 0) + netAmount
@@ -355,7 +343,6 @@ const Prototype = () => {
       setBalances(newBalances);
       localStorage.setItem('accountBalances', JSON.stringify(newBalances));
 
-      // Remove the lock
       const { [account]: removedLock, ...restLocks } = lockedFunds;
       saveLockedFunds(restLocks);
       
