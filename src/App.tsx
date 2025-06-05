@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { FeedbackProvider } from "@/context/FeedbackContext";
 import { AuthProvider } from "@/context/AuthContext";
+import Home from "./pages/Home";
 import Feedback from "./pages/Feedback";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
@@ -29,7 +30,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/feedback" replace />} />
+      <Route path="/" element={<Feedback />} />
+      <Route path="/home" element={<Home />} />
       <Route path="/feedback" element={<Feedback />} />
       <Route path="/admin-login" element={<AdminLogin />} />
       <Route path="/prototype" element={<Prototype />} />
