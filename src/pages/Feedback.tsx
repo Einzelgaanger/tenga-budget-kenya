@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFeedback } from '@/hooks/use-feedback';
 import Layout from '@/components/Layout';
@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
-import { ChevronRight, CheckCircle2, User, Briefcase, Wallet, PiggyBank, Info, Star, Shield, Clock } from 'lucide-react';
+import { ChevronRight, CheckCircle2, User, Briefcase, Wallet, PiggyBank, Info, Star, Shield, Clock, AlertTriangle } from 'lucide-react';
 import type { FeedbackData } from '@/types/feedback';
 
 type FormData = Omit<FeedbackData, 'id' | 'timestamp'>;
@@ -20,6 +20,9 @@ type FormData = Omit<FeedbackData, 'id' | 'timestamp'>;
 const Feedback = () => {
   const navigate = useNavigate();
   const { addFeedback } = useFeedback();
+  
+  // Check if user has already submitted feedback
+  const [hasAlreadySubmitted, setHasAlreadySubmitted] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState<FormData>({
@@ -63,6 +66,14 @@ const Feedback = () => {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Check submission status on component mount
+  useEffect(() => {
+    const submissionStatus = localStorage.getItem('tengapesa_feedback_submitted');
+    if (submissionStatus === 'true') {
+      setHasAlreadySubmitted(true);
+    }
+  }, []);
 
   // Custom RadioOption component for better visual feedback
   const RadioOption = ({ value, currentValue, onValueChange, children, id }: {
@@ -154,6 +165,21 @@ const Feedback = () => {
     setCurrentStep(1);
   };
 
+  const handleAlreadySubmittedAction = () => {
+    // Clear localStorage flag
+    localStorage.removeItem('tengapesa_feedback_submitted');
+    // Reset state
+    setHasAlreadySubmitted(false);
+    // Reset form
+    resetForm();
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    toast.info("Form reset", {
+      description: "You can now submit feedback again."
+    });
+  };
+
   const handleSubmit = async () => {
     console.log('Submit button clicked - handling submission');
     
@@ -162,7 +188,7 @@ const Feedback = () => {
         !formData.demographic.occupation || 
         !formData.demographic.incomeRange) {
       toast.error("Please fill in all required demographic information");
-      setCurrentStep(1); // Go back to step 1 if validation fails
+      setCurrentStep(1);
       return;
     }
 
@@ -198,15 +224,20 @@ const Feedback = () => {
       const success = await addFeedback(finalFormData);
       
       if (success) {
+        // Mark as submitted in localStorage
+        localStorage.setItem('tengapesa_feedback_submitted', 'true');
+        
         toast.success("Thank you for your feedback!", {
           description: "Your responses have been recorded successfully."
         });
         
-        // Reset form and redirect to feedback page at the top
-        resetForm();
-        navigate('/feedback');
+        // Set the submitted state
+        setHasAlreadySubmitted(true);
         
-        // Scroll to top after navigation
+        // Reset form
+        resetForm();
+        
+        // Scroll to top after submission
         setTimeout(() => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 100);
@@ -224,7 +255,6 @@ const Feedback = () => {
   const nextStep = () => {
     if (currentStep < 3) {
       setCurrentStep(prev => prev + 1);
-      // Scroll to the form section instead of top
       setTimeout(() => {
         const formElement = document.getElementById('feedback-form');
         if (formElement) {
@@ -237,7 +267,6 @@ const Feedback = () => {
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1);
-      // Scroll to the form section instead of top
       setTimeout(() => {
         const formElement = document.getElementById('feedback-form');
         if (formElement) {
@@ -246,6 +275,64 @@ const Feedback = () => {
       }, 100);
     }
   };
+
+  // If user has already submitted, show thank you message
+  if (hasAlreadySubmitted) {
+    return (
+      <Layout>
+        <div className="min-h-screen py-8 px-4 sm:px-6">
+          <div className="max-w-2xl mx-auto">
+            <Card className="border-2 border-green-100 bg-gradient-to-br from-green-50 via-green-25 to-white shadow-lg">
+              <CardContent className="p-8 text-center">
+                <div className="space-y-6">
+                  <div className="flex justify-center">
+                    <div className="bg-green-600 p-4 rounded-full shadow-lg">
+                      <CheckCircle2 className="text-white" size={48} />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <h1 className="text-3xl font-bold text-gray-900">
+                      Thank You!
+                    </h1>
+                    <p className="text-lg text-gray-700">
+                      Your feedback has been successfully submitted and recorded.
+                    </p>
+                  </div>
+
+                  <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <AlertTriangle className="text-yellow-600" size={20} />
+                      <h3 className="font-semibold text-yellow-800">Already Submitted</h3>
+                    </div>
+                    <p className="text-sm text-yellow-700">
+                      You have already completed this questionnaire. Each person can only submit feedback once to ensure data quality.
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <p className="text-gray-600">
+                      We appreciate your time and valuable input in helping us improve TengaPesa.
+                    </p>
+                    
+                    <div className="pt-4">
+                      <Button
+                        onClick={handleAlreadySubmittedAction}
+                        variant="outline"
+                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                      >
+                        Reset & Submit Again (for testing)
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   // Progress indicator based on current step
   const Progress = () => (
@@ -375,11 +462,7 @@ const Feedback = () => {
                     {/* Age Group */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">Age Group</Label>
-                      <RadioGroup
-                        value={formData.demographic.ageGroup}
-                        onValueChange={(value) => updateFormField('demographic', 'ageGroup', value)}
-                        className="grid grid-cols-2 sm:grid-cols-3 gap-4"
-                      >
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         {['18-24', '25-34', '35-44', '45-54', '55+'].map((age) => (
                           <RadioOption
                             key={age}
@@ -391,17 +474,13 @@ const Feedback = () => {
                             {age}
                           </RadioOption>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </div>
 
                     {/* Occupation */}
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">Occupation</Label>
-                      <RadioGroup
-                        value={formData.demographic.occupation}
-                        onValueChange={(value) => updateFormField('demographic', 'occupation', value)}
-                        className="grid grid-cols-2 gap-4"
-                      >
+                      <div className="grid grid-cols-2 gap-4">
                         {['Student', 'Employed', 'Self-employed', 'Business Owner', 'Other'].map((occ) => (
                           <RadioOption
                             key={occ}
@@ -413,7 +492,7 @@ const Feedback = () => {
                             {occ}
                           </RadioOption>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </div>
 
                     {formData.demographic.occupation === 'Other' && (
@@ -433,11 +512,7 @@ const Feedback = () => {
 
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">Monthly Income Range (KES)</Label>
-                      <RadioGroup
-                        value={formData.demographic.incomeRange}
-                        onValueChange={(value) => updateFormField('demographic', 'incomeRange', value)}
-                        className="grid grid-cols-2 gap-4"
-                      >
+                      <div className="grid grid-cols-2 gap-4">
                         {['Below 20,000', '20,000 - 50,000', '50,000 - 100,000', 'Above 100,000'].map((range) => (
                           <RadioOption
                             key={range}
@@ -449,7 +524,7 @@ const Feedback = () => {
                             {range}
                           </RadioOption>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </div>
 
                     <div className="space-y-4">
@@ -486,11 +561,7 @@ const Feedback = () => {
                   <div className="space-y-6">
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">Do you follow a monthly budget?</Label>
-                      <RadioGroup
-                        value={formData.financialHabits.followsBudget}
-                        onValueChange={(value) => updateFormField('financialHabits', 'followsBudget', value)}
-                        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-                      >
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {['Always', 'Sometimes', 'Never'].map((option) => (
                           <RadioOption
                             key={option}
@@ -502,7 +573,7 @@ const Feedback = () => {
                             {option}
                           </RadioOption>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </div>
 
                     <div className="space-y-4">
@@ -536,11 +607,7 @@ const Feedback = () => {
 
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">How often do you run out of money before month-end?</Label>
-                      <RadioGroup
-                        value={formData.financialHabits.runsOutOfMoney}
-                        onValueChange={(value) => updateFormField('financialHabits', 'runsOutOfMoney', value)}
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                      >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {['Often', 'Sometimes', 'Rarely', 'Never'].map((option) => (
                           <RadioOption
                             key={option}
@@ -552,16 +619,12 @@ const Feedback = () => {
                             {option}
                           </RadioOption>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </div>
 
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">Do you regularly save money?</Label>
-                      <RadioGroup
-                        value={formData.financialHabits.savesMoney}
-                        onValueChange={(value) => updateFormField('financialHabits', 'savesMoney', value)}
-                        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-                      >
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {['Yes', 'Sometimes', 'No'].map((option) => (
                           <RadioOption
                             key={option}
@@ -573,7 +636,7 @@ const Feedback = () => {
                             {option}
                           </RadioOption>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -590,11 +653,7 @@ const Feedback = () => {
                       <Label className="text-base font-medium text-gray-900">
                         Would you use TengaPesa to help manage your M-PESA spending?
                       </Label>
-                      <RadioGroup
-                        value={formData.reactionToTengaPesa.wouldUseFeature}
-                        onValueChange={(value) => updateFormField('reactionToTengaPesa', 'wouldUseFeature', value)}
-                        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-                      >
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {['Definitely', 'Maybe', 'No'].map((option) => (
                           <RadioOption
                             key={option}
@@ -606,18 +665,14 @@ const Feedback = () => {
                             {option}
                           </RadioOption>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </div>
 
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">
                         Would you find withdrawal rules helpful for managing your spending?
                       </Label>
-                      <RadioGroup
-                        value={formData.reactionToTengaPesa.findWithdrawalRulesHelpful}
-                        onValueChange={(value) => updateFormField('reactionToTengaPesa', 'findWithdrawalRulesHelpful', value)}
-                        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-                      >
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {['Very Helpful', 'Somewhat Helpful', 'Not Helpful'].map((option) => (
                           <RadioOption
                             key={option}
@@ -629,18 +684,14 @@ const Feedback = () => {
                             {option}
                           </RadioOption>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </div>
 
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">
                         How do you feel about small penalties for breaking spending rules?
                       </Label>
-                      <RadioGroup
-                        value={formData.reactionToTengaPesa.feelingAboutPenalty}
-                        onValueChange={(value) => updateFormField('reactionToTengaPesa', 'feelingAboutPenalty', value)}
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                      >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {['Acceptable as motivation', 'Prefer no penalties', 'Need more information', 'Not sure'].map((option) => (
                           <RadioOption
                             key={option}
@@ -652,18 +703,14 @@ const Feedback = () => {
                             {option}
                           </RadioOption>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </div>
 
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">
                         Would you like to receive insights about your spending habits?
                       </Label>
-                      <RadioGroup
-                        value={formData.reactionToTengaPesa.wantsSpendingInsights}
-                        onValueChange={(value) => updateFormField('reactionToTengaPesa', 'wantsSpendingInsights', value)}
-                        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-                      >
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {['Yes, regularly', 'Sometimes', 'No'].map((option) => (
                           <RadioOption
                             key={option}
@@ -675,18 +722,14 @@ const Feedback = () => {
                             {option}
                           </RadioOption>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </div>
 
                     <div className="space-y-4">
                       <Label className="text-base font-medium text-gray-900">
                         Do you think TengaPesa would help you manage your money better?
                       </Label>
-                      <RadioGroup
-                        value={formData.finalThoughts.thinksTengaPesaHelps}
-                        onValueChange={(value) => updateFormField('finalThoughts', 'thinksTengaPesaHelps', value)}
-                        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-                      >
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {['Yes, definitely', 'Maybe', 'No'].map((option) => (
                           <RadioOption
                             key={option}
@@ -698,7 +741,7 @@ const Feedback = () => {
                             {option}
                           </RadioOption>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </div>
 
                     <div className="space-y-4">

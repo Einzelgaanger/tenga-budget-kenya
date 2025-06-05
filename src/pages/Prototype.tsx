@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   User, 
   Bell, 
@@ -23,7 +23,10 @@ import {
   ArrowLeftRight,
   BarChart3,
   Grid3X3,
-  Send
+  Send,
+  AlertTriangle,
+  CheckCircle,
+  Info
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { toast } from '@/components/ui/sonner';
@@ -36,8 +39,12 @@ const Prototype = () => {
   const [titles, setTitles] = useState<Record<string, string>>({
     main: 'M-PESA', // Only initialize main account
   });
+  const [descriptions, setDescriptions] = useState<Record<string, string>>({
+    main: 'Main M-PESA account for all transactions',
+  });
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newAccountTitle, setNewAccountTitle] = useState('');
+  const [newAccountDescription, setNewAccountDescription] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [transferFromAccount, setTransferFromAccount] = useState('');
@@ -56,102 +63,160 @@ const Prototype = () => {
     const storedTitles = localStorage.getItem('accountTitles');
     if (storedTitles) {
       const parsed = JSON.parse(storedTitles);
-      // Ensure main account always exists
       setTitles({ main: 'M-PESA', ...parsed });
     }
+    
+    const storedDescriptions = localStorage.getItem('accountDescriptions');
+    if (storedDescriptions) {
+      const parsed = JSON.parse(storedDescriptions);
+      setDescriptions({ main: 'Main M-PESA account for all transactions', ...parsed });
+    }
+    
     const storedBalances = localStorage.getItem('accountBalances');
     if (storedBalances) {
       const parsed = JSON.parse(storedBalances);
-      // Ensure main account always has at least 100,000
       setBalances({ main: 100000, ...parsed });
     }
   };
 
   const saveAccounts = () => {
     localStorage.setItem('accountTitles', JSON.stringify(titles));
+    localStorage.setItem('accountDescriptions', JSON.stringify(descriptions));
     localStorage.setItem('accountBalances', JSON.stringify(balances));
   };
 
-  const createNewAccount = () => {
-    if (newAccountTitle && !Object.values(titles).includes(newAccountTitle)) {
-      const newKey = newAccountTitle.toLowerCase().replace(/\s+/g, '');
-      setTitles(prev => ({ ...prev, [newKey]: newAccountTitle }));
-      setBalances(prev => ({ ...prev, [newKey]: 0 }));
-      setSelectedAccount(newKey);
-      setShowCreateModal(false);
-      setNewAccountTitle('');
-      saveAccounts();
+  const showEnhancedToast = (type: 'success' | 'error' | 'warning' | 'info', title: string, description?: string) => {
+    const config = {
+      success: { icon: <CheckCircle className="h-4 w-4" />, className: 'border-green-200 bg-green-50 text-green-800' },
+      error: { icon: <AlertTriangle className="h-4 w-4" />, className: 'border-red-200 bg-red-50 text-red-800' },
+      warning: { icon: <AlertTriangle className="h-4 w-4" />, className: 'border-yellow-200 bg-yellow-50 text-yellow-800' },
+      info: { icon: <Info className="h-4 w-4" />, className: 'border-blue-200 bg-blue-50 text-blue-800' }
+    };
+
+    const toastConfig = config[type];
+    
+    if (type === 'success') {
+      toast.success(title, { description });
+    } else if (type === 'error') {
+      toast.error(title, { description });
+    } else if (type === 'warning') {
+      toast.warning(title, { description });
     } else {
-      toast.error("Account name already exists or is invalid");
+      toast.info(title, { description });
     }
+  };
+
+  const createNewAccount = () => {
+    if (!newAccountTitle.trim()) {
+      showEnhancedToast('error', 'Validation Error', 'Account title is required');
+      return;
+    }
+
+    if (Object.values(titles).includes(newAccountTitle)) {
+      showEnhancedToast('error', 'Account Exists', 'An account with this name already exists');
+      return;
+    }
+
+    const newKey = newAccountTitle.toLowerCase().replace(/\s+/g, '');
+    
+    const newTitles = { ...titles, [newKey]: newAccountTitle };
+    const newDescriptions = { ...descriptions, [newKey]: newAccountDescription.trim() || 'No description provided' };
+    const newBalances = { ...balances, [newKey]: 0 };
+    
+    setTitles(newTitles);
+    setDescriptions(newDescriptions);
+    setBalances(newBalances);
+    setSelectedAccount(newKey);
+    setShowCreateModal(false);
+    setNewAccountTitle('');
+    setNewAccountDescription('');
+    
+    // Save immediately
+    localStorage.setItem('accountTitles', JSON.stringify(newTitles));
+    localStorage.setItem('accountDescriptions', JSON.stringify(newDescriptions));
+    localStorage.setItem('accountBalances', JSON.stringify(newBalances));
+    
+    showEnhancedToast('success', 'Account Created', `${newAccountTitle} account has been created successfully`);
   };
 
   const deleteAccount = () => {
     if (selectedAccount === 'main') {
-      toast.error("Cannot delete the main M-PESA account");
+      showEnhancedToast('error', 'Cannot Delete Main Account', 'The main M-PESA account cannot be deleted');
       setShowDeleteModal(false);
       return;
     }
+
+    const accountBalance = balances[selectedAccount] || 0;
+    let totalTransferAmount = accountBalance;
 
     // Check if account has locked funds
     if (lockedFunds[selectedAccount]) {
       const lockedAmount = lockedFunds[selectedAccount].amount;
       const penalty = lockedFunds[selectedAccount].penalty;
       const penaltyAmount = lockedAmount * (penalty / 100);
-      const netAmount = lockedAmount - penaltyAmount;
+      const netLockedAmount = lockedAmount - penaltyAmount;
       
-      toast.warning(`Account has locked funds! Penalty of KES ${penaltyAmount.toFixed(2)} will apply. Remaining KES ${netAmount.toFixed(2)} will go to main account.`);
+      totalTransferAmount += netLockedAmount;
       
-      // Add net amount to main account
-      setBalances(prev => ({
-        ...prev,
-        main: (prev.main || 0) + netAmount + (balances[selectedAccount] || 0)
-      }));
+      showEnhancedToast('warning', 'Locked Funds Penalty Applied', 
+        `Penalty of KES ${penaltyAmount.toFixed(2)} applied. Net transfer: KES ${totalTransferAmount.toFixed(2)}`);
       
       // Remove locked funds
       const { [selectedAccount]: removedLock, ...restLocks } = lockedFunds;
       setLockedFunds(restLocks);
-      saveLockedFunds(restLocks);
-    } else {
-      // Transfer available balance to main account
-      setBalances(prev => ({
-        ...prev,
-        main: (prev.main || 0) + (balances[selectedAccount] || 0)
-      }));
+      localStorage.setItem('lockedFunds', JSON.stringify(restLocks));
     }
 
-    // Remove account
+    // Transfer all funds to main account
+    const newBalances = {
+      ...balances,
+      main: (balances.main || 0) + totalTransferAmount
+    };
+    
+    // Remove the account from all records
     const { [selectedAccount]: deletedTitle, ...restTitles } = titles;
-    const { [selectedAccount]: deletedBalance, ...restBalances } = balances;
+    const { [selectedAccount]: deletedDescription, ...restDescriptions } = descriptions;
+    const { [selectedAccount]: deletedBalance, ...restBalances } = newBalances;
+
+    // Remove the deleted account from restBalances
+    delete restBalances[selectedAccount];
 
     setTitles(restTitles);
+    setDescriptions(restDescriptions);
     setBalances(restBalances);
     setSelectedAccount('main');
-    saveAccounts();
+    
+    // Save to localStorage
+    localStorage.setItem('accountTitles', JSON.stringify(restTitles));
+    localStorage.setItem('accountDescriptions', JSON.stringify(restDescriptions));
+    localStorage.setItem('accountBalances', JSON.stringify(restBalances));
+    
     setShowDeleteModal(false);
-    toast.success("Account deleted and funds transferred to main account");
+    
+    showEnhancedToast('success', 'Account Deleted', 
+      `${deletedTitle} deleted successfully. KES ${totalTransferAmount.toLocaleString()} transferred to main account`);
   };
 
   const handleTransfer = () => {
     const amount = parseFloat(transferAmount);
     
     if (!transferFromAccount || !transferToAccount) {
-      toast.error("Please select both accounts");
+      showEnhancedToast('error', 'Invalid Selection', 'Please select both source and destination accounts');
       return;
     }
     
     if (transferFromAccount === transferToAccount) {
-      toast.error("Cannot transfer to the same account");
+      showEnhancedToast('error', 'Invalid Transfer', 'Cannot transfer to the same account');
       return;
     }
     
     if (!amount || amount <= 0) {
-      toast.error("Please enter a valid amount");
+      showEnhancedToast('error', 'Invalid Amount', 'Please enter a valid transfer amount');
       return;
     }
     
     if ((balances[transferFromAccount] || 0) < amount) {
-      toast.error("Insufficient funds in source account");
+      showEnhancedToast('error', 'Insufficient Funds', 'Not enough balance in source account');
       return;
     }
 
@@ -160,24 +225,28 @@ const Prototype = () => {
     const availableBalance = (balances[transferFromAccount] || 0) - lockedAmount;
     
     if (availableBalance < amount) {
-      toast.error("Insufficient unlocked funds in source account");
+      showEnhancedToast('error', 'Insufficient Available Funds', 
+        `Only KES ${availableBalance.toLocaleString()} available (KES ${lockedAmount.toLocaleString()} locked)`);
       return;
     }
 
     // Perform transfer
-    setBalances(prev => ({
-      ...prev,
-      [transferFromAccount]: (prev[transferFromAccount] || 0) - amount,
-      [transferToAccount]: (prev[transferToAccount] || 0) + amount
-    }));
+    const newBalances = {
+      ...balances,
+      [transferFromAccount]: (balances[transferFromAccount] || 0) - amount,
+      [transferToAccount]: (balances[transferToAccount] || 0) + amount
+    };
+    
+    setBalances(newBalances);
+    localStorage.setItem('accountBalances', JSON.stringify(newBalances));
 
-    saveAccounts();
     setShowTransferModal(false);
     setTransferFromAccount('');
     setTransferToAccount('');
     setTransferAmount('');
     
-    toast.success(`KES ${amount.toLocaleString()} transferred successfully from ${titles[transferFromAccount]} to ${titles[transferToAccount]}`);
+    showEnhancedToast('success', 'Transfer Successful', 
+      `KES ${amount.toLocaleString()} transferred from ${titles[transferFromAccount]} to ${titles[transferToAccount]}`);
   };
 
   const loadLockedFunds = () => {
@@ -213,22 +282,22 @@ const Prototype = () => {
     const penalty = parseFloat(customPenalty);
     
     if (!amount || amount <= 0) {
-      toast.error("Please enter a valid amount");
+      showEnhancedToast('error', 'Invalid Amount', 'Please enter a valid amount to lock');
       return;
     }
     
     if (!validateLockDuration()) {
-      toast.error("Please enter a valid lock duration");
+      showEnhancedToast('error', 'Invalid Duration', 'Please enter a valid lock duration (minimum 1 day)');
       return;
     }
     
     if ((balances[selectedAccount] || 0) < amount) {
-      toast.error("Insufficient funds to lock");
+      showEnhancedToast('error', 'Insufficient Funds', 'Not enough balance to lock this amount');
       return;
     }
     
     if (penalty < 1 || penalty > 100) {
-      toast.error("Penalty must be between 1% and 100%");
+      showEnhancedToast('error', 'Invalid Penalty', 'Penalty must be between 1% and 100%');
       return;
     }
 
@@ -243,10 +312,12 @@ const Prototype = () => {
     lockUntil.setDate(lockUntil.getDate() + days);
 
     // Deduct the locked amount from the account balance
-    setBalances(prev => ({
-      ...prev,
-      [selectedAccount]: (prev[selectedAccount] || 0) - amount
-    }));
+    const newBalances = {
+      ...balances,
+      [selectedAccount]: (balances[selectedAccount] || 0) - amount
+    };
+    setBalances(newBalances);
+    localStorage.setItem('accountBalances', JSON.stringify(newBalances));
 
     const updatedLockedFunds = {
       ...lockedFunds,
@@ -258,7 +329,6 @@ const Prototype = () => {
     };
 
     saveLockedFunds(updatedLockedFunds);
-    saveAccounts();
     setShowLockModal(false);
     setLockAmount('');
     setLockYears('0');
@@ -266,7 +336,8 @@ const Prototype = () => {
     setLockDays('1');
     setCustomPenalty('1');
     
-    toast.success(`KES ${amount.toLocaleString()} locked until ${lockUntil.toLocaleDateString()}`);
+    showEnhancedToast('success', 'Funds Locked Successfully', 
+      `KES ${amount.toLocaleString()} locked until ${lockUntil.toLocaleDateString()} with ${penalty}% early penalty`);
   };
 
   const handleUnlockEarly = (account: string) => {
@@ -277,24 +348,30 @@ const Prototype = () => {
       const netAmount = lockedAmount - penaltyAmount;
       
       // Add the net amount back to the account
-      setBalances(prev => ({
-        ...prev,
-        [account]: (prev[account] || 0) + netAmount
-      }));
+      const newBalances = {
+        ...balances,
+        [account]: (balances[account] || 0) + netAmount
+      };
+      setBalances(newBalances);
+      localStorage.setItem('accountBalances', JSON.stringify(newBalances));
 
       // Remove the lock
       const { [account]: removedLock, ...restLocks } = lockedFunds;
       saveLockedFunds(restLocks);
-      saveAccounts();
       
-      toast.warning(`Funds unlocked early. Penalty: KES ${penaltyAmount.toFixed(2)}. Net received: KES ${netAmount.toFixed(2)}`);
+      if (penaltyAmount > 0) {
+        showEnhancedToast('warning', 'Early Unlock Penalty Applied', 
+          `Penalty: KES ${penaltyAmount.toFixed(2)}. Net received: KES ${netAmount.toFixed(2)}`);
+      } else {
+        showEnhancedToast('success', 'Funds Unlocked', 
+          `KES ${netAmount.toFixed(2)} successfully unlocked`);
+      }
     }
   };
 
   const getAvailableBalance = (account: string) => {
     const totalBalance = balances[account] || 0;
-    const lockedAmount = lockedFunds[account]?.amount || 0;
-    return totalBalance; // Available balance is just the current balance (locked funds are already deducted)
+    return totalBalance;
   };
 
   const isLockExpired = (account: string) => {
@@ -318,7 +395,7 @@ const Prototype = () => {
 
   useEffect(() => {
     saveAccounts();
-  }, [balances, titles]);
+  }, [balances, titles, descriptions]);
 
   return (
     <Layout>
@@ -402,6 +479,14 @@ const Prototype = () => {
                 </option>
               ))}
             </select>
+
+            {/* Account Description */}
+            {descriptions[selectedAccount] && (
+              <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800 font-medium mb-1">Account Details:</p>
+                <p className="text-sm text-blue-700">{descriptions[selectedAccount]}</p>
+              </div>
+            )}
           </div>
 
           {/* Balance Card */}
@@ -559,19 +644,40 @@ const Prototype = () => {
           {/* Modals */}
           {/* Create Account Modal */}
           {showCreateModal && (
-            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-              <Card className="max-w-sm p-6">
-                <CardContent>
-                  <Label htmlFor="account-title" className="block mb-2">Account Title</Label>
-                  <Input
-                    id="account-title"
-                    value={newAccountTitle}
-                    onChange={(e) => setNewAccountTitle(e.target.value)}
-                    className="mb-4"
-                  />
-                  <div className="flex justify-end gap-2">
-                    <Button variant="ghost" onClick={() => setShowCreateModal(false)}>Cancel</Button>
-                    <Button onClick={createNewAccount}>Create Account</Button>
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <Card className="w-full max-w-sm">
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">Create New Account</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="account-title" className="block mb-2">Account Title *</Label>
+                      <Input
+                        id="account-title"
+                        value={newAccountTitle}
+                        onChange={(e) => setNewAccountTitle(e.target.value)}
+                        placeholder="e.g., School Fees, Savings"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="account-description" className="block mb-2">Description</Label>
+                      <Textarea
+                        id="account-description"
+                        value={newAccountDescription}
+                        onChange={(e) => setNewAccountDescription(e.target.value)}
+                        placeholder="e.g., School account number: 123456789"
+                        className="min-h-[80px] resize-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 mt-6">
+                    <Button variant="ghost" onClick={() => {
+                      setShowCreateModal(false);
+                      setNewAccountTitle('');
+                      setNewAccountDescription('');
+                    }}>Cancel</Button>
+                    <Button onClick={createNewAccount} className="bg-green-600 hover:bg-green-700">
+                      Create Account
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -580,21 +686,20 @@ const Prototype = () => {
 
           {/* Delete Account Modal */}
           {showDeleteModal && (
-            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-              <Card className="max-w-sm p-6">
-                <CardContent>
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <Card className="w-full max-w-sm">
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-4 text-red-600">Delete Account</h3>
                   <p className="mb-4">
                     Are you sure you want to delete the account "{titles[selectedAccount]}"?
                     {lockedFunds[selectedAccount] && (
-                      <span className="block text-red-600 text-sm mt-2">
-                        This account has locked funds. Penalty will apply and remaining funds will go to main account.
+                      <span className="block text-red-600 text-sm mt-2 font-medium">
+                        ⚠️ This account has locked funds. Early withdrawal penalty of {lockedFunds[selectedAccount].penalty}% will apply.
                       </span>
                     )}
-                    {!lockedFunds[selectedAccount] && (
-                      <span className="block text-gray-600 text-sm mt-2">
-                        All funds will be transferred to your main account.
-                      </span>
-                    )}
+                    <span className="block text-gray-600 text-sm mt-2">
+                      All funds (KES {((balances[selectedAccount] || 0) + (lockedFunds[selectedAccount]?.amount || 0)).toLocaleString()}) will be transferred to your main account.
+                    </span>
                   </p>
                   <div className="flex justify-end gap-2">
                     <Button variant="ghost" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
