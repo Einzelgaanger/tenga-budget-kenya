@@ -350,7 +350,7 @@ const Feedback = () => {
                     <h3 className="text-lg font-semibold text-green-600">What is TengaPesa?</h3>
                   </div>
                   <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
-                    TengaPesa is a proposed M-PESA feature that helps you manage your money by creating a special savings wallet with customizable withdrawal rules. You set aside money and create your own rules for when and how you can withdraw it, helping you stick to your financial goals.
+                  TengaPesa is a proposed enhancement to the M-PESA platform designed to empower users to create dedicated mini wallets for effective financial planning. It enables the separation of funds into distinct sub-accounts, each with configurable locking functionalities and withdrawal conditions. Users can allocate money exclusively for specific purposes, ensuring that disbursements occur only from designated wallets, thereby promoting disciplined spending and long-term financial goal adherence.
                   </p>
                 </div>
               </CardContent>
