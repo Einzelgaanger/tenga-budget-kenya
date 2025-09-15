@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFeedback } from '@/hooks/use-feedback';
+import { useOffline } from '@/hooks/use-offline';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
-import { ChevronRight, CheckCircle2, User, Briefcase, Wallet, PiggyBank, Info, Star, Shield, Clock, AlertTriangle } from 'lucide-react';
+import { ChevronRight, CheckCircle2, User, Briefcase, Wallet, PiggyBank, Info, Star, Shield, Clock, AlertTriangle, Wifi, WifiOff, Cloud, CloudOff } from 'lucide-react';
 import type { FeedbackData } from '@/types/feedback';
 
 type FormData = Omit<FeedbackData, 'id' | 'timestamp'>;
@@ -20,6 +21,7 @@ type FormData = Omit<FeedbackData, 'id' | 'timestamp'>;
 const Feedback = () => {
   const navigate = useNavigate();
   const { addFeedback } = useFeedback();
+  const { isOnline, pendingCount, refreshPendingCount } = useOffline();
   
   // Check if user has already submitted feedback
   const [hasAlreadySubmitted, setHasAlreadySubmitted] = useState(false);
@@ -194,9 +196,15 @@ const Feedback = () => {
         // Mark as submitted in localStorage
         localStorage.setItem('tengapesa_feedback_submitted', 'true');
         
-        toast.success("Thank you for your feedback!", {
-          description: "Your responses have been recorded successfully."
-        });
+        if (isOnline) {
+          toast.success("Thank you for your feedback!", {
+            description: "Your responses have been recorded successfully."
+          });
+        } else {
+          toast.success("Thank you for your feedback!", {
+            description: "Your responses have been saved and will be submitted when you're back online."
+          });
+        }
         
         // Set the submitted state
         setHasAlreadySubmitted(true);
@@ -204,12 +212,19 @@ const Feedback = () => {
         // Reset form
         resetForm();
         
+        // Refresh pending count
+        refreshPendingCount();
+        
         // Scroll to top after submission
         setTimeout(() => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 100);
       } else {
-        toast.error("Failed to submit feedback");
+        if (isOnline) {
+          toast.error("Failed to submit feedback");
+        } else {
+          toast.error("Failed to save feedback locally");
+        }
       }
     } catch (error) {
       console.error("Error submitting feedback:", error);
@@ -403,6 +418,35 @@ const Feedback = () => {
             <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
               Your input will help shape the future of mobile money management in Kenya.
             </p>
+            
+            {/* Offline Status Indicator */}
+            <div className="mt-4 flex justify-center">
+              <Card className={`border-2 ${isOnline ? 'border-green-200 bg-green-50' : 'border-orange-200 bg-orange-50'}`}>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2">
+                    {isOnline ? (
+                      <>
+                        <Wifi className="text-green-600" size={16} />
+                        <span className="text-green-700 text-sm font-medium">Online</span>
+                      </>
+                    ) : (
+                      <>
+                        <WifiOff className="text-orange-600" size={16} />
+                        <span className="text-orange-700 text-sm font-medium">Offline - Responses will be saved locally</span>
+                      </>
+                    )}
+                    {pendingCount > 0 && (
+                      <div className="flex items-center gap-1 ml-2">
+                        <Cloud className="text-blue-600" size={14} />
+                        <span className="text-blue-700 text-xs">
+                          {pendingCount} pending submission{pendingCount > 1 ? 's' : ''}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
           <Progress />

@@ -16,5 +16,11 @@ services:
         value: 18
       - key: PORT
         value: 8080
+      - key: NODE_ENV
+        value: production
     healthCheckPath: /healthz
     autoDeploy: true
+    # Keep the service alive with regular health checks
+    healthCheckGracePeriod: 300s
+    # Enable keep-alive mechanism
+    healthCheckTimeout: 30s
